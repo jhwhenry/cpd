@@ -12,7 +12,7 @@ From
 OCP: 4.12
 CPD: 4.8.2
 Storage: Storage Fusion 2.7.2
-Componenets: cpfs,cpd_platform,ws,ws_runtimes,wml,datastage_ent,datastage_ent_plus,dmc,wkc,analyticsengine,openscale,ws_pipelines,db2oltp,db2wh,match360,mantaflow,dp
+Componenets: cpfs,cpd_platform,ws,ws_runtimes,wml,datastage_ent,datastage_ent_plus,dmc,wkc,analyticsengine,openscale,db2wh,match360,mantaflow
 ```
 
 Current IAM and SAML setup
@@ -30,7 +30,7 @@ To
 ```
 OCP: 4.12
 CPD: 4.8.5
-Componenets: cpfs,cpd_platform,ws,ws_runtimes,wml,datastage_ent,datastage_ent_plus,dmc,wkc,analyticsengine,openscale,ws_pipelines,db2oltp,db2wh,match360,mantaflow,dp
+Componenets: cpfs,cpd_platform,ws,ws_runtimes,wml,datastage_ent,datastage_ent_plus,dmc,wkc,analyticsengine,openscale,db2wh,match360,mantaflow
 ```
 
 ## Table of Content
@@ -68,29 +68,13 @@ Part 3: Post-upgrade
 ## Part 1: Pre-upgrade
 ### 1.1 Collect information and review upgrade runbook
 #### 1.1.1 Prepare cpd_vars.sh
-
-To upgrade from Cloud Pak for Data Version 4.8.2 to Version 4.8.5, based on the variables file for 4.8.x such as cpd_vars.sh, you must update the VERSION environment variable and add several new environment variables. Update them into a cpd_vars_482.sh script like this 
+To upgrade from Cloud Pak for Data Version 4.8.2 to Version 4.8.5, based on the variables file for 4.8.x such as cpd_vars.sh, you must update the environment variable for VERSION  and COMPONENTS. Update them into a cpd_vars_482.sh script like this 
 
 ```
-export PROJECT_CERT_MANAGER=ibm-cert-manager
-export PROJECT_LICENSE_SERVICE=ibm-licensing
-export PROJECT_CS_CONTROL=cs-control
-# export PROJECT_SCHEDULING_SERVICE=cpd-scheduler
-export PROJECT_CPD_INST_OPERATORS=cpd-operators
-export PROJECT_CPD_INST_OPERANDS=cpd-instance
 export VERSION=4.8.5
-
-export SERVER_ARGUMENTS="--server=${OCP_URL}"
-export LOGIN_ARGUMENTS="--username=${OCP_USERNAME} --password=${OCP_PASSWORD}"
-# export LOGIN_ARGUMENTS="--token=${OCP_TOKEN}"
-export CPDM_OC_LOGIN="cpd-cli manage login-to-ocp ${SERVER_ARGUMENTS} ${LOGIN_ARGUMENTS}"
-export OC_LOGIN="oc login ${OCP_URL} ${LOGIN_ARGUMENTS}"
-
-# export COMPONENTS=ibm-cert-manager,ibm-licensing,cpfs,cpd_platform,ws,ws_runtimes,datarefinery,wml,datastage_ent,datastage_ent_plus,dmc,wkc,analyticsengine,openscale,ws_pipelines,db2aaservice,db2oltp,db2wh,match360,mantaflow,dp
-
-export COMPONENTS=ibm-cert-manager,ibm-licensing,cpfs,cpd_platform,ws,ws_runtimes,datarefinery,wml,datastage_ent,datastage_ent_plus,dmc,wkc,analyticsengine,openscale,db2aaservice,db2oltp,db2wh,match360,dp, mantaflow
-# export OLM_UTILS_IMAGE=${PRIVATE_REGISTRY_LOCATION}/cpd/olm-utils-v2:latest
-# export CPD_CLI_MANAGE_WORKSPACE=<enter a fully qualified directory>
+export COMPONENTS=ibm-cert-manager,ibm-licensing,cpfs,cpd_platform,ws,ws_runtimes,wml,datastage_ent,datastage_ent_plus,dmc,wkc,analyticsengine,openscale,db2wh,match360,mantaflow
+#export OLM_UTILS_IMAGE=${PRIVATE_REGISTRY_LOCATION}/cpd/olm-utils-v2:latest
+#export CPD_CLI_MANAGE_WORKSPACE=<enter a fully qualified directory>
 ```
 
 #### 1.1.2 Review the upgrade runbook
