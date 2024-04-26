@@ -15,16 +15,6 @@ Storage: Storage Fusion 2.7.2
 Componenets: cpfs,cpd_platform,ws,ws_runtimes,wml,datastage_ent,datastage_ent_plus,dmc,wkc,analyticsengine,openscale,db2wh,match360,mantaflow
 ```
 
-Current IAM and SAML setup
-```
-export ZEN_NAMESPACE=<cpd/wkc namespace>
-oc -n ${ZEN_NAMESPACE} get zenservice lite-cr -o jsonpath="{.spec.iamIntegration}{'\n'}"
-
-oc exec -it -n ${ZEN_NAMESPACE} \
-$(oc get pod -n ${ZEN_NAMESPACE} -l component=ibm-nginx | tail -1 | cut -f1 -d\ ) \
--- bash -c "ls -al /user-home/_global_/config/saml/samlConfig.json"
-```
-
 To
 
 ```
