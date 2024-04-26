@@ -413,6 +413,16 @@ cpd-cli manage apply-olm \
 --cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
 --upgrade=true
 ```
+
+In another terminal, keep running below command and monitoring "InstallPlan" to find which one need manual approval.
+```
+oc get ip -n ibm-cpd-operators -o=jsonpath='{.items[?(@.spec.approved==false)].metadata.name}'
+```
+Approve the upgrade request and run below command as soon as we find it.
+```
+oc patch installplan $(oc get ip -n ibm-cpd-operators -o=jsonpath='{.items[?(@.spec.approved==false)].metadata.name}') -n ibm-cpd-operators --type merge --patch '{"spec":{"approved":true}}'
+```
+
 3.	Confirm that the operator pods are Running or Copmpleted:
 NOTE: You will find CPD operators and catalog sources running in the ${PROJECT_CPD_INST_OPERATORS} namespace
 ```
