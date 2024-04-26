@@ -661,7 +661,7 @@ If post upgrade login using SAML doesn't work, then follow This instruction. You
 
 https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=environment-configuring-sso
 
-### 3.x Summarize and close out the upgrade
+### 3.5 Summarize and close out the upgrade
 
 Schedule a wrap-up meeting and review the upgrade procedure and lessons learned from it.
 
