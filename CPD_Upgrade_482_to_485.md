@@ -105,9 +105,11 @@ oc get CCS ccs-cr -o yaml > ccs-cr.yaml
 
 oc get wkc wkc-cr -o yaml > wkc-cr.yaml
 
-oc get ae analyticsengine-sample -o yaml > analyticsengine-cr.yaml
+oc get analyticsengine analyticsengine-sample -o yaml > analyticsengine-cr.yaml
 
 oc get wkc wkc-cr -o yaml > wkc-cr.yaml
+
+oc get MantaFlow mantaflow -o yaml > mantaflow-cr.yaml
 
 oc get DataStage datastage -o yaml > datastage-cr.yaml
 
