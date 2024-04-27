@@ -37,15 +37,17 @@ Part 1: Pre-upgrade
 1.2 Set up client workstation 
 1.2.1 Prepare a client workstation
 1.2.2 Make olm-utils available in bastion
+1.2.3 Creating a profile for upgrading the service instances
+1.2.4 Download CASE files
 1.3 Health check OCP & CPD
-1.4 Remove "Access advanced mapping permission" from Administrator > Access control > Role
 
 Part 2: Upgrade
 2.1 Upgrade CPD to 4.8.5
 2.1.1 Upgrading shared cluster components
 2.1.2 Preparing to upgrade an CPD instance
-2.1.3 Upgrade foundation service and CPD platform to 4.8.5
-2.2 Upgrade CPD services to 4.8.5
+2.1.3 Upgrade foundation service
+2.1.4 Upgrade CPD platform
+2.2 Upgrade CPD services
 
 Part 3: Post-upgrade
 3.1 Validate CPD & CPD services
@@ -229,7 +231,7 @@ Loaded image: icr.io/cpopen/cpd/olm-utils-v2:latest
 For details please refer to 4.8 doc (https://www.ibm.com/docs/en/SSQNUZ_4.8.x/cpd/upgrade/v48-setup-client.html)
 
 
-#### 1.2.3 Creating a profile for upgrading the service instances.
+#### 1.2.3 Creating a profile for upgrading the service instances
 Create a profile on the workstation from which you will upgrade the service instances. <br>
 
 The profile must be associated with a Cloud Pak for Data user who has either the following permissions:
