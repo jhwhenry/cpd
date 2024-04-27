@@ -701,10 +701,10 @@ Validate the service upgrade status.
 ```
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
 ```
-#### 2.2.8 Upgrade Db2 Warehouse
+#### 2.2.6 Upgrade Db2 Warehouse and Data Management Console 
 ```
 # 1.Upgrade the service
-export COMPONENTS=db2wh
+export COMPONENTS=db2wh,dmc
 
 cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --license_acceptance=true --upgrade=true
 
@@ -724,22 +724,9 @@ cpd-cli service-instance upgrade --profile=${CPD_PROFILE_NAME} --instance-name=$
 # 3.1. Wait for the status to change to Ready
 oc get db2ucluster <instance_id> -o jsonpath='{.status.state} {"\n"}'
 
-3.2. Check the service instances have updated
+#3.2. Check the service instances have updated
 cpd-cli service-instance list --profile=${CPD_PROFILE_NAME} --service-type=${COMPONENTS}
 ```
-#### 2.2.9 Upgrade Data Management Console service
-```
-# 1.Upgrade the service
-export COMPONENTS=dmc
-
-cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --license_acceptance=true --upgrade=true
-
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
-
-# 2.Confirm the version of service instance is 4.8.0
-oc get dmc -n ${PROJECT_CPD_INST_OPERANDS}
-```
-
 
 ## Part 3: Post-upgrade
 
