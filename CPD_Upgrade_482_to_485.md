@@ -424,17 +424,17 @@ oc patch installplan $(oc get ip -n ibm-cpd-operators -o=jsonpath='{.items[?(@.s
 ```
 
 3.	Confirm that the operator pods are Running or Copmpleted:
-NOTE: You will find CPD operators and catalog sources running in the ${PROJECT_CPD_INST_OPERATORS} namespace
+<br> NOTE: You will find CPD operators and catalog sources running in the ${PROJECT_CPD_INST_OPERATORS} namespace
 ```
 oc get pods --namespace=${PROJECT_CPD_INST_OPERATORS}
 ```
 
-4.	Upgrade the operands in the operands project for CPD instance. First run the oc command with the --preview=true option.
+4.	Upgrade the operands in the operands project for CPD instance.
+<br>First run the oc command with the --preview=true option.
 ```
 cpd-cli manage apply-cr --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=cpd_platform --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true --preview=true
 
 cpd-cli manage apply-cr --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=cpd_platform --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
-
 
 oc logs -f cpd-platform-operator-manager-XXXX-XXXX -n ${PROJECT_CPD_INST_OPERATORS}
 ```
@@ -445,7 +445,6 @@ cpd-cli manage get-cr-status \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 NOTE: cpd_platform has been upgraded to 4.8.5
-
 
 ### 2.2 Upgrade CPD services to 4.8.5
 #### 2.2.1 Upgrade IBM Knowledge Catalog service
@@ -514,15 +513,7 @@ cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_in
 
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 ```
-#### 2.2.5 Upgrade Data Privacy
-```
-export COMPONENTS=dp
-
-cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
-
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
-```
-#### ~~2.2.6 Upgrade Db2 Data Management Console service~~
+#### 2.2.5 Upgrade Data Management Console service
 ```
 # 1.Upgrade the service
 export COMPONENTS=dmc
@@ -560,30 +551,23 @@ oc get db2ucluster <instance_id> -o jsonpath='{.status.state} {"\n"}'
 3.2. Check the service instances have updated
 cpd-cli service-instance list --profile=${CPD_PROFILE_NAME} --service-type=${COMPONENTS}
 ```
-~~#### 2.2.8 Upgrade Db2 OLTP~~
+#### 2.2.8 Upgrade Db2 Warehouse
 ```
-# 1.Upgrade the service
-export COMPONENTS=db2oltp
-
-cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --license_acceptance=true --upgrade=true
-
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
-
-# 2. Upgrading Db2 Warehouse service instances
-# 2.1. Get a list of your Db2 Warehouse service instances
+# 1. Upgrading Db2 Warehouse service instances
+# 1.1. Get a list of your Db2 Warehouse service instances
 cpd-cli service-instance list --profile=${CPD_PROFILE_NAME} --service-type=${COMPONENTS}
 
-# 2.2. If you have applied any custom patches to override scripts, remove them. This will restart Db2 pods. 
+# 1.2. If you have applied any custom patches to override scripts, remove them. This will restart Db2 pods. 
 oc set volume statefulset/c-${DB2U_ID}-db2u -n ${PROJECT_CPD_INST_OPERANDS} --remove --name=<volume_name>
 
-# 2.3. Upgrade Db2 Warehouse service instances
+# 1.3. Upgrade Db2 Warehouse service instances
 cpd-cli service-instance upgrade --profile=${CPD_PROFILE_NAME} --instance-name=${INSTANCE_NAME} --service-type=${COMPONENTS}
 
-# 3. Verifying the service instance upgrade
-# 3.1. Wait for the status to change to Ready
+# 2. Verifying the service instance upgrade
+# 2.1. Wait for the status to change to Ready
 oc get db2ucluster <instance_id> -o jsonpath='{.status.state} {"\n"}'
 
-3.2. Check the service instances have updated
+# 3.1. Check the service instances have updated
 cpd-cli service-instance list --profile=${CPD_PROFILE_NAME} --service-type=${COMPONENTS}
 ```
 #### 2.2.9 Upgrade Watson OpenScale
@@ -594,14 +578,7 @@ cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_in
 
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
 ```
-~~#### 2.2.10 Upgrade Watson Pipelines~~
-```
-export COMPONENTS=ws_pipelines
 
-cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --license_acceptance=true --upgrade=true
-
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
-```
 #### 2.2.11 Upgrade Match 360
 ```
 export COMPONENTS=match360
