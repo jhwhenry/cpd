@@ -229,7 +229,17 @@ Loaded image: icr.io/cpopen/cpd/olm-utils-v2:latest
 For details please refer to 4.8 doc (https://www.ibm.com/docs/en/SSQNUZ_4.8.x/cpd/upgrade/v48-setup-client.html)
 
 
-#### 1.2.3 Download CASE files
+#### 1.2.3 Creating a profile for upgrading the service instances.
+Create a profile on the workstation from which you will upgrade the service instances. <br>
+
+The profile must be associated with a Cloud Pak for Data user who has either the following permissions:
+
+- Create service instances (can_provision)
+- Manage service instances (manage_service_instances)
+
+Click this link and follow these steps for getting it done. (https://www.ibm.com/docs/en/SSQNUZ_4.8.x/cpd/upgrade/v48-setup-client.html](https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=cli-creating-cpd-profile#taskcpd-profile-mgmt__steps__1).
+
+#### 1.2.4 Download CASE files
 
 1. Go to the client workstation with internet
 
@@ -476,7 +486,9 @@ custom_spec:
 ```
 export COMPONENTS=wkc
 ```
-<br>Run the cpd-cli manage login-to-ocp command to log in to the cluster.
+
+Run the cpd-cli manage login-to-ocp command to log in to the cluster.
+
 ```
 cpd-cli manage login-to-ocp \
 --username=${OCP_USERNAME} \
@@ -484,12 +496,12 @@ cpd-cli manage login-to-ocp \
 --server=${OCP_URL}
 ```
 
-##### Custom installation (with installation options)
+##### Custom upgrade with installation options
 ```
 cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --param-file=/tmp/work/install-options.yml --license_acceptance=true --upgrade=true
 ```
 
-##### Default installation (without installation options)
+##### Default upgrade without installation options
 ```
 cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
 ```
@@ -504,22 +516,108 @@ Follow the step in [Bulk sync relationships for global search (IBM Knowledge Cat
 #### 2.2.2 Upgrade MANTA service
 ```
 export COMPONENTS=mantaflow
+```
 
+Run the cpd-cli manage login-to-ocp command to log in to the cluster.
+
+```
+cpd-cli manage login-to-ocp \
+--username=${OCP_USERNAME} \
+--password=${OCP_PASSWORD} \
+--server=${OCP_URL}
+```
+Run the command for upgrade MANTA service.
+
+```
 cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
+```
 
+Validating the upgrade.
+```
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
 ```
 
 #### 2.2.3 Upgrade Analytics Engine service
+##### 2.2.3.1 Upgrade the service
+
+Check the Analytics Engine service version and status. 
 ```
 export COMPONENTS=analyticsengine
-
-cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
 
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
 ```
 
-#### 2.2.3 Upgrade DataStage edition plus
+If the Analytics Engine service version is **not 4.8.5**, then run below commands for the upgrade. <br>
+
+Check if the Analytics Engine service was installed with the custom install options. <br>
+
+If it's custom installation, check the previous install-options.yaml or analyticsengine-sample yaml, make sure to keep original custom settings.
+```
+vim cpd-cli-workspace/olm-utils-workspace/work/install-options.yml
+```
+
+If it's custom installation, then run this upgrade command.
+```
+cpd-cli manage apply-cr \
+--components=analyticsengine \
+--release=${VERSION} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--param-file=/tmp/work/install-options.yml \
+--license_acceptance=true \
+--upgrade=true
+```
+
+If it's **NOT** custom installation, then run this upgrade command.
+
+```
+cpd-cli manage apply-cr \
+--components=analyticsengine \
+--release=${VERSION} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--license_acceptance=true \
+--upgrade=true
+```
+
+Validate the service upgrade status.
+```
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
+```
+
+##### 2.2.3.2 Upgrade the service instances
+```
+cpd-cli service-instance upgrade \
+--service-type=spark \
+--profile=${CPD_PROFILE_NAME} \
+--all
+```
+
+Validate the service instance upgrade status.
+```
+cpd-cli service-instance list \
+--service-type=spark \
+--profile=${CPD_PROFILE_NAME}
+```
+
+#### 2.2.4 Upgrade DataStage Enterprise 
+Check the DataStage Enterprise service version and status.
+```
+export COMPONENTS=datastage_ent
+
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
+```
+
+If the DataStage Enterprise service version is **not 4.8.5**, then run below commands for the upgrade. <br>
+
+```
+cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
+```
+
+Validate the upgrade status.
+```
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
+```
+
+#### 2.2.4 Upgrade DataStage Enterprise plus
 ```
 export COMPONENTS=datastage_ent_plus
 
@@ -527,7 +625,7 @@ cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_in
 
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
 ```
-#### 2.2.4 Upgrade Match 360
+#### 2.2.5 Upgrade Match 360
 ```
 export COMPONENTS=match360
 
