@@ -490,15 +490,24 @@ cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_in
 
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
 ```
-#### 2.2.3 Upgrade Watson Machine Learning service
+#### 2.2.3 Upgrade DataStage edition plus
 ```
-export COMPONENTS=wml
+export COMPONENTS=datastage_ent_plus
 
 cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
 
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
 ```
-#### 2.2.4 Upgrade Watson Studio service
+#### 2.2.4 Upgrade Match 360
+```
+export COMPONENTS=match360
+
+cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
+
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
+```
+
+#### 2.2.5 Upgrade Watson Studio service
 ```
 export COMPONENTS=ws
 
@@ -506,26 +515,30 @@ cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_in
 
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
 ```
-#### 2.2.4.1 Upgrade all installed Watson Studio Runtimes:
+#### 2.2.5.1 Upgrade all installed Watson Studio Runtimes:
 ```
 export COMPONENTS=ws_runtimes
 cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --license_acceptance=true --upgrade=true
 
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 ```
-#### 2.2.5 Upgrade Data Management Console service
+#### 2.2.6 Upgrade Watson Machine Learning service
 ```
-# 1.Upgrade the service
-export COMPONENTS=dmc
+export COMPONENTS=wml
 
-cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --license_acceptance=true --upgrade=true
+cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
 
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
-
-# 2.Confirm the version of service instance is 4.8.0
-oc get dmc -n ${PROJECT_CPD_INST_OPERANDS}
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
 ```
-#### 2.2.7 Upgrade Db2 Warehouse
+#### 2.2.7 Upgrade Watson OpenScale
+```
+export COMPONENTS=openscale
+
+cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
+
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
+```
+#### 2.2.8 Upgrade Db2 Warehouse
 ```
 # 1.Upgrade the service
 export COMPONENTS=db2wh
@@ -551,50 +564,19 @@ oc get db2ucluster <instance_id> -o jsonpath='{.status.state} {"\n"}'
 3.2. Check the service instances have updated
 cpd-cli service-instance list --profile=${CPD_PROFILE_NAME} --service-type=${COMPONENTS}
 ```
-#### 2.2.8 Upgrade Db2 Warehouse
+#### 2.2.9 Upgrade Data Management Console service
 ```
-# 1. Upgrading Db2 Warehouse service instances
-# 1.1. Get a list of your Db2 Warehouse service instances
-cpd-cli service-instance list --profile=${CPD_PROFILE_NAME} --service-type=${COMPONENTS}
+# 1.Upgrade the service
+export COMPONENTS=dmc
 
-# 1.2. If you have applied any custom patches to override scripts, remove them. This will restart Db2 pods. 
-oc set volume statefulset/c-${DB2U_ID}-db2u -n ${PROJECT_CPD_INST_OPERANDS} --remove --name=<volume_name>
+cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --license_acceptance=true --upgrade=true
 
-# 1.3. Upgrade Db2 Warehouse service instances
-cpd-cli service-instance upgrade --profile=${CPD_PROFILE_NAME} --instance-name=${INSTANCE_NAME} --service-type=${COMPONENTS}
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 
-# 2. Verifying the service instance upgrade
-# 2.1. Wait for the status to change to Ready
-oc get db2ucluster <instance_id> -o jsonpath='{.status.state} {"\n"}'
-
-# 3.1. Check the service instances have updated
-cpd-cli service-instance list --profile=${CPD_PROFILE_NAME} --service-type=${COMPONENTS}
-```
-#### 2.2.9 Upgrade Watson OpenScale
-```
-export COMPONENTS=openscale
-
-cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
-
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
+# 2.Confirm the version of service instance is 4.8.0
+oc get dmc -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
-#### 2.2.11 Upgrade Match 360
-```
-export COMPONENTS=match360
-
-cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
-
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
-```
-#### 2.2.12 Upgrade DataStage edition plus
-```
-export COMPONENTS=datastage_ent_plus
-
-cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
-
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
-```
 
 ## Part 3: Post-upgrade
 
