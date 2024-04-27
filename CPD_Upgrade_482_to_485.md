@@ -430,6 +430,13 @@ oc get pods --namespace=${PROJECT_CPD_INST_OPERATORS}
 ```
 
 4.	Upgrade the operands in the operands project for CPD instance.
+<br>Run the cpd-cli manage login-to-ocp command to log in to the cluster.
+```
+cpd-cli manage login-to-ocp \
+--username=${OCP_USERNAME} \
+--password=${OCP_PASSWORD} \
+--server=${OCP_URL}
+```
 <br>First run the oc command with the --preview=true option.
 ```
 cpd-cli manage apply-cr --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=cpd_platform --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true --preview=true
@@ -462,8 +469,16 @@ custom_spec:
 #    enableDataQuality: False
 ```
 ##### 2.Upgrade WKC instance with default or custom installation
+
 ```
 export COMPONENTS=wkc
+```
+<br>Run the cpd-cli manage login-to-ocp command to log in to the cluster.
+```
+cpd-cli manage login-to-ocp \
+--username=${OCP_USERNAME} \
+--password=${OCP_PASSWORD} \
+--server=${OCP_URL}
 ```
 
 ##### Custom installation (with installation options)
@@ -479,6 +494,7 @@ cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_in
 ```
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
+
 ##### Run the bulk sync utility before start using Global Search indexed data for relationships
 Follow the step in [Bulk sync relationships for global search (IBM Knowledge Catalog)](https://www.ibm.com/docs/en/SSQNUZ_4.8.x/wsj/admin/admin-bulk-sync.html)
 
@@ -490,6 +506,16 @@ cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_in
 
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
 ```
+
+#### 2.2.3 Upgrade Analytics Engine service
+```
+export COMPONENTS=analyticsengine
+
+cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
+
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
+```
+
 #### 2.2.3 Upgrade DataStage edition plus
 ```
 export COMPONENTS=datastage_ent_plus
