@@ -358,14 +358,15 @@ cpd-cli manage login-to-ocp \
 --server=${OCP_URL}
 ```
 2.	Apply the required permissions to the projects.
-<br>Preview
+<br>
+Preview
 
 ```
 cpd-cli manage authorize-instance-topology \
 --cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}  --preview=true
 ```
-Apply
+<br>Apply
 ```
 cpd-cli manage authorize-instance-topology \
 --cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
