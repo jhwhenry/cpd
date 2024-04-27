@@ -424,7 +424,7 @@ oc patch installplan $(oc get ip -n ibm-cpd-operators -o=jsonpath='{.items[?(@.s
 ```
 
 3.	Confirm that the operator pods are Running or Copmpleted:
-<br> NOTE: You will find CPD operators and catalog sources running in the ${PROJECT_CPD_INST_OPERATORS} namespace
+<br>NOTE: You will find CPD operators and catalog sources running in the ${PROJECT_CPD_INST_OPERATORS} namespace
 ```
 oc get pods --namespace=${PROJECT_CPD_INST_OPERATORS}
 ```
