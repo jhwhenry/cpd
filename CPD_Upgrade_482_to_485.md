@@ -423,14 +423,14 @@ Approve the upgrade request and run below command as soon as we find it.
 oc patch installplan $(oc get ip -n ibm-cpd-operators -o=jsonpath='{.items[?(@.spec.approved==false)].metadata.name}') -n ibm-cpd-operators --type merge --patch '{"spec":{"approved":true}}'
 ```
 
-3.	Confirm that the operator pods are Running or Copmpleted:
-<br>NOTE: You will find CPD operators and catalog sources running in the ${PROJECT_CPD_INST_OPERATORS} namespace
+3.	Confirm that the operator pods are Running or Copmpleted:<br>
+NOTE: You will find CPD operators and catalog sources running in the ${PROJECT_CPD_INST_OPERATORS} namespace
 ```
 oc get pods --namespace=${PROJECT_CPD_INST_OPERATORS}
 ```
 
-4.	Upgrade the operands in the operands project for CPD instance.
-<br>Run the cpd-cli manage login-to-ocp command to log in to the cluster.
+4.	Upgrade the operands in the operands project for CPD instance.<br>
+Run the cpd-cli manage login-to-ocp command to log in to the cluster.
 ```
 cpd-cli manage login-to-ocp \
 --username=${OCP_USERNAME} \
