@@ -551,12 +551,12 @@ If the Analytics Engine service version is **not 4.8.5**, then run below command
 
 Check if the Analytics Engine service was installed with the custom install options. <br>
 
-If it's custom installation, check the previous install-options.yaml or analyticsengine-sample yaml, make sure to keep original custom settings.
+- If it's custom installation, check the previous install-options.yaml or analyticsengine-sample yaml, make sure to keep original custom settings.
 ```
 vim cpd-cli-workspace/olm-utils-workspace/work/install-options.yml
 ```
 
-If it's custom installation, then run this upgrade command.
+Then run this upgrade command.
 ```
 cpd-cli manage apply-cr \
 --components=analyticsengine \
@@ -567,7 +567,7 @@ cpd-cli manage apply-cr \
 --upgrade=true
 ```
 
-If it's **NOT** custom installation, then run this upgrade command.
+- If it's **NOT** custom installation, then run this upgrade command.
 
 ```
 cpd-cli manage apply-cr \
@@ -622,47 +622,83 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --compone
 export COMPONENTS=datastage_ent_plus
 
 cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
+```
 
+Validate the upgrade status.
+```
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
 ```
 #### 2.2.5 Upgrade Match 360
 ```
 export COMPONENTS=match360
+```
 
-cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
+Run the cpd-cli manage login-to-ocp command to log in to the cluster.
 
+```
+cpd-cli manage login-to-ocp \
+--username=${OCP_USERNAME} \
+--password=${OCP_PASSWORD} \
+--server=${OCP_URL}
+```
+
+Check if the Match 360 service was installed with the custom install options. <br>
+
+- If it's custom installation, check the previous install-options.yaml or mdm-cr yaml, make sure to keep original custom settings.
+```
+vim cpd-cli-workspace/olm-utils-workspace/work/install-options.yml
+```
+
+Then run this upgrade command.
+```
+cpd-cli manage apply-cr \
+--components=${COMPONENTS} \
+--release=${VERSION} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--block_storage_class=${STG_CLASS_BLOCK} \
+--file_storage_class=${STG_CLASS_FILE} \
+--param-file=/tmp/work/install-options.yml \
+--license_acceptance=true \
+--upgrade=true
+```
+
+- If it's **NOT** custom installation, then run this upgrade command.
+
+```
+cpd-cli manage apply-cr \
+--components=${COMPONENTS} \
+--release=${VERSION} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--block_storage_class=${STG_CLASS_BLOCK} \
+--file_storage_class=${STG_CLASS_FILE} \
+--license_acceptance=true \
+--upgrade=true
+```
+
+Validate the service upgrade status.
+```
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
 ```
 
-#### 2.2.5 Upgrade Watson Studio service
+#### 2.2.5 Upgrade Watson Studio, Watson Studio Runtimes and Watson Machine Learning 
 ```
-export COMPONENTS=ws
+export COMPONENTS=ws,ws_runtimes,wml,openscale
+```
+Run the cpd-cli manage login-to-ocp command to log in to the cluster.
 
+```
+cpd-cli manage login-to-ocp \
+--username=${OCP_USERNAME} \
+--password=${OCP_PASSWORD} \
+--server=${OCP_URL}
+```
+
+Run the upgrade command.
+```
 cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
-
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
 ```
-#### 2.2.5.1 Upgrade all installed Watson Studio Runtimes:
+Validate the service upgrade status.
 ```
-export COMPONENTS=ws_runtimes
-cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --license_acceptance=true --upgrade=true
-
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
-```
-#### 2.2.6 Upgrade Watson Machine Learning service
-```
-export COMPONENTS=wml
-
-cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
-
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
-```
-#### 2.2.7 Upgrade Watson OpenScale
-```
-export COMPONENTS=openscale
-
-cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
-
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
 ```
 #### 2.2.8 Upgrade Db2 Warehouse
