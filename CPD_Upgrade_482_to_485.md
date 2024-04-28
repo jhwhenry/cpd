@@ -469,10 +469,8 @@ cpd-cli manage apply-cr --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INS
 <br>Apply
 ```
 cpd-cli manage apply-cr --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=cpd_platform --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
-
-oc logs -f cpd-platform-operator-manager-XXXX-XXXX -n ${PROJECT_CPD_INST_OPERATORS}
 ```
-
+This may take about 45 minutes to complete.
 5.	Confirm that the status of the operands is Completed:
 ```
 cpd-cli manage get-cr-status \
