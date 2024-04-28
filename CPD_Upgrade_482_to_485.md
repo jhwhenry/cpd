@@ -480,7 +480,7 @@ NOTE: cpd_platform has been upgraded to 4.8.5
 
 ### 2.2 Upgrade CPD services to 4.8.5
 #### 2.2.1 Upgrade IBM Knowledge Catalog service
-
+Check if the IBM Knowledge Catalog service was installed with the custom install options. 
 ##### 1. For custom installation, check the previous install-options.yaml or wkc-cr yaml, make sure to keep original custom settings
 ```
 vim cpd-cli-workspace/olm-utils-workspace/work/install-options.yml
@@ -508,6 +508,7 @@ cpd-cli manage login-to-ocp \
 --server=${OCP_URL}
 ```
 
+Based on wheter or not the custom install options used by existing WKC service, choose one from the below two options and run the command accordingly.
 ##### Custom upgrade with installation options
 ```
 cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --param-file=/tmp/work/install-options.yml --license_acceptance=true --upgrade=true
