@@ -775,8 +775,6 @@ Schedule a wrap-up meeting and review the upgrade procedure and lessons learned 
 
 Evaluate the outcome of upgrade with pre-defined goals.
 
-Close out the upgrade git issue.
-
 ---
 
 End of document
