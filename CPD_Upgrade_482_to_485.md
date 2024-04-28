@@ -104,10 +104,6 @@ oc get MantaFlow mantaflow -o yaml > mantaflow-cr.yaml
 oc get DataStage datastage -o yaml > datastage-cr.yaml
 
 ```
-Make a copy of existing custom route under CPD namespace
-```
-oc get route <custom route> -n <CPD namespace> -o yaml > custom_route.yaml
-```
 
 #### 1.1.4 if you installed hotfixes, uninstall all hotfixes
 Edit Zensevice, CCS, WKC, AE custom resources and remove all hotfix references.
