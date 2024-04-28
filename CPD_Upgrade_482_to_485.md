@@ -546,6 +546,8 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ##### Run the bulk sync utility before start using Global Search indexed data for relationships
 Follow the step in [Bulk sync relationships for global search (IBM Knowledge Catalog)](https://www.ibm.com/docs/en/SSQNUZ_4.8.x/wsj/admin/admin-bulk-sync.html)
 
+##### Apply the hotfixes if available.
+
 #### 2.2.2 Upgrade MANTA service
 ```
 export COMPONENTS=mantaflow
