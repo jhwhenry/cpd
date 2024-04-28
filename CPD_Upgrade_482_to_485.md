@@ -261,14 +261,14 @@ ${IBM_ENTITLEMENT_KEY}
 ```
 
 Download case package from either of the following locations:<br>
-GitHub (github.com)
+Option 1 - GitHub (github.com)
 ```
 cpd-cli manage case-download \
 --components=${COMPONENTS} \
 --release=${VERSION}
 ```
 
-IBM Cloud Pak Open Container Initiative (icr.io)
+Option 2 - IBM Cloud Pak Open Container Initiative (icr.io)
 ```
 cpd-cli manage case-download \
 --components=${COMPONENTS} \
@@ -305,7 +305,7 @@ Log onto bastion node, and make sure IBM Cloud Pak for Data command-line interfa
 Run this command in terminal and make sure the Lite and all the services' status are in Ready status.
 
 ```
-cpd-cli manage get-cr-status -n <enter your Cloud Pak for Data installation project>
+cpd-cli manage get-cr-status -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
 Run this command and make sure all pods healthy.
@@ -317,16 +317,16 @@ oc get po --no-headers --all-namespaces -o wide | grep -Ev '([[:digit:]])/\1.*R'
 3. Check private container registry status if installed
 
 Log into bastion node, where the private container registry is usually installed, as root.
-Run this command in terminal and make sure it is succeed.
+Run this command in terminal and make sure it can succeed.
 
 ```
-podman login --username $PRIVATE_REGISTRY_USER --password $PRIVATE_REGISTRY_PASSWORD $PRIVATE_REGISTRY --tls-verify=false
+podman login --username $PRIVATE_REGISTRY_PULL_USER --password $PRIVATE_REGISTRY_PULL_PASSWORD $PRIVATE_REGISTRY_LOCATION --tls-verify=false
 ```
 
 You can run this command to verify the images in private container registry.
 
 ```
-curl -k -u ${PRIVATE_REGISTRY_USER}:${PRIVATE_REGISTRY_PASSWORD} https://${PRIVATE_REGISTRY}/v2/_catalog?n=6000 | jq .
+curl -k -u ${PRIVATE_REGISTRY_PULL_USER}:${PRIVATE_REGISTRY_PULL_PASSWORD} https://${PRIVATE_REGISTRY_LOCATION}/v2/_catalog?n=6000 | jq .
 ```
 
 ## Part 2: Upgrade
