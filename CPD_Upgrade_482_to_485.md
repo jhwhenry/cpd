@@ -397,12 +397,14 @@ cpd-cli manage login-to-ocp \
 ```
 2.	Upgrade IBM Cloud Pak foundational services and create the required ConfigMap.
 <br>Assuming instances is without tethered projects. First run the oc command with the --preview=true option
+<br>Preview
 ```
 cpd-cli manage setup-instance-topology --release=${VERSION} --cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --license_acceptance=true --block_storage_class=${STG_CLASS_BLOCK} --preview=true
-
+```
+<br>Apply
+```
 cpd-cli manage setup-instance-topology --release=${VERSION} --cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --license_acceptance=true --block_storage_class=${STG_CLASS_BLOCK}
 ```
-
 - Confirm common-service, namespace-scope, opencloud and odlm operator running in the ${PROJECT_CPD_INST_OPERATORS} namespace
 ```
 oc get pod -n ${PROJECT_CPD_INST_OPERATORS}
