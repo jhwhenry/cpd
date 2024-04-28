@@ -341,7 +341,10 @@ oc get deployment -A |  grep ibm-licensing-operator
 ```   
 2.	Run the cpd-cli manage login-to-ocp command to log in to the cluster
 ```
-${CPDM_OC_LOGIN}
+cpd-cli manage login-to-ocp \
+--username=${OCP_USERNAME} \
+--password=${OCP_PASSWORD} \
+--server=${OCP_URL}
 ```
 3. Upgrade the Certificate manager and License Service
 
