@@ -260,20 +260,21 @@ cpd-cli manage login-entitled-registry \
 ${IBM_ENTITLEMENT_KEY}
 ```
 
-Download case package from either of the following locations:
+Download case package from either of the following locations:<br>
+GitHub (github.com)
 ```
-# GitHub (github.com)
 cpd-cli manage case-download \
 --components=${COMPONENTS} \
 --release=${VERSION}
+```
 
-# IBM Cloud Pak Open Container Initiative (icr.io)
+IBM Cloud Pak Open Container Initiative (icr.io)
+```
 cpd-cli manage case-download \
 --components=${COMPONENTS} \
 --release=${VERSION} \
 --from_oci=true
 ```
-
 ### 1.3 Health check OCP & CPD
 
 1. Check OCP status
