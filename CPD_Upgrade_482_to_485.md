@@ -423,6 +423,7 @@ cpd-cli manage login-to-ocp \
 2.	Upgrade the operators in the operators project for CPD instance. First run the oc command with the --preview=true option.
 <br>
 Preview
+
 ```
 cpd-cli manage apply-olm \
 --release=${VERSION} \
@@ -464,7 +465,9 @@ cpd-cli manage login-to-ocp \
 <br>First run the oc command with the --preview=true option.
 ```
 cpd-cli manage apply-cr --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=cpd_platform --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true --preview=true
-
+```
+<br>Apply
+```
 cpd-cli manage apply-cr --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=cpd_platform --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
 
 oc logs -f cpd-platform-operator-manager-XXXX-XXXX -n ${PROJECT_CPD_INST_OPERATORS}
