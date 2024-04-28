@@ -33,7 +33,6 @@ Part 1: Pre-upgrade
 1.1.3 Backup before upgrade
 1.1.4 If you installed hotfixes, uninstall all hotfixes
 1.1.5 If use SAML SSO, export SSO configuration
-1.1.6 Enable default admin user if it's disabled. Once upgrade complet you can disable it again
 1.2 Set up client workstation 
 1.2.1 Prepare a client workstation
 1.2.2 Make olm-utils available in bastion
@@ -117,14 +116,6 @@ If you use SAML SSO, export your SSO configuration. You will need to reapply you
 ```
 oc cp -n=${PROJECT_CPD_INSTANCE} $(oc get pods -l component=usermgmt -n ${PROJECT_CPD_INSTANCE} -o jsonpath='{.items[0].metadata.name}'):/user-home/_global_/config/saml ./samlConfig.json
 ```
-#### 1.1.6 Enable default admin user if it's disabled. Once upgrade complet you can disable it again. 
-```
-oc exec -it -n ${PROJECT_CPD_INST_OPERANDS} \
-$(oc get pod -n ${PROJECT_CPD_INST_OPERANDS} -l component=usermgmt | tail -1 | cut -f1 -d\ ) \
--- bash -c "/usr/src/server-src/scripts/manage-user.sh --enable-user admin"
-```
-
-Ref: https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=users-disabling-default-platform-administrator
 
 ### 1.2 Set up client workstation
 
