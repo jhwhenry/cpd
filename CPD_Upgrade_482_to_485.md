@@ -23,24 +23,24 @@ Componenets: cpfs,cpd_platform,ws,ws_runtimes,wml,datastage_ent,datastage_ent_pl
 ```
 
 ## Pre-requisites
-### Backup of the cluster is done.
+#### Backup of the cluster is done.
 Backup your Cloud Pak for Data installation before you upgrade.
 For details, see Backing up and restoring Cloud Pak for Data (https://www.ibm.com/docs/en/SSQNUZ_4.8.x/cpd/admin/backup_restore.html).
 
 **Note:**
 Make sure there are no scheduled backups conflicting with the scheduled upgrade.
   
-### The image mirroring completed successfully
+#### The image mirroring completed successfully
   If a private container registry is in-use to host the IBM Cloud Pak for Data software images, you must mirror the updated images from the IBM® Entitled Registry to the private container registry. <br>
   Reference: https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=48-preparing-run-upgrades-from-private-container-registry 
-### The permissions required for the upgrade is ready
+#### The permissions required for the upgrade is ready
 - Openshift cluster permissions
 An Openshift cluster administrator can complete all of the installation tasks.<br>
 However, if you want to enable users with fewer permissions to complete some of the installation tasks, follow this link https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=planning-installation-roles-personas and get the roles with required permission prepared.
 - Cloud Pak for Data permissions
 The Cloud Pak for Data administrator role or permissions is required for upgrading the service instances.
 
-### A pre-upgrade health check is made to ensure the cluster's readiness for upgrade.
+#### A pre-upgrade health check is made to ensure the cluster's readiness for upgrade.
 - The OpenShift cluster, persistent storage and Cloud Pak for Data platform and services are in healthy status.
 
 ## Table of Content
