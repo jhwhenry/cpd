@@ -37,8 +37,9 @@ Part 1: Pre-upgrade
 1.2 Set up client workstation 
 1.2.1 Prepare a client workstation
 1.2.2 Make olm-utils available in bastion
-1.2.3 Creating a profile for upgrading the service instances
-1.2.4 Download CASE files
+1.2.3 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
+1.2.4 Creating a profile for upgrading the service instances
+1.2.5 Download CASE files
 1.3 Health check OCP & CPD
 
 Part 2: Upgrade
@@ -230,8 +231,11 @@ Loaded image: icr.io/cpopen/cpd/olm-utils-v2:latest
 
 For details please refer to 4.8 doc (https://www.ibm.com/docs/en/SSQNUZ_4.8.x/cpd/upgrade/v48-setup-client.html)
 
-
-#### 1.2.3 Creating a profile for upgrading the service instances
+#### 1.2.3 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
+```
+cpd-cli manage restart-container
+```
+#### 1.2.4 Creating a profile for upgrading the service instances
 Create a profile on the workstation from which you will upgrade the service instances. <br>
 
 The profile must be associated with a Cloud Pak for Data user who has either the following permissions:
@@ -241,7 +245,7 @@ The profile must be associated with a Cloud Pak for Data user who has either the
 
 Click this link and follow these steps for getting it done. (https://www.ibm.com/docs/en/SSQNUZ_4.8.x/cpd/upgrade/v48-setup-client.html](https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=cli-creating-cpd-profile#taskcpd-profile-mgmt__steps__1).
 
-#### 1.2.4 Download CASE files
+#### 1.2.5 Download CASE files
 
 1. Go to the client workstation with internet
 
