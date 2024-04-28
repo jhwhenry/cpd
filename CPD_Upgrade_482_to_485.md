@@ -103,6 +103,8 @@ oc get MantaFlow mantaflow -o yaml > mantaflow-cr.yaml
 
 oc get DataStage datastage -o yaml > datastage-cr.yaml
 
+oc get MasterDataManagement mdm-cr -o yaml > mdm-cr.yaml 
+
 ```
 
 #### 1.1.4 if you installed hotfixes, uninstall all hotfixes
