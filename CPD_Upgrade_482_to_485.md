@@ -237,6 +237,7 @@ For details please refer to 4.8 doc (https://www.ibm.com/docs/en/SSQNUZ_4.8.x/cp
 
 #### 1.2.4 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
 ```
+podman stop olm-utils-play-v2
 cpd-cli manage restart-container
 ```
 #### 1.2.5 Creating a profile for upgrading the service instances
@@ -340,12 +341,6 @@ oc get deployment -A |  grep ibm-licensing-operator
 ```   
 2.	Run the cpd-cli manage login-to-ocp command to log in to the cluster
 ```
-cpd-cli manage login-to-ocp \
---username=${OCP_USERNAME} \
---password=${OCP_PASSWORD} \
---server=${OCP_URL}
-
-# or
 ${CPDM_OC_LOGIN}
 ```
 3. Upgrade the Certificate manager and License Service
