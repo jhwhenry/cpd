@@ -653,9 +653,16 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --compone
 ```
 
 #### 2.2.4 Upgrade DataStage Enterprise plus
+Check the DataStage Enterprise Plus service version and status.
 ```
 export COMPONENTS=datastage_ent_plus
 
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
+```
+
+If the DataStage Enterprise Plus service version is not 4.8.5, then run below commands for the upgrade. 
+
+```
 cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
 ```
 
