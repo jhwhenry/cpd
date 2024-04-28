@@ -396,7 +396,9 @@ cpd-cli manage login-to-ocp \
 --server=${OCP_URL}
 ```
 2.	Upgrade IBM Cloud Pak foundational services and create the required ConfigMap.
-<br>Preview
+<br>
+Preview
+
 ```
 cpd-cli manage setup-instance-topology --release=${VERSION} --cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --license_acceptance=true --block_storage_class=${STG_CLASS_BLOCK} --preview=true
 ```
@@ -419,7 +421,8 @@ cpd-cli manage login-to-ocp \
 ```
 
 2.	Upgrade the operators in the operators project for CPD instance. First run the oc command with the --preview=true option.
-<br>Preview
+<br>
+Preview
 ```
 cpd-cli manage apply-olm \
 --release=${VERSION} \
@@ -437,7 +440,7 @@ cpd-cli manage apply-olm \
 
 In another terminal, keep running below command and monitoring "InstallPlan" to find which one need manual approval.
 ```
-oc get ip -n ibm-cpd-operators -o=jsonpath='{.items[?(@.spec.approved==false)].metadata.name}'
+watch "oc get ip -n ibm-cpd-operators -o=jsonpath='{.items[?(@.spec.approved==false)].metadata.name}'"
 ```
 Approve the upgrade request and run below command as soon as we find it.
 ```
