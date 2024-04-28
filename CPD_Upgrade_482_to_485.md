@@ -114,7 +114,7 @@ Edit Zensevice, CCS, WKC, AE custom resources and remove all hotfix references.
 If you use SAML SSO, export your SSO configuration. You will need to reapply your SAML SSO configuration after you upgrade to Version 4.8. Skip this step if you use the IBM Cloud Pak foundational services Identity Management Service
 
 ```
-oc cp -n=${PROJECT_CPD_INSTANCE} $(oc get pods -l component=usermgmt -n ${PROJECT_CPD_INSTANCE} -o jsonpath='{.items[0].metadata.name}'):/user-home/_global_/config/saml ./samlConfig.json
+oc cp -n=${PROJECT_CPD_INST_OPERANDS} $(oc get pods -l component=usermgmt -n ${PROJECT_CPD_INST_OPERANDS} -o jsonpath='{.items[0].metadata.name}'):/user-home/_global_/config/saml ./samlConfig.json
 ```
 
 ### 1.2 Set up client workstation
