@@ -75,30 +75,19 @@ export CPD_CLI_MANAGE_WORKSPACE=<enter a new fully qualified and valid directory
 Review upgrade runbook
 
 #### 1.1.3 Backup before upgrade
-Note: Create a folder for 4.8.2 and maintain below created copies in that folder.
+Note: Create a folder for 4.8.2 and maintain below created copies in that folder. <br>
 
-Make a copy of existing catalog sources (Recommended)
-
-```
-for CS in $(oc get catsrc -n ${PROJECT_CATSRC} | awk '/IBM|MANTA/ {print $1}')
-do
-   oc get catsrc -n ${PROJECT_CATSRC} ${CS} -o yaml >${CS}-catsrc.yaml
-done
-```
-
-Make a copy of existing subscriptions (Recommended)
+Capture data for the CPD 4.8.2 instance. No sensitive information is collected. Only the operational state of the Kubernetes artifacts is collected.The output of the command is stored in a file named collect-state.tar.gz in the cpd-cli-workspace/olm-utils-workspace/work directory.
 
 ```
-for SUB in $(oc get subs -n ${PROJECT_CPFS_OPS} | awk '!/NAME/{print $1}')
-do
-   oc get subs -n ${PROJECT_CPFS_OPS} ${SUB} -o yaml >${SUB}-sub.yaml
-done
+cpd-cli manage collect-state \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
 Make a copy of existing custom resources (Recommended)
 
 ```
-oc project ${PROJECT_CPD_INSTANCE}
+oc project ${PROJECT_CPD_INST_OPERANDS}
 
 oc get ibmcpd ibmcpd-cr -o yaml > ibmcpd-cr.yaml
 
@@ -109,8 +98,6 @@ oc get CCS ccs-cr -o yaml > ccs-cr.yaml
 oc get wkc wkc-cr -o yaml > wkc-cr.yaml
 
 oc get analyticsengine analyticsengine-sample -o yaml > analyticsengine-cr.yaml
-
-oc get wkc wkc-cr -o yaml > wkc-cr.yaml
 
 oc get MantaFlow mantaflow -o yaml > mantaflow-cr.yaml
 
