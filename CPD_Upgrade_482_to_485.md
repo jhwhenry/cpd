@@ -247,7 +247,7 @@ The profile must be associated with a Cloud Pak for Data user who has either the
 - Create service instances (can_provision)
 - Manage service instances (manage_service_instances)
 
-Click this link and follow these steps for getting it done. (https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=cli-creating-cpd-profile#taskcpd-profile-mgmt__steps__1).
+Click this link and follow these steps for getting it done. https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=cli-creating-cpd-profile#taskcpd-profile-mgmt__steps__1
 
 #### 1.2.6 Download CASE files
 
