@@ -186,11 +186,18 @@ cpd-cli
 	CPD Release Version: 4.8.5
 ```
 #### 1.2.2 Update cpd_vars.sh for the upgrade to Version 4.8.5
+
+```
+vi cpd_vars_485.sh
+```
+
 To upgrade from Cloud Pak for Data Version 4.8.2 to Version 4.8.5, you must update the environment variable for VERSION. 
+
 ```
 export VERSION=4.8.5
 #export OLM_UTILS_IMAGE=${PRIVATE_REGISTRY_LOCATION}/cpd/olm-utils-v2:latest
 ```
+Save the changes. <br>
 
 Run this command to apply cpd_vars_485.sh
 ```
