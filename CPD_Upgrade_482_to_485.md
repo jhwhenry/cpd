@@ -192,6 +192,11 @@ export VERSION=4.8.5
 #export OLM_UTILS_IMAGE=${PRIVATE_REGISTRY_LOCATION}/cpd/olm-utils-v2:latest
 ```
 
+Run this command to apply cpd_vars_485.sh
+```
+source cpd_vars_485.sh
+```
+
 #### 1.2.3 Make olm-utils available
 
 Go to the client workstation with internet
