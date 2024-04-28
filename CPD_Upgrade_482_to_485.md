@@ -67,7 +67,7 @@ To upgrade from Cloud Pak for Data Version 4.8.2 to Version 4.8.5, based on the 
 export VERSION=4.8.5
 export COMPONENTS=ibm-cert-manager,ibm-licensing,cpfs,cpd_platform,ws,ws_runtimes,wml,datastage_ent,datastage_ent_plus,dmc,wkc,analyticsengine,openscale,db2wh,match360,mantaflow
 #export OLM_UTILS_IMAGE=${PRIVATE_REGISTRY_LOCATION}/cpd/olm-utils-v2:latest
-#export CPD_CLI_MANAGE_WORKSPACE=<enter a fully qualified directory>
+export CPD_CLI_MANAGE_WORKSPACE=<enter a new fully qualified and valid directory>
 ```
 
 #### 1.1.2 Review the upgrade runbook
