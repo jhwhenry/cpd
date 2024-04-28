@@ -35,10 +35,11 @@ Part 1: Pre-upgrade
 1.1.5 If use SAML SSO, export SSO configuration
 1.2 Set up client workstation 
 1.2.1 Prepare a client workstation
-1.2.2 Make olm-utils available in bastion
-1.2.3 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
-1.2.4 Creating a profile for upgrading the service instances
-1.2.5 Download CASE files
+1.2.2 Update cpd_vars.sh for the upgrade to Version 4.8.5
+1.2.3 Make olm-utils available in bastion
+1.2.4 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
+1.2.5 Creating a profile for upgrading the service instances
+1.2.6 Download CASE files
 1.3 Health check OCP & CPD
 
 Part 2: Upgrade
@@ -59,21 +60,12 @@ Part 3: Post-upgrade
 
 ## Part 1: Pre-upgrade
 ### 1.1 Collect information and review upgrade runbook
-#### 1.1.1 Prepare cpd_vars.sh
-To upgrade from Cloud Pak for Data Version 4.8.2 to Version 4.8.5, based on the variables file for 4.8.x such as cpd_vars.sh, you must update the environment variable for VERSION  and COMPONENTS. Update them into a cpd_vars_482.sh script like this 
 
-```
-export VERSION=4.8.5
-export COMPONENTS=ibm-cert-manager,ibm-licensing,cpfs,cpd_platform,ws,ws_runtimes,wml,datastage_ent,datastage_ent_plus,dmc,wkc,analyticsengine,openscale,db2wh,match360,mantaflow
-#export OLM_UTILS_IMAGE=${PRIVATE_REGISTRY_LOCATION}/cpd/olm-utils-v2:latest
-export CPD_CLI_MANAGE_WORKSPACE=<enter a new fully qualified and valid directory>
-```
-
-#### 1.1.2 Review the upgrade runbook
+#### 1.1.1 Review the upgrade runbook
 
 Review upgrade runbook
 
-#### 1.1.3 Backup before upgrade
+#### 1.1.2 Backup before upgrade
 Note: Create a folder for 4.8.2 and maintain below created copies in that folder. <br>
 
 Capture data for the CPD 4.8.2 instance. No sensitive information is collected. Only the operational state of the Kubernetes artifacts is collected.The output of the command is stored in a file named collect-state.tar.gz in the cpd-cli-workspace/olm-utils-workspace/work directory.
@@ -106,10 +98,10 @@ oc get MasterDataManagement mdm-cr -o yaml > mdm-cr.yaml
 
 ```
 
-#### 1.1.4 if you installed hotfixes, uninstall all hotfixes
+#### 1.1.3 if you installed hotfixes, uninstall all hotfixes
 Edit Zensevice, CCS, WKC, AE custom resources and remove all hotfix references.
 
-#### 1.1.5 If use SAML SSO, export SSO configuration
+#### 1.1.4 If use SAML SSO, export SSO configuration
 
 If you use SAML SSO, export your SSO configuration. You will need to reapply your SAML SSO configuration after you upgrade to Version 4.8. Skip this step if you use the IBM Cloud Pak foundational services Identity Management Service
 
@@ -125,8 +117,9 @@ oc cp -n=${PROJECT_CPD_INST_OPERANDS} $(oc get pods -l component=usermgmt -n ${P
 
 Create a directory for the cpd-cli utility.
 ```
-mkdir -p /ibm/cpd/485
-cd /ibm/cpd/485
+export CPD485_WORKSPACE=/ibm/cpd/485
+mkdir -p ${CPD485_WORKSPACE}
+cd ${CPD485_WORKSPACE}
 ```
 
 Download the cpd-cli for 4.8.5.
@@ -147,17 +140,28 @@ mv cpd-cli-linux-EE-13.1.5-176/* .
 rm -rf cpd-cli-linux-EE-13.1.5-176
 ```
 
-3. Copy the cpd_vars.sh over and add path to it
+3. Copy the cpd_vars.sh file used by the CPD 4.8.2 to the folder ${CPD485_WORKSPACE}.
 
 ```
-cd /ibm/cpd/485
+cd ${CPD485_WORKSPACE}
+cp <the file path of the cpd_vars.sh file used by the CPD 4.8.2 > cpd_vars_485.sh
+```
+4. Make cpd-cli executable anywhere
+```
 vi cpd_vars_485.sh
 ```
 
-Add this line into the head of cpd_vars_485.sh
+Add below two lines into the head of cpd_vars_485.sh
 
 ```
-export PATH=/ibm/cpd/485:$PATH
+export CPD485_WORKSPACE=/ibm/cpd/485
+export PATH=${CPD485_WORKSPACE}:$PATH
+```
+
+Update the CPD_CLI_MANAGE_WORKSPACE variable
+
+```
+export CPD_CLI_MANAGE_WORKSPACE=${CPD485_WORKSPACE}
 ```
 
 Run this command to apply cpd_vars_485.sh
@@ -181,13 +185,19 @@ cpd-cli
 	Build Number: nn
 	CPD Release Version: 4.8.5
 ```
+#### 1.2.2 Update cpd_vars.sh for the upgrade to Version 4.8.5
+To upgrade from Cloud Pak for Data Version 4.8.2 to Version 4.8.5, you must update the environment variable for VERSION. 
+```
+export VERSION=4.8.5
+#export OLM_UTILS_IMAGE=${PRIVATE_REGISTRY_LOCATION}/cpd/olm-utils-v2:latest
+```
 
-#### 1.2.2 Make olm-utils available
+#### 1.2.3 Make olm-utils available
 
 Go to the client workstation with internet
 
 ```
-cd /ibm/cpd/485
+cd ${CPD485_WORKSPACE}
 source cpd_vars_485.sh
 
 cpd-cli manage save-image \
@@ -213,11 +223,11 @@ Loaded image: icr.io/cpopen/cpd/olm-utils-v2:latest
 
 For details please refer to 4.8 doc (https://www.ibm.com/docs/en/SSQNUZ_4.8.x/cpd/upgrade/v48-setup-client.html)
 
-#### 1.2.3 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
+#### 1.2.4 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
 ```
 cpd-cli manage restart-container
 ```
-#### 1.2.4 Creating a profile for upgrading the service instances
+#### 1.2.5 Creating a profile for upgrading the service instances
 Create a profile on the workstation from which you will upgrade the service instances. <br>
 
 The profile must be associated with a Cloud Pak for Data user who has either the following permissions:
@@ -227,14 +237,9 @@ The profile must be associated with a Cloud Pak for Data user who has either the
 
 Click this link and follow these steps for getting it done. (https://www.ibm.com/docs/en/SSQNUZ_4.8.x/cpd/upgrade/v48-setup-client.html](https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=cli-creating-cpd-profile#taskcpd-profile-mgmt__steps__1).
 
-#### 1.2.5 Download CASE files
+#### 1.2.6 Download CASE files
 
 1. Go to the client workstation with internet
-
-```
-cd /ibm/cpd/485
-source cpd_vars_485.sh
-```
 
 Log into IBM registry and list images
 
