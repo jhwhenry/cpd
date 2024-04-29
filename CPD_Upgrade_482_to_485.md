@@ -260,7 +260,35 @@ For details please refer to 4.8 doc (https://www.ibm.com/docs/en/SSQNUZ_4.8.x/cp
 podman stop olm-utils-play-v2
 cpd-cli manage restart-container
 ```
-#### 1.2.5 Creating a profile for upgrading the service instances
+#### 1.2.6 Ensure the images were mirrored to the private container registry
+- Check the log files in the work directory generated during the image mirroring
+```
+grep "error" ${CPD_CLI_MANAGE_WORKSPACE}/work/mirror_*.log
+```
+- Log in to the private container registry.
+```
+cpd-cli manage login-private-registry \
+${PRIVATE_REGISTRY_LOCATION} \
+${PRIVATE_REGISTRY_PULL_USER} \
+${PRIVATE_REGISTRY_PULL_PASSWORD}
+```
+- Confirm that the images were mirrored to the private container registry:
+Inspect the contents of the private container registry:
+```
+cpd-cli manage list-images \
+--components=${COMPONENTS} \
+--release=${VERSION} \
+--target_registry=${PRIVATE_REGISTRY_LOCATION} \
+--case_download=false
+```
+The output is saved to the list_images.csv file in the work/offline/${VERSION} directory.<br>
+Check the output for errors:
+```
+grep "level=fatal" ${CPD_CLI_MANAGE_WORKSPACE}/work/offline/${VERSION}/list_images.csv
+```
+The command returns images that are missing or that cannot be inspected which needs to be addressed.
+
+#### 1.2.6 Creating a profile for upgrading the service instances
 Create a profile on the workstation from which you will upgrade the service instances. <br>
 
 The profile must be associated with a Cloud Pak for Data user who has either the following permissions:
