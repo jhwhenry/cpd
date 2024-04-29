@@ -597,7 +597,7 @@ cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_in
 
 Validating the upgrade.
 ```
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 ```
 
 #### 2.2.3 Upgrade Analytics Engine service
@@ -607,7 +607,7 @@ Check the Analytics Engine service version and status.
 ```
 export COMPONENTS=analyticsengine
 
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 ```
 
 If the Analytics Engine service version is **not 4.8.5**, then run below commands for the upgrade. <br>
@@ -643,7 +643,7 @@ cpd-cli manage apply-cr \
 
 Validate the service upgrade status.
 ```
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 ```
 
 ##### 2.2.3.2 Upgrade the service instances
@@ -666,7 +666,7 @@ Check the DataStage Enterprise service version and status.
 ```
 export COMPONENTS=datastage_ent
 
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 ```
 
 If the DataStage Enterprise service version is **not 4.8.5**, then run below commands for the upgrade. <br>
@@ -677,7 +677,7 @@ cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_in
 
 Validate the upgrade status.
 ```
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 ```
 
 #### 2.2.4 Upgrade DataStage Enterprise plus
@@ -685,7 +685,7 @@ Check the DataStage Enterprise Plus service version and status.
 ```
 export COMPONENTS=datastage_ent_plus
 
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 ```
 
 If the DataStage Enterprise Plus service version is not 4.8.5, then run below commands for the upgrade. 
@@ -696,7 +696,7 @@ cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_in
 
 Validate the upgrade status.
 ```
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 ```
 #### 2.2.5 Upgrade Match 360
 ```
@@ -747,7 +747,7 @@ cpd-cli manage apply-cr \
 
 Validate the service upgrade status.
 ```
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 ```
 
 #### 2.2.5 Upgrade Watson Studio, Watson Studio Runtimes and Watson Machine Learning 
@@ -769,7 +769,7 @@ cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_in
 ```
 Validate the service upgrade status.
 ```
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --components=${COMPONENTS}
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 ```
 #### 2.2.6 Upgrade Db2 Warehouse and Data Management Console 
 ```
