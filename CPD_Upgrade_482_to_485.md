@@ -119,13 +119,35 @@ oc get MasterDataManagement mdm-cr -o yaml > mdm-cr.yaml
 
 ```
 
-Take a note of the c-db2oltp-wkc-db2u-0 databases' buffer pool information.
+Collect wkc db2u information.
 ```
 oc exec -it c-db2oltp-wkc-db2u-0 bash
+```
 
+Collect the c-db2oltp-wkc-db2u-0 databases' buffer pool information.
+```
 for db in LINEAGE BGDB ILGDB WFDB; do echo "(*) dbname: $db"; db2top -d $db -b b -s 1 | awk -F';' '{print $2 ":" $14}'; echo "--------------------------"; done
 ```
 Save the output to a file named wkc-db2u-dbs-bp.txt .
+
+
+Collect the c-db2oltp-wkc-db2u-0 databases' log utilization information.
+```
+for db in LINEAGE BGDB ILGDB WFDB; do echo "(*) dbname: $db"; db2 connect to $db; db2 "select * from SYSIBMADM.LOG_UTILIZATION"; echo "--------------------------"; done
+```
+Save the output to a file named wkc-db2u-log-utilization.txt .
+
+Collect the c-db2oltp-wkc-db2u-0 databases' snapshot information.
+```
+ for db in LINEAGE BGDB ILGDB WFDB; do echo "(*) dbname: $db"; db2 "get snapshot for database on $db" | grep -i log; echo "--------------------------"; done
+```
+Save the output to a file named wkc-db2u-log-snapshot.txt .
+
+Collect the c-db2oltp-wkc-db2u-0 databases' log configuration information.
+```
+for db in LINEAGE BGDB ILGDB WFDB; do echo "(*) dbname: $db"; db2 "get db cfg for $db" | grep -i log; echo "--------------------------"; done
+```
+Save the output to a file named wkc-db2u-log-conf.txt .
 
 #### 1.1.3 if you installed hotfixes, uninstall all hotfixes
 Edit custom resources and remove all hotfix references if any.
