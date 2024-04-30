@@ -128,7 +128,7 @@ for db in LINEAGE BGDB ILGDB WFDB; do echo "(*) dbname: $db"; db2top -d $db -b b
 Save the output to a file named wkc-db2u-dbs-bp.txt .
 
 #### 1.1.3 if you installed hotfixes, uninstall all hotfixes
-Edit Zensevice, CCS, WKC, AE custom resources and remove all hotfix references.
+Edit custom resources and remove all hotfix references if any.
 
 #### 1.1.4 If use SAML SSO, export SSO configuration
 
@@ -708,6 +708,22 @@ Validate the upgrade status.
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 ```
 #### 2.2.5 Upgrade Match 360
+
+```
+oc edit MasterDataManagement mdm-cr
+```
+
+Remove below lines from the mdm-cr and save.
+```
+ mdm_job:
+    image:
+      tag: sha256:1e03d2e6e268be8176b4fb9e3936e730b85d5a73e59dfd09b77e661734db090a
+  spark:
+    image_version: sha256:2d828ba755b87eed08c48f4944555166ea8734698174e3fd32128e5d818ac1f8
+```
+
+Wait until the mdm-cr become Completed status.
+
 ```
 export COMPONENTS=match360
 ```
