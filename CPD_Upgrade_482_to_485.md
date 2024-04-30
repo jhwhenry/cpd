@@ -19,6 +19,7 @@ To
 ```
 OCP: 4.12
 CPD: 4.8.5
+Storage: Storage Fusion 2.7.2
 Componenets: cpfs,cpd_platform,ws,ws_runtimes,wml,datastage_ent,datastage_ent_plus,dmc,wkc,analyticsengine,openscale,db2wh,match360,mantaflow
 ```
 
@@ -117,6 +118,14 @@ oc get DataStage datastage -o yaml > datastage-cr.yaml
 oc get MasterDataManagement mdm-cr -o yaml > mdm-cr.yaml 
 
 ```
+
+Take a note of the c-db2oltp-wkc-db2u-0 databases' buffer pool information.
+```
+oc exec -it c-db2oltp-wkc-db2u-0 bash
+
+for db in LINEAGE BGDB ILGDB WFDB; do echo "(*) dbname: $db"; db2top -d $db -b b -s 1 | awk -F';' '{print $2 ":" $14}'; echo "--------------------------"; done
+```
+Save the output to a file named wkc-db2u-dbs-bp.txt .
 
 #### 1.1.3 if you installed hotfixes, uninstall all hotfixes
 Edit Zensevice, CCS, WKC, AE custom resources and remove all hotfix references.
