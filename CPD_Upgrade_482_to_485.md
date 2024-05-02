@@ -852,12 +852,14 @@ cpd-cli service-instance list --profile=${CPD_PROFILE_NAME} --service-type=${COM
 Log into CPD web UI with admin and check out each services, including provision instance and functions of each service
 
 ### 3.2 Enabling users to upload JDBC drivers
+Reference: https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=environment-enabling-users-upload-jdbc-drivers
+
 #### 3.2.1 Set the wdp_connect_connection_disable_jar_tab parameter to false
 ```
 oc patch ccs ccs-cr \
 --namespace=${PROJECT_CPD_INST_OPERANDS} \
 --type=merge \
---patch '{"spec": {"wdp_connect_connection_disable_jar_tab": "false"}}'
+--patch '{"spec": {"wdp_connect_connection_jdbc_drivers_repository_mode": "enabled"}}'
 ```
 
 #### 3.2.2 Wait for the common core services status to be Completed
