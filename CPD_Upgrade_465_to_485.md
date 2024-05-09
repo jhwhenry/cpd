@@ -158,35 +158,35 @@ cat cpd-cli-workspace/olm-utils-workspace/work/get_rsi_patch_info.log
 ```
 2.Set active patches to inactive.
 
-- Disable rsi-asset-files-api-annotation-selinux.
+- Inactivate rsi-asset-files-api-annotation-selinux.
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
 --patch_name=rsi-asset-files-api-annotation-selinux \
 --state=inactive
 ```
-- Disable rsi-asset-files-api-pod-spec-selinux.
+- Inactivate rsi-asset-files-api-pod-spec-selinux.
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
 --patch_name=rsi-asset-files-api-pod-spec-selinux \
 --state=inactive
 ```
-- Disable rsi-create-dap-directories-annotation-selinux.
+- Inactivate rsi-create-dap-directories-annotation-selinux.
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
 --patch_name=rsi-create-dap-directories-annotation-selinux \
 --state=inactive
 ```
-- Disable rsi-create-dap-directories-pod-spec-selinux.
+- Inactivate rsi-create-dap-directories-pod-spec-selinux.
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
 --patch_name=rsi-create-dap-directories-pod-spec-selinux \
 --state=inactive
 ```
-- Disable rsi-dp-api-annotation-selinux.
+- Inactivate rsi-dp-api-annotation-selinux.
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
@@ -194,7 +194,7 @@ cpd-cli manage create-rsi-patch \
 --state=inactive
 ```
 
-- Disable rsi-dp-api-pod-spec-selinux.
+- Inactivate rsi-dp-api-pod-spec-selinux.
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
@@ -202,7 +202,7 @@ cpd-cli manage create-rsi-patch \
 --state=inactive
 ```
 
-- Disable rsi-event-logger-api-annotation-selinux.
+- Inactivate rsi-event-logger-api-annotation-selinux.
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
@@ -210,7 +210,7 @@ cpd-cli manage create-rsi-patch \
 --state=inactive
 ```
 
-- Disable rsi-event-logger-api-pod-spec-selinux.
+- Inactivate rsi-event-logger-api-pod-spec-selinux.
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
@@ -218,7 +218,7 @@ cpd-cli manage create-rsi-patch \
 --state=inactive
 ```
 
-- Disable rsi-finley-public-service-patch.
+- Inactivate rsi-finley-public-service-patch.
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
@@ -226,7 +226,7 @@ cpd-cli manage create-rsi-patch \
 --state=inactive
 ```
 
-- Disable rsi-iae-nginx-ephemeral-patch.
+- Inactivate rsi-iae-nginx-ephemeral-patch.
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
@@ -234,7 +234,7 @@ cpd-cli manage create-rsi-patch \
 --state=inactive
 ```
 
-- Disable rsi-mde-service-manager-patch.
+- Inactivate rsi-mde-service-manager-patch.
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
@@ -242,7 +242,7 @@ cpd-cli manage create-rsi-patch \
 --state=inactive
 ```
 
-- Disable rsi-mde-service-manager-patch-2.
+- Inactivate rsi-mde-service-manager-patch-2.
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
@@ -250,7 +250,7 @@ cpd-cli manage create-rsi-patch \
 --state=inactive
 ```
 
-- Disable rsi-spark-runtimes-annotation-selinux.
+- Inactivate rsi-spark-runtimes-annotation-selinux.
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
@@ -258,7 +258,7 @@ cpd-cli manage create-rsi-patch \
 --state=inactive
 ```
 
-- Disable rsi-spark-runtimes-pod-spec-selinux.
+- Inactivate rsi-spark-runtimes-pod-spec-selinux.
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
@@ -271,12 +271,17 @@ cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --al
 
 cat cpd-cli-workspace/olm-utils-workspace/work/get_rsi_patch_info.log
 ```
+4.Disable the RSI feature in the project
+If IBM Cloud Pak foundational services is installed in ibm-common-services
+```
+cpd-cli manage disable-rsi \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE}
+```
 
-We need to disable the RSI patches. While, We should not disable any selinux patches???? We can disable all non-selinux patches. Once the upgrade is complete we can enable them depending on if not fixed on 4.8.5.
 
 **Important:** 
-<br>
-If you plan to use the RSI feature in IBM Cloud Pak for Data Version 4.8, skip the step to delete the patches. You can re-activate the patches after you install the RSI-webhook at the instance-level.
+<br>We need to disable the RSI patches. While, We should not disable any selinux patches???? We can disable all non-selinux patches. Once the upgrade is complete we can enable them depending on if not fixed on 4.8.5.
+<br>If you plan to use the RSI feature in IBM Cloud Pak for Data Version 4.8, skip the step to delete the patches. You can re-activate the patches after you install the RSI-webhook at the instance-level.
 
 #### 1.1.4 If use SAML SSO, export SSO configuration
 
@@ -977,6 +982,8 @@ cpd-cli service-instance list --profile=${CPD_PROFILE_NAME} --service-type=${COM
 
 Log into CPD web UI with admin and check out each services, including provision instance and functions of each service
 
+### Re-activate the RSI patches.
+ 
 ### 3.2 Enabling users to upload JDBC drivers
 Reference: https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=environment-enabling-users-upload-jdbc-drivers
 
