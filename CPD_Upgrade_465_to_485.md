@@ -1,17 +1,17 @@
-# CPD Upgrade Runbook - v.4.8.2 to 4.8.5
+# CPD Upgrade Runbook - v.4.6.5 to 4.8.5
 
 ---
 ## Upgrade documentation
-[Upgrading from IBM Cloud Pak for Data Version 4.8.x to a later 4.8 refresh](https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=upgrading-from-cloud-pak-data-version-48)
+[Upgrading from IBM Cloud Pak for Data Version 4.6 to Version 4.8](https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=upgrading-from-cloud-pak-data-version-46)
 
 ## Upgrade context
 From
 
 ```
 OCP: 4.12
-CPD: 4.8.2
+CPD: 4.6.5
 Storage: Storage Fusion 2.7.2
-Componenets: cpfs,cpd_platform,ws,ws_runtimes,wml,datastage_ent,datastage_ent_plus,dmc,wkc,analyticsengine,openscale,db2wh,match360,mantaflow
+Componenets: cpfs,cpd_platform,ws,ws_runtimes,wml,datastage_ent,wkc,analyticsengine,openscale,db2wh,dp
 ```
 
 To
@@ -20,7 +20,7 @@ To
 OCP: 4.12
 CPD: 4.8.5
 Storage: Storage Fusion 2.7.2
-Componenets: cpfs,cpd_platform,ws,ws_runtimes,wml,datastage_ent,datastage_ent_plus,dmc,wkc,analyticsengine,openscale,db2wh,match360,mantaflow
+Componenets: cpfs,cpd_platform,ws,ws_runtimes,wml,datastage_ent,wkc,analyticsengine,openscale,db2wh,dp
 ```
 
 ## Pre-requisites
