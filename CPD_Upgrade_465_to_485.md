@@ -87,9 +87,9 @@ Part 3: Post-upgrade
 Review upgrade runbook
 
 #### 1.1.2 Backup before upgrade
-Note: Create a folder for 4.8.2 and maintain below created copies in that folder. <br>
+Note: Create a folder for 4.6.5 and maintain below created copies in that folder. <br>
 
-Capture data for the CPD 4.8.2 instance. No sensitive information is collected. Only the operational state of the Kubernetes artifacts is collected.The output of the command is stored in a file named collect-state.tar.gz in the cpd-cli-workspace/olm-utils-workspace/work directory.
+Capture data for the CPD 4.6.5 instance. No sensitive information is collected. Only the operational state of the Kubernetes artifacts is collected.The output of the command is stored in a file named collect-state.tar.gz in the cpd-cli-workspace/olm-utils-workspace/work directory.
 
 ```
 cpd-cli manage collect-state \
@@ -111,11 +111,7 @@ oc get wkc wkc-cr -o yaml > wkc-cr.yaml
 
 oc get analyticsengine analyticsengine-sample -o yaml > analyticsengine-cr.yaml
 
-oc get MantaFlow mantaflow-wkc -o yaml > mantaflow-cr.yaml
-
 oc get DataStage datastage -o yaml > datastage-cr.yaml
-
-oc get MasterDataManagement mdm-cr -o yaml > mdm-cr.yaml 
 
 ```
 
@@ -149,8 +145,138 @@ for db in LINEAGE BGDB ILGDB WFDB; do echo "(*) dbname: $db"; db2 "get db cfg fo
 ```
 Save the output to a file named wkc-db2u-log-conf.txt .
 
-#### 1.1.3 if you installed hotfixes, uninstall all hotfixes
-Edit custom resources and remove all hotfix references if any.
+#### 1.1.3 If you installed hotfixes, uninstall all hotfixes
+Edit custom resources (e.g. Zensevice, CCS, WKC, AE) and remove all hotfix references if any.
+
+#### 1.1.4 If you installed the resource specification injection (RSI) feature, uninstall the cluster-scoped webhook
+
+1. Get a list of all patches in the project:
+```
+cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --all
+
+cat cpd-cli-workspace/olm-utils-workspace/work/get_rsi_patch_info.log
+```
+2.Set active patches to inactive.
+
+- Disable rsi-asset-files-api-annotation-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-asset-files-api-annotation-selinux \
+--state=inactive
+```
+- Disable rsi-asset-files-api-pod-spec-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-asset-files-api-pod-spec-selinux \
+--state=inactive
+```
+- Disable rsi-create-dap-directories-annotation-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-create-dap-directories-annotation-selinux \
+--state=inactive
+```
+- Disable rsi-create-dap-directories-pod-spec-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-create-dap-directories-pod-spec-selinux \
+--state=inactive
+```
+- Disable rsi-dp-api-annotation-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-dp-api-annotation-selinux \
+--state=inactive
+```
+
+- Disable rsi-dp-api-pod-spec-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-dp-api-pod-spec-selinux \
+--state=inactive
+```
+
+- Disable rsi-event-logger-api-annotation-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-event-logger-api-annotation-selinux \
+--state=inactive
+```
+
+- Disable rsi-event-logger-api-pod-spec-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-event-logger-api-pod-spec-selinux \
+--state=inactive
+```
+
+- Disable rsi-finley-public-service-patch.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-finley-public-service-patch \
+--state=inactive
+```
+
+- Disable rsi-iae-nginx-ephemeral-patch.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-iae-nginx-ephemeral-patch \
+--state=inactive
+```
+
+- Disable rsi-mde-service-manager-patch.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-mde-service-manager-patch \
+--state=inactive
+```
+
+- Disable rsi-mde-service-manager-patch-2.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-mde-service-manager-patch-2 \
+--state=inactive
+```
+
+- Disable rsi-spark-runtimes-annotation-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-spark-runtimes-annotation-selinux \
+--state=inactive
+```
+
+- Disable rsi-spark-runtimes-pod-spec-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-spark-runtimes-pod-spec-selinux \
+--state=inactive
+```
+3.Check the RSI patches status again:
+```
+cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --all
+
+cat cpd-cli-workspace/olm-utils-workspace/work/get_rsi_patch_info.log
+```
+
+We need to disable the RSI patches. While, We should not disable any selinux patches???? We can disable all non-selinux patches. Once the upgrade is complete we can enable them depending on if not fixed on 4.8.5.
+
+**Important:** 
+<br>
+If you plan to use the RSI feature in IBM Cloud Pak for Data Version 4.8, skip the step to delete the patches. You can re-activate the patches after you install the RSI-webhook at the instance-level.
 
 #### 1.1.4 If use SAML SSO, export SSO configuration
 
