@@ -156,7 +156,7 @@ cpd-cli manage login-to-ocp \
 --password=${OCP_PASSWORD} \
 --server=${OCP_URL}
 ```
-2. Get a list of all patches in the project:
+2.Get a list of all patches in the project:
 ```
 cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --all
 
@@ -303,6 +303,9 @@ oc cp -n=${PROJECT_CPD_INSTANCE} \
 $(oc get pods -l component=usermgmt -n ${PROJECT_CPD_INSTANCE} \
 -o jsonpath='{.items[0].metadata.name}'):/user-home/_global_/config/saml ./samlConfig.json
 ```
+#### 1.1.6 Enable default admin user if it's disabled. Once upgrade complet you can disable it again.
+
+https://www.ibm.com/docs/en/cloud-paks/cp-data/4.6.x?topic=users-disabling-default-admin-user#taskremove-admin__postreq__1
 
 ### 1.2 Set up client workstation
 
