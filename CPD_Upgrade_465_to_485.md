@@ -149,14 +149,20 @@ Save the output to a file named wkc-db2u-log-conf.txt .
 Edit custom resources (e.g. Zensevice, CCS, WKC, AE) and remove all hotfix references if any.
 
 #### 1.1.4 If you installed the resource specification injection (RSI) feature, uninstall the cluster-scoped webhook
-
-1. Get a list of all patches in the project:
+1.Run the cpd-cli manage login-to-ocp command to log in to the cluster as a user with sufficient permissions.
+```
+cpd-cli manage login-to-ocp \
+--username=${OCP_USERNAME} \
+--password=${OCP_PASSWORD} \
+--server=${OCP_URL}
+```
+2. Get a list of all patches in the project:
 ```
 cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --all
 
 cat cpd-cli-workspace/olm-utils-workspace/work/get_rsi_patch_info.log
 ```
-2.Set active patches to inactive.
+3.Set active patches to inactive.
 
 - Inactivate rsi-asset-files-api-annotation-selinux.
 ```
@@ -265,19 +271,24 @@ cpd-cli manage create-rsi-patch \
 --patch_name=rsi-spark-runtimes-pod-spec-selinux \
 --state=inactive
 ```
-3.Check the RSI patches status again:
+4.Check the RSI patches status again:
 ```
 cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --all
 
 cat cpd-cli-workspace/olm-utils-workspace/work/get_rsi_patch_info.log
 ```
-4.Disable the RSI feature in the project
+5.Disable the RSI feature in the project
 If IBM Cloud Pak foundational services is installed in ibm-common-services
 ```
 cpd-cli manage disable-rsi \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE}
 ```
-
+6.Uninstall the webhook
+```
+cpd-cli manage uninstall-rsi \
+--cs_ns=${PROJECT_CPFS_OPS} \
+--rsi_image=${PRIVATE_REGISTRY_LOCATION}/cpd/zen-rsi-adm-controller:4.6.5-x86_64
+```
 
 **Important:** 
 <br>We need to disable the RSI patches. While, We should not disable any selinux patches???? We can disable all non-selinux patches. Once the upgrade is complete we can enable them depending on if not fixed on 4.8.5.
@@ -983,6 +994,139 @@ cpd-cli service-instance list --profile=${CPD_PROFILE_NAME} --service-type=${COM
 Log into CPD web UI with admin and check out each services, including provision instance and functions of each service
 
 ### Re-activate the RSI patches.
+1.Log the cpd-cli in to the Red Hat OpenShift Container Platform cluster.
+```
+cpd-cli manage login-to-ocp \
+--username=${OCP_USERNAME} \
+--password=${OCP_PASSWORD} \
+--server=${OCP_URL}
+```
+2.Install the RSI webhook.
+```
+cpd-cli manage install-rsi \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+--rsi_image=${PRIVATE_REGISTRY_LOCATION}cpopen/cpd/zen-rsi-adm-controller:${VERSION}-x86_64
+```
+3.Enable RSI for the instance
+```
+cpd-cli manage enable-rsi \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+```
+4.Set inactive patches to active.
+
+- Activate rsi-asset-files-api-annotation-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-asset-files-api-annotation-selinux \
+--state=active
+```
+- Activate rsi-asset-files-api-pod-spec-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-asset-files-api-pod-spec-selinux \
+--state=active
+```
+- Activate rsi-create-dap-directories-annotation-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-create-dap-directories-annotation-selinux \
+--state=active
+```
+- Activate rsi-create-dap-directories-pod-spec-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-create-dap-directories-pod-spec-selinux \
+--state=active
+```
+- Activate rsi-dp-api-annotation-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-dp-api-annotation-selinux \
+--state=active
+```
+
+- Activate rsi-dp-api-pod-spec-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-dp-api-pod-spec-selinux \
+--state=active
+```
+
+- Activate rsi-event-logger-api-annotation-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-event-logger-api-annotation-selinux \
+--state=active
+```
+
+- Activate rsi-event-logger-api-pod-spec-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-event-logger-api-pod-spec-selinux \
+--state=active
+```
+
+- Activate rsi-finley-public-service-patch.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-finley-public-service-patch \
+--state=active
+```
+
+- Activate rsi-iae-nginx-ephemeral-patch.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-iae-nginx-ephemeral-patch \
+--state=active
+```
+
+- Activate rsi-mde-service-manager-patch.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-mde-service-manager-patch \
+--state=active
+```
+
+- Activate rsi-mde-service-manager-patch-2.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-mde-service-manager-patch-2 \
+--state=active
+```
+
+- Activate rsi-spark-runtimes-annotation-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-spark-runtimes-annotation-selinux \
+--state=active
+```
+
+- Activate rsi-spark-runtimes-pod-spec-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-spark-runtimes-pod-spec-selinux \
+--state=active
+```
+5.Check the RSI patches status again:
+```
+cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --all
+
+cat cpd-cli-workspace/olm-utils-workspace/work/get_rsi_patch_info.log
+```
  
 ### 3.2 Enabling users to upload JDBC drivers
 Reference: https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=environment-enabling-users-upload-jdbc-drivers
