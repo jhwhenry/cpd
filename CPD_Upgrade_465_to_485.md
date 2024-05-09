@@ -294,12 +294,14 @@ cpd-cli manage uninstall-rsi \
 <br>We need to disable the RSI patches. While, We should not disable any selinux patches???? We can disable all non-selinux patches. Once the upgrade is complete we can enable them depending on if not fixed on 4.8.5.
 <br>If you plan to use the RSI feature in IBM Cloud Pak for Data Version 4.8, skip the step to delete the patches. You can re-activate the patches after you install the RSI-webhook at the instance-level.
 
-#### 1.1.4 If use SAML SSO, export SSO configuration
+#### 1.1.5 If use SAML SSO, export SSO configuration
 
 If you use SAML SSO, export your SSO configuration. You will need to reapply your SAML SSO configuration after you upgrade to Version 4.8. Skip this step if you use the IBM Cloud Pak foundational services Identity Management Service
 
 ```
-oc cp -n=${PROJECT_CPD_INST_OPERANDS} $(oc get pods -l component=usermgmt -n ${PROJECT_CPD_INST_OPERANDS} -o jsonpath='{.items[0].metadata.name}'):/user-home/_global_/config/saml ./samlConfig.json
+oc cp -n=${PROJECT_CPD_INSTANCE} \
+$(oc get pods -l component=usermgmt -n ${PROJECT_CPD_INSTANCE} \
+-o jsonpath='{.items[0].metadata.name}'):/user-home/_global_/config/saml ./samlConfig.json
 ```
 
 ### 1.2 Set up client workstation
