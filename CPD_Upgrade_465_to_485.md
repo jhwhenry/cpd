@@ -838,10 +838,10 @@ vim cpd-cli-workspace/olm-utils-workspace/work/install-options.yml
 ################################################################################
 custom_spec:
   wkc:
-#    enableKnowledgeGraph: False
-#    enableDataQuality: False
+    enableKnowledgeGraph: True
+    enableDataQuality: True
 ```
-##### 2.Upgrade WKC instance with default or custom installation
+##### 2.Upgrade WKC instance with custom installation
 
 ```
 export COMPONENTS=wkc
@@ -856,25 +856,33 @@ cpd-cli manage login-to-ocp \
 --server=${OCP_URL}
 ```
 
-Based on wheter or not the custom install options used by existing WKC service, choose one from the below two options and run the command accordingly.
-##### Custom upgrade with installation options
+Run custom upgrade with installation options.
 ```
-cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --param-file=/tmp/work/install-options.yml --license_acceptance=true --upgrade=true
+cpd-cli manage apply-cr \
+--components=wkc \
+--release=${VERSION} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--block_storage_class=${STG_CLASS_BLOCK} \
+--file_storage_class=${STG_CLASS_FILE} \
+--param-file=/tmp/work/install-options.yml \
+--license_acceptance=true \
+--upgrade=true
 ```
 
-##### Default upgrade without installation options
-```
-cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
-```
 ##### Validate the upgrade
 ```
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
+##### Apply the hotfixes if available.
+
+
 ##### Run the bulk sync utility before start using Global Search indexed data for relationships
 Follow the step in [Bulk sync relationships for global search (IBM Knowledge Catalog)](https://www.ibm.com/docs/en/SSQNUZ_4.8.x/wsj/admin/admin-bulk-sync.html)
 
-##### Apply the hotfixes if available.
+##### To see your catalogs' assets in the Knowledge Graph, you need to resync your lineage metadata. 
+[For steps to run the resync, see Resync of lineage metadata](https://www.ibm.com/docs/en/SSQNUZ_4.8.x/wsj/admin/admin-lineage-resync.html)
+
 
 #### 2.2.2 Upgrade MANTA service
 ```
