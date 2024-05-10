@@ -72,34 +72,46 @@ The Cloud Pak for Data administrator role or permissions is required for upgradi
 ```
 Part 1: Pre-upgrade
 1.1 Collect information and review upgrade runbook
-1.1.1 Prepare cpd_vars.sh
-1.1.2 Review the upgrade runbook
-1.1.3 Backup before upgrade
-1.1.4 If you installed hotfixes, uninstall all hotfixes
+1.1.1 Review the upgrade runbook
+1.1.2 Backup before upgrade
+1.1.3 If you installed hotfixes, uninstall all hotfixes
+1.1.4 1.1.4 If you installed the resource specification injection (RSI) feature, uninstall the cluster-scoped webhook
 1.1.5 If use SAML SSO, export SSO configuration
+1.1.6 Enable default admin user if it's disabled. Once upgrade complet you can disable it again.
 1.2 Set up client workstation 
 1.2.1 Prepare a client workstation
 1.2.2 Update cpd_vars.sh for the upgrade to Version 4.8.5
-1.2.3 Make olm-utils available in bastion
+1.2.3 Make olm-utils available
 1.2.4 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
-1.2.5 Creating a profile for upgrading the service instances
-1.2.6 Download CASE files
+1.2.5 Ensure the images were mirrored to the private container registry
+1.2.6 Updating the image content source policy
+1.2.7 Creating a profile for upgrading the service instances
+1.2.8 Download CASE files
 1.3 Health check OCP & CPD
 
 Part 2: Upgrade
 2.1 Upgrade CPD to 4.8.5
-2.1.1 Upgrading shared cluster components
+2.1.1 Migrate to private topology
 2.1.2 Preparing to upgrade an CPD instance
+2.1.3 Upgrade foundation service and CPD platform to 4.8.5
 2.1.3 Upgrade foundation service
 2.1.4 Upgrade CPD platform
 2.2 Upgrade CPD services
+2.2.1 Upgrade IBM Knowledge Catalog service
+2.2.2 Upgrade MANTA service
+2.2.3 Upgrade Analytics Engine service
+2.2.4 Upgrade DataStage Enterprise
+2.2.5 Upgrade Data Privacy,Watson Studio, Watson Studio Runtimes and Watson Machine Learning
+2.2.6 Upgrade Db2 Warehouse
 
 Part 3: Post-upgrade
-3.1 Validate CPD & CPD services
-3.2 Enabling users to upload JDBC drivers
-3.3 Enable Relationship Explorer feature
-3.4 Configuring single sign-on
-3.5 Summarize and close out the upgrade
+3.1 Configuring single sign-on
+3.2 Re-activate the RSI patches
+3.3 Validate CPD & CPD services
+3.4 Enabling users to upload JDBC drivers
+3.5 Removing the shared operators
+3.6 WKC post-upgrade tasks
+3.7 Summarize and close out the upgrade
 ```
 
 ## Part 1: Pre-upgrade
