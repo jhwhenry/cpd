@@ -1028,9 +1028,10 @@ Validate the upgrade status.
 ```
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 ```
-#### 2.2.5 Upgrade Watson Studio, Watson Studio Runtimes and Watson Machine Learning 
+
+#### 2.2.5 Upgrade Data Privacy,Watson Studio, Watson Studio Runtimes and Watson Machine Learning 
 ```
-export COMPONENTS=ws,ws_runtimes,wml,openscale
+export COMPONENTS=dp,ws,ws_runtimes,wml,openscale
 ```
 Run the cpd-cli manage login-to-ocp command to log in to the cluster.
 
@@ -1053,12 +1054,11 @@ cpd-cli manage apply-cr \
 --upgrade=true
 ```
 
-
-
 Validate the service upgrade status.
 ```
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 ```
+
 #### 2.2.6 Upgrade Db2 Warehouse
 ```
 # 1.Upgrade the service
