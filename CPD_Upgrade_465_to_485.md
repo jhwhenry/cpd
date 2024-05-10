@@ -400,7 +400,7 @@ export VERSION=4.8.5
 ```
 export PROJECT_CERT_MANAGER=ibm-cert-manager
 export PROJECT_LICENSE_SERVICE=ibm-licensing
-export PROJECT_CS_CONTROL=cs-control
+export PROJECT_CS_CONTROL=ibm-licensing
 export PROJECT_CPD_INST_OPERATORS=cpd-operators
 export PROJECT_CPD_INST_OPERANDS=cpd-instance
 ```
@@ -422,6 +422,13 @@ bash ./cpd_vars.sh
 Run this command to apply cpd_vars_485.sh
 ```
 source cpd_vars_485.sh
+```
+5.Locate the Cluster section of the script and add the following environment variables.
+```
+export SERVER_ARGUMENTS="--server=${OCP_URL}"
+export LOGIN_ARGUMENTS="--username=${OCP_USERNAME} --password=${OCP_PASSWORD}"
+export CPDM_OC_LOGIN="cpd-cli manage login-to-ocp ${SERVER_ARGUMENTS} ${LOGIN_ARGUMENTS}"
+export OC_LOGIN="oc login ${OCP_URL} ${LOGIN_ARGUMENTS}"
 ```
 
 #### 1.2.3 Make olm-utils available
@@ -598,6 +605,200 @@ curl -k -u ${PRIVATE_REGISTRY_PULL_USER}:${PRIVATE_REGISTRY_PULL_PASSWORD} https
 ## Part 2: Upgrade
 
 ### 2.1 Upgrade CPD to 4.8.5
+
+#### 2.1.1 Migrate to private topology
+1.Create new projects
+```
+${OC_LOGIN}
+oc new-project ${PROJECT_CS_CONTROL}             # This is for ibm-licensing operator and instance
+oc new-project ${PROJECT_CERT_MANAGER}           # This is for ibm-cert-manager operator and instance
+oc new-project ${PROJECT_LICENSE_SERVICE}        # This is for the License Service
+oc new-project ${PROJECT_CPD_INST_OPERATORS}     # This is for migrated cpd operator
+```
+2.Run the cpd-cli manage login-to-ocp command to log in to the cluster
+```
+cpd-cli manage login-to-ocp \
+--username=${OCP_USERNAME} \
+--password=${OCP_PASSWORD} \
+--server=${OCP_URL}
+```
+3.Move the Certificate manager and License Service from the shared operators project to the cs-control project.
+```
+cpd-cli manage detach-cpd-instance \
+--cpfs_operator_ns=${PROJECT_CPFS_OPS} \
+--control_ns=${PROJECT_CS_CONTROL} \
+--specialized_operator_ns=${PROJECT_CPD_OPS}
+```
+**Note**:
+<br>Monitor the install plan and approved them as needed.
+<br><br>Wait for the detach-cpd-instance command ran successfully before proceeding to the next step:
+<br>Confirm that the Certificate manager and License Service pods in the cs-control project are Running :
+```
+oc get pods --namespace=${PROJECT_CS_CONTROL}
+```
+4.Upgrade the Certificate manager and License Service
+```
+cpd-cli manage apply-cluster-components \
+--release=${VERSION} \
+--license_acceptance=true \
+--migrate_from_cs_ns=${PROJECT_CPFS_OPS} \
+--cert_manager_ns=${PROJECT_CERT_MANAGER} \
+--licensing_ns=${PROJECT_CS_CONTROL}
+```
+The Certificate manager will be moved to the {PROJECT_CERT_MANAGER} project. The License Service will remain in the cs-control {PROJECT_CS_CONTROL} project.
+<br>Confirm that the Certificate manager pods in the ${PROJECT_CERT_MANAGER} project are Running:
+```
+oc get pod -n ${PROJECT_CERT_MANAGER}
+```
+Confirm that the License Service pods in the ${PROJECT_CS_CONTROL} project are Running:
+```
+oc get pods --namespace=${PROJECT_CS_CONTROL}
+```
+
+2.1.2 Preparing to upgrade an CPD instance
+
+    Detache CPD instance from the shared operators
+
+cpd-cli manage detach-cpd-instance --cpfs_operator_ns=${PROJECT_CPFS_OPS} --control_ns=${PROJECT_CS_CONTROL}  --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+
+    Confirm ${PROJECT_CPD_INST_OPERANDS} has been isolated from the previous nss
+
+oc get cm -n $PROJECT_CPFS_OPS namespace-scope -o yaml
+
+Result example:
+
+Name:         namespace-scope
+Namespace:    ibm-common-services
+Labels:       <none>
+Annotations:  <none>
+
+Data
+====
+namespaces:
+----
+ibm-common-services #<- original $PROJECT_CPD_INSTANCE (cpd-instance) should NOT appear here
+...
+
+    Apply the required permissions to the projects
+
+cpd-cli manage authorize-instance-topology --cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --preview=true
+
+cpd-cli manage authorize-instance-topology --cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+
+2.1.3 Upgrade foundation service and CPD platform to 4.8.2
+
+    Run the cpd-cli manage login-to-ocp command to log in to the cluster.
+
+cpd-cli manage login-to-ocp \
+--username=${OCP_USERNAME} \
+--password=${OCP_PASSWORD} \
+--server=${OCP_URL}
+
+    upgrade IBM Cloud Pak foundational services and create the required ConfigMap.
+
+cpd-cli manage setup-instance-topology --release=${VERSION} --cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --license_acceptance=true
+
+    Confirm common-service, namespace-scope, opencloud and odlm operator migrated to ${PROJECT_CPD_INST_OPERATORS} namespace
+
+oc get pod -n ${PROJECT_CPD_INST_OPERATORS}
+
+    Upgrade the operators in the operators project for CPD instance
+
+cpd-cli manage apply-olm \
+--release=${VERSION} \
+--cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--upgrade=true
+
+    Confirm that the operator pods are Running or Copmpleted: NOTE: You will find cpd component operator and catalogsource migrated to ${PROJECT_CPD_INST_OPERATORS} namespace
+
+oc get pods --namespace=${PROJECT_CPD_INST_OPERATORS}
+
+WARNING: This step will ask you to validated that your WKC legacy data can be migrated If you want to continue with the migration, please type: 'I have validated that I can migrate my metadata and I want to continue'
+
+    Check the version, refer to the following operator version
+
+cpd_platform*                                5.2.0               4.8.2
+opencloud-operators                          4.3.0               4.3.0
+ibm-cpd-ws-operator-catalog                  8.1.0               8.1.0
+ibm-cpd-ws-runtimes-operator-catalog         8.1.0               8.1.0
+ibm-cpd-wml-operator-catalog                 5.1.0               4.8.1
+ibm-cpd-wkc-operator-catalog*                1.8.2               4.8.2
+ibm-cpd-ae-operator-catalog                  5.1.0               4.8.1
+ibm-cpd-datarefinery-operator-catalog        8.1.0               8.1.0
+ibm-cpd-datastage-operator-catalog*          5.2.0               4.8.2
+ibm-dv-operator-catalog*                     4.2.0               2.2.2
+ibm-dmc-operator-catalog*                    4.1.0               4.8.2   
+ibm-cpd-rstudio-operator-catalog             8.1.0               8.1.0
+ibm-cpd-ccs-operator-catalog*                8.2.0               8.2.0
+ibm-db2aaservice-cp4d-operator-catalog*      5.1.0               4.8.2
+ibm-db2uoperator-catalog*                    5.1.0               11.5.8.0-cn7
+ibm-elasticsearch-catalog*                   1.1.1934            1.1.1934
+ibm-fdb-operator-catalog                     3.1.6               3.1.6
+ibm-cloud-databases-redis-operator-catalog   1.6.11
+ibm-dashboard-operator-catalog               2.1.0               4.8.1
+
+    Upgrade the operands in the operands project for CPD instance
+
+cpd-cli manage apply-cr --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=cpd_platform --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
+
+oc logs -f cpd-platform-operator-manager-XXXX-XXXX -n ${PROJECT_CPD_INST_OPERATORS}
+
+    Confirm that the status of the operands is Completed:
+
+cpd-cli manage get-cr-status \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+
+NOTE: cpd_platform has been upgraded to 4.8.2
+
+    Clean up any failed operand requests in the operands project:
+
+    Get the list of operand requests with the format -requests-:
+
+oc get operandrequest --namespace=${PROJECT_CPD_INST_OPERANDS} | grep requests
+
+    Delete each operand request in the Failed state: Replace with the name of operand request to delete.
+
+oc delete operandrequest <operand-request-name>
+--namespace=${PROJECT_CPD_INST_OPERANDS}
+
+    Remove the instance project from the sharewith list in the ibm-cpp-config SecretShare in the shared IBM Cloud Pak foundational services operators project: • Confirm the name of the instance project:
+
+echo $PROJECT_CPD_INST_OPERANDS
+
+    Check whether the instance project is listed in the sharewith list in the ibm-cpp-config SecretShare:
+
+ oc get secretshare ibm-cpp-config \
+--namespace=${PROJECT_CPFS_OPS} \
+-o yaml
+
+The command returns output with the following format:
+
+apiVersion: ibmcpcs.ibm.com/v1
+kind: SecretShare
+metadata:
+  name: ibm-cpp-config
+  namespace: ibm-common-services
+spec:
+  configmapshares:
+  - configmapname: ibm-cpp-config
+    sharewith:
+    - namespace: cpd-instance-x
+    - namespace: ibm-common-services
+    - namespace: cpd-operators
+    - namespace: cpd-instance-y
+
+If the instance project is in the list, proceed to the next step. If the instance is not in the list, no further action is required.
+
+    Open the ibm-cpp-config SecretShare in the editor:
+
+oc edit secretshare ibm-cpp-config \
+--namespace=${PROJECT_CPFS_OPS}
+
+    Remove the entry for the instance project from the sharewith list and save your changes to the SecretShare.
+
+
+
+
 
 #### 2.1.1 Upgrading shared cluster components
 1. Find out which project the License Service installed. Assuming it installed in ${PROJECT_CS_CONTROL}. If not, upgrade command needs to change.
