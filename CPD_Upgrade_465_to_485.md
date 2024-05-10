@@ -655,18 +655,31 @@ Confirm that the License Service pods in the ${PROJECT_CS_CONTROL} project are R
 oc get pods --namespace=${PROJECT_CS_CONTROL}
 ```
 
-2.1.2 Preparing to upgrade an CPD instance
+#### 2.1.2 Preparing to upgrade an CPD instance
+1.Run the cpd-cli manage login-to-ocp command to log in to the cluster
+```
+cpd-cli manage login-to-ocp \
+--username=${OCP_USERNAME} \
+--password=${OCP_PASSWORD} \
+--server=${OCP_URL}
+```
 
-    Detache CPD instance from the shared operators
+2.Detache CPD instance from the shared operators
+```
+cpd-cli manage detach-cpd-instance \
+--cpfs_operator_ns=${PROJECT_CPFS_OPS} \
+--specialized_operator_ns=${PROJECT_CPD_OPS} \
+--control_ns=${PROJECT_CS_CONTROL} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+```
 
-cpd-cli manage detach-cpd-instance --cpfs_operator_ns=${PROJECT_CPFS_OPS} --control_ns=${PROJECT_CS_CONTROL}  --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
-
-    Confirm ${PROJECT_CPD_INST_OPERANDS} has been isolated from the previous nss
-
+Confirm ${PROJECT_CPD_INST_OPERANDS} has been isolated from the previous nss
+```
 oc get cm -n $PROJECT_CPFS_OPS namespace-scope -o yaml
+```
 
 Result example:
-
+```
 Name:         namespace-scope
 Namespace:    ibm-common-services
 Labels:       <none>
@@ -678,12 +691,20 @@ namespaces:
 ----
 ibm-common-services #<- original $PROJECT_CPD_INSTANCE (cpd-instance) should NOT appear here
 ...
+```
 
-    Apply the required permissions to the projects
+3.Manually creating the operators project
+Create the operators project for the instance:
+```
+oc new-project ${PROJECT_CPD_INST_OPERATORS}
+```
 
-cpd-cli manage authorize-instance-topology --cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --preview=true
-
-cpd-cli manage authorize-instance-topology --cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+4.Apply the required permissions to the projects
+```
+cpd-cli manage authorize-instance-topology \
+--cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+```
 
 2.1.3 Upgrade foundation service and CPD platform to 4.8.2
 
