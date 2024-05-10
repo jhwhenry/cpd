@@ -864,7 +864,7 @@ custom_spec:
     enableKnowledgeGraph: True
     enableDataQuality: True
 ```
-##### 2.Upgrade WKC instance with custom installation
+##### 2.Upgrade WKC with custom installation
 
 ```
 export COMPONENTS=wkc
@@ -997,6 +997,12 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --co
 ```
 
 ##### 2.2.3.2 Upgrade the service instances
+Find the proper CPD user profile to use.
+```
+cpd-cli config profiles list
+```
+
+Upgrade the Spark service instance
 ```
 cpd-cli service-instance upgrade \
 --service-type=spark \
@@ -1029,93 +1035,6 @@ Validate the upgrade status.
 ```
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 ```
-
-#### 2.2.4 Upgrade DataStage Enterprise plus
-Check the DataStage Enterprise Plus service version and status.
-```
-export COMPONENTS=datastage_ent_plus
-
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
-```
-
-If the DataStage Enterprise Plus service version is not 4.8.5, then run below commands for the upgrade. 
-
-```
-cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
-```
-
-Validate the upgrade status.
-```
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
-```
-#### 2.2.5 Upgrade Match 360
-
-```
-oc edit MasterDataManagement mdm-cr
-```
-
-Remove below lines from the mdm-cr and save.
-```
- mdm_job:
-    image:
-      tag: sha256:1e03d2e6e268be8176b4fb9e3936e730b85d5a73e59dfd09b77e661734db090a
-  spark:
-    image_version: sha256:2d828ba755b87eed08c48f4944555166ea8734698174e3fd32128e5d818ac1f8
-```
-
-Wait until the mdm-cr become Completed status.
-
-```
-export COMPONENTS=match360
-```
-
-Run the cpd-cli manage login-to-ocp command to log in to the cluster.
-
-```
-cpd-cli manage login-to-ocp \
---username=${OCP_USERNAME} \
---password=${OCP_PASSWORD} \
---server=${OCP_URL}
-```
-
-Check if the Match 360 service was installed with the custom install options. <br>
-
-- If it's custom installation, check the previous install-options.yaml or mdm-cr yaml, make sure to keep original custom settings.
-```
-vim cpd-cli-workspace/olm-utils-workspace/work/install-options.yml
-```
-
-Then run this upgrade command.
-```
-cpd-cli manage apply-cr \
---components=${COMPONENTS} \
---release=${VERSION} \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---block_storage_class=${STG_CLASS_BLOCK} \
---file_storage_class=${STG_CLASS_FILE} \
---param-file=/tmp/work/install-options.yml \
---license_acceptance=true \
---upgrade=true
-```
-
-- If it's **NOT** custom installation, then run this upgrade command.
-
-```
-cpd-cli manage apply-cr \
---components=${COMPONENTS} \
---release=${VERSION} \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---block_storage_class=${STG_CLASS_BLOCK} \
---file_storage_class=${STG_CLASS_FILE} \
---license_acceptance=true \
---upgrade=true
-```
-
-Validate the service upgrade status.
-```
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
-```
-
 #### 2.2.5 Upgrade Watson Studio, Watson Studio Runtimes and Watson Machine Learning 
 ```
 export COMPONENTS=ws,ws_runtimes,wml,openscale
@@ -1131,16 +1050,26 @@ cpd-cli manage login-to-ocp \
 
 Run the upgrade command.
 ```
-cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
+cpd-cli manage apply-cr \
+--components=${COMPONENTS}  \
+--release=${VERSION} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--block_storage_class=${STG_CLASS_BLOCK} \
+--file_storage_class=${STG_CLASS_FILE} \
+--license_acceptance=true \
+--upgrade=true
 ```
+
+
+
 Validate the service upgrade status.
 ```
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 ```
-#### 2.2.6 Upgrade Db2 Warehouse and Data Management Console 
+#### 2.2.6 Upgrade Db2 Warehouse
 ```
 # 1.Upgrade the service
-export COMPONENTS=db2wh,dmc
+export COMPONENTS=db2wh
 
 cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --license_acceptance=true --upgrade=true
 
