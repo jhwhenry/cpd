@@ -922,16 +922,27 @@ cpd-cli manage login-to-ocp \
 ```
 
 Patch the mantaflow custom resource (CR) by running the following command:
+
 ```
 oc patch mantaflow mantaflow-wkc --type merge -p '{ "spec": { "migrations": { "h2-format-3": "true" }}}'
 ```
 
+Recreate the deployments by running:
+```
+oc delete deploy manta-admin-gui manta-configuration-service manta-dataflow
+```
 
-
-Run the command for upgrade MANTA service.
+Run the command for upgrading MANTA service.
 
 ```
-cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
+cpd-cli manage apply-cr \
+--components=mantaflow \
+--release=${VERSION} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--block_storage_class=${STG_CLASS_BLOCK} \
+--file_storage_class=${STG_CLASS_FILE} \
+--license_acceptance=true \
+--upgrade=true
 ```
 
 Validating the upgrade.
