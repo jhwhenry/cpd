@@ -706,219 +706,30 @@ cpd-cli manage authorize-instance-topology \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-2.1.3 Upgrade foundation service and CPD platform to 4.8.2
+#### 2.1.3 Upgrade foundation service and CPD platform to 4.8.5
 
-    Run the cpd-cli manage login-to-ocp command to log in to the cluster.
-
+1.Run the cpd-cli manage login-to-ocp command to log in to the cluster.
+```
 cpd-cli manage login-to-ocp \
 --username=${OCP_USERNAME} \
 --password=${OCP_PASSWORD} \
 --server=${OCP_URL}
-
-    upgrade IBM Cloud Pak foundational services and create the required ConfigMap.
-
-cpd-cli manage setup-instance-topology --release=${VERSION} --cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --license_acceptance=true
-
-    Confirm common-service, namespace-scope, opencloud and odlm operator migrated to ${PROJECT_CPD_INST_OPERATORS} namespace
-
-oc get pod -n ${PROJECT_CPD_INST_OPERATORS}
-
-    Upgrade the operators in the operators project for CPD instance
-
-cpd-cli manage apply-olm \
+```
+2.Upgrade IBM Cloud Pak foundational services and create the required ConfigMap.
+```
+cpd-cli manage setup-instance-topology \
 --release=${VERSION} \
 --cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
---upgrade=true
-
-    Confirm that the operator pods are Running or Copmpleted: NOTE: You will find cpd component operator and catalogsource migrated to ${PROJECT_CPD_INST_OPERATORS} namespace
-
-oc get pods --namespace=${PROJECT_CPD_INST_OPERATORS}
-
-WARNING: This step will ask you to validated that your WKC legacy data can be migrated If you want to continue with the migration, please type: 'I have validated that I can migrate my metadata and I want to continue'
-
-    Check the version, refer to the following operator version
-
-cpd_platform*                                5.2.0               4.8.2
-opencloud-operators                          4.3.0               4.3.0
-ibm-cpd-ws-operator-catalog                  8.1.0               8.1.0
-ibm-cpd-ws-runtimes-operator-catalog         8.1.0               8.1.0
-ibm-cpd-wml-operator-catalog                 5.1.0               4.8.1
-ibm-cpd-wkc-operator-catalog*                1.8.2               4.8.2
-ibm-cpd-ae-operator-catalog                  5.1.0               4.8.1
-ibm-cpd-datarefinery-operator-catalog        8.1.0               8.1.0
-ibm-cpd-datastage-operator-catalog*          5.2.0               4.8.2
-ibm-dv-operator-catalog*                     4.2.0               2.2.2
-ibm-dmc-operator-catalog*                    4.1.0               4.8.2   
-ibm-cpd-rstudio-operator-catalog             8.1.0               8.1.0
-ibm-cpd-ccs-operator-catalog*                8.2.0               8.2.0
-ibm-db2aaservice-cp4d-operator-catalog*      5.1.0               4.8.2
-ibm-db2uoperator-catalog*                    5.1.0               11.5.8.0-cn7
-ibm-elasticsearch-catalog*                   1.1.1934            1.1.1934
-ibm-fdb-operator-catalog                     3.1.6               3.1.6
-ibm-cloud-databases-redis-operator-catalog   1.6.11
-ibm-dashboard-operator-catalog               2.1.0               4.8.1
-
-    Upgrade the operands in the operands project for CPD instance
-
-cpd-cli manage apply-cr --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=cpd_platform --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
-
-oc logs -f cpd-platform-operator-manager-XXXX-XXXX -n ${PROJECT_CPD_INST_OPERATORS}
-
-    Confirm that the status of the operands is Completed:
-
-cpd-cli manage get-cr-status \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
-
-NOTE: cpd_platform has been upgraded to 4.8.2
-
-    Clean up any failed operand requests in the operands project:
-
-    Get the list of operand requests with the format -requests-:
-
-oc get operandrequest --namespace=${PROJECT_CPD_INST_OPERANDS} | grep requests
-
-    Delete each operand request in the Failed state: Replace with the name of operand request to delete.
-
-oc delete operandrequest <operand-request-name>
---namespace=${PROJECT_CPD_INST_OPERANDS}
-
-    Remove the instance project from the sharewith list in the ibm-cpp-config SecretShare in the shared IBM Cloud Pak foundational services operators project: • Confirm the name of the instance project:
-
-echo $PROJECT_CPD_INST_OPERANDS
-
-    Check whether the instance project is listed in the sharewith list in the ibm-cpp-config SecretShare:
-
- oc get secretshare ibm-cpp-config \
---namespace=${PROJECT_CPFS_OPS} \
--o yaml
-
-The command returns output with the following format:
-
-apiVersion: ibmcpcs.ibm.com/v1
-kind: SecretShare
-metadata:
-  name: ibm-cpp-config
-  namespace: ibm-common-services
-spec:
-  configmapshares:
-  - configmapname: ibm-cpp-config
-    sharewith:
-    - namespace: cpd-instance-x
-    - namespace: ibm-common-services
-    - namespace: cpd-operators
-    - namespace: cpd-instance-y
-
-If the instance project is in the list, proceed to the next step. If the instance is not in the list, no further action is required.
-
-    Open the ibm-cpp-config SecretShare in the editor:
-
-oc edit secretshare ibm-cpp-config \
---namespace=${PROJECT_CPFS_OPS}
-
-    Remove the entry for the instance project from the sharewith list and save your changes to the SecretShare.
-
-
-
-
-
-#### 2.1.1 Upgrading shared cluster components
-1. Find out which project the License Service installed. Assuming it installed in ${PROJECT_CS_CONTROL}. If not, upgrade command needs to change.
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--license_acceptance=true
 ```
-oc get deployment -A |  grep ibm-licensing-operator
-```   
-2. Run the cpd-cli manage login-to-ocp command to log in to the cluster
-```
-cpd-cli manage login-to-ocp \
---username=${OCP_USERNAME} \
---password=${OCP_PASSWORD} \
---server=${OCP_URL}
-```
-3. Upgrade the Certificate manager and License Service
-
-The License Service will remain in the cs-control ${PROJECT_CS_CONTROL} project.
-```
-cpd-cli manage apply-cluster-components --release=${VERSION} --license_acceptance=true --cert_manager_ns=${PROJECT_CERT_MANAGER} --licensing_ns=${PROJECT_CS_CONTROL}
-
-```
-- Confirm that the Certificate manager pods in the ${PROJECT_CERT_MANAGER} project are Running:
-```
-oc get pod -n ${PROJECT_CERT_MANAGER}
-```
-
-- Confirm that the License Service pods in the ${PROJECT_CS_CONTROL} project are Running:
-```
-oc get pods --namespace=${PROJECT_CS_CONTROL}
-``` 
-
-#### 2.1.2 Preparing to upgrade Cloud Pak for Data instance
-1.	Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster:
-```
-cpd-cli manage login-to-ocp \
---username=${OCP_USERNAME} \
---password=${OCP_PASSWORD} \
---server=${OCP_URL}
-```
-2.	Apply the required permissions to the projects.
-<br>
-Preview
-
-```
-cpd-cli manage authorize-instance-topology \
---cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}  --preview=true
-```
-<br>Apply
-```
-cpd-cli manage authorize-instance-topology \
---cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
-```
-
-#### 2.1.3 Upgrade foundation service to 4.8.5
-1.	Run the cpd-cli manage login-to-ocp command to log in to the cluster.
-```
-cpd-cli manage login-to-ocp \
---username=${OCP_USERNAME} \
---password=${OCP_PASSWORD} \
---server=${OCP_URL}
-```
-2.	Upgrade IBM Cloud Pak foundational services and create the required ConfigMap.
-<br>
-Preview
-
-```
-cpd-cli manage setup-instance-topology --release=${VERSION} --cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --license_acceptance=true --block_storage_class=${STG_CLASS_BLOCK} --preview=true
-```
-<br>Apply
-```
-cpd-cli manage setup-instance-topology --release=${VERSION} --cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --license_acceptance=true --block_storage_class=${STG_CLASS_BLOCK}
-```
-- Confirm common-service, namespace-scope, opencloud and odlm operator running in the ${PROJECT_CPD_INST_OPERATORS} namespace
+ 
+Confirm common-service, namespace-scope, opencloud and odlm operator migrated to ${PROJECT_CPD_INST_OPERATORS} namespace
 ```
 oc get pod -n ${PROJECT_CPD_INST_OPERATORS}
 ```
 
-#### 2.1.4 Upgrade CPD platform (control plane) to 4.8.5
-1.	Run the cpd-cli manage login-to-ocp command to log in to the cluster.
-```
-cpd-cli manage login-to-ocp \
---username=${OCP_USERNAME} \
---password=${OCP_PASSWORD} \
---server=${OCP_URL}
-```
-
-2.	Upgrade the operators in the operators project for CPD instance. First run the oc command with the --preview=true option.
-<br>
-Preview
-
-```
-cpd-cli manage apply-olm \
---release=${VERSION} \
---cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
---upgrade=true \
---preview=true
-```
-<br>Apply
+3.Upgrade the operators in the operators project for CPD instance
 ```
 cpd-cli manage apply-olm \
 --release=${VERSION} \
@@ -935,35 +746,85 @@ Approve the upgrade request and run below command as soon as we find it.
 oc patch installplan $(oc get ip -n ibm-cpd-operators -o=jsonpath='{.items[?(@.spec.approved==false)].metadata.name}') -n ibm-cpd-operators --type merge --patch '{"spec":{"approved":true}}'
 ```
 
-3.	Confirm that the operator pods are Running or Copmpleted:
-NOTE: You will find CPD operators and catalog sources running in the ${PROJECT_CPD_INST_OPERATORS} namespace
+Confirm that the operator pods are Running or Copmleted:
 ```
 oc get pods --namespace=${PROJECT_CPD_INST_OPERATORS}
 ```
 
-4.	Upgrade the operands in the operands project for CPD instance.
-<br>Run the cpd-cli manage login-to-ocp command to log in to the cluster.
+**WARNING:**
+<br>This step will ask you to validated that your WKC legacy data can be migrated If you want to continue with the migration, please type: 'I have validated that I can migrate my metadata and I want to continue'
+<br><br>
+Check the version for both CSV and Subscription and ensure the CPD Operators have been upgraded successfully.
 ```
-cpd-cli manage login-to-ocp \
---username=${OCP_USERNAME} \
---password=${OCP_PASSWORD} \
---server=${OCP_URL}
+oc get csv,sub -n ${PROJECT_CPD_INST_OPERATORS}
 ```
-<br>First run the oc command with the --preview=true option.
+Operator and operand versions: https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=planning-operator-operand-versions
+
+4. Upgrade the operands in the operands project for CPD instance
+
 ```
-cpd-cli manage apply-cr --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=cpd_platform --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true --preview=true
+cpd-cli manage apply-cr \
+--release=${VERSION} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--components=cpd_platform \
+--block_storage_class=${STG_CLASS_BLOCK} \
+--file_storage_class=${STG_CLASS_FILE} \
+--license_acceptance=true \
+--upgrade=true
 ```
-<br>Apply
-```
-cpd-cli manage apply-cr --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=cpd_platform --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
-```
-This may take about 45 minutes to complete.
-5.	Confirm that the status of the operands is Completed:
+Confirm that the status of the operands is Completed:
 ```
 cpd-cli manage get-cr-status \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
-NOTE: cpd_platform has been upgraded to 4.8.5
+
+5.Clean up any failed operand requests in the operands project:
+Get the list of operand requests with the format <component>-requests-<component>:
+```
+oc get operandrequest --namespace=${PROJECT_CPD_INST_OPERANDS} | grep requests
+```
+Delete each operand request in the Failed state: Replace with the name of operand request to delete.
+```
+oc delete operandrequest <operand-request-name> \
+--namespace=${PROJECT_CPD_INST_OPERANDS}
+```
+Remove the instance project from the sharewith list in the ibm-cpp-config SecretShare in the shared IBM Cloud Pak foundational services operators project:
+
+<br>Confirm the name of the instance project:
+```
+echo $PROJECT_CPD_INST_OPERANDS
+```
+
+Check whether the instance project is listed in the sharewith list in the ibm-cpp-config SecretShare:
+```
+oc get secretshare ibm-cpp-config \
+--namespace=${PROJECT_CPFS_OPS} \
+-o yaml
+```
+The command returns output with the following format:
+```
+apiVersion: ibmcpcs.ibm.com/v1
+kind: SecretShare
+metadata:
+  name: ibm-cpp-config
+  namespace: ibm-common-services
+spec:
+  configmapshares:
+  - configmapname: ibm-cpp-config
+    sharewith:
+    - namespace: cpd-instance-x
+    - namespace: ibm-common-services
+    - namespace: cpd-operators
+    - namespace: cpd-instance-y
+```
+If the instance project is in the list, proceed to the next step. If the instance is not in the list, no further action is required.
+<br>
+Open the ibm-cpp-config SecretShare in the editor:
+```
+oc edit secretshare ibm-cpp-config \
+--namespace=${PROJECT_CPFS_OPS}
+```
+Remove the entry for the instance project from the sharewith list and save your changes to the SecretShare.
 
 ### 2.2 Upgrade CPD services to 4.8.5
 #### 2.2.1 Upgrade IBM Knowledge Catalog service
