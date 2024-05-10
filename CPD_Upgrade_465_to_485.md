@@ -900,13 +900,6 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ##### 4.Apply the hotfixes if available.
 
 
-##### 5.Run the bulk sync utility before start using Global Search indexed data for relationships
-Follow the step in [Bulk sync relationships for global search (IBM Knowledge Catalog)](https://www.ibm.com/docs/en/SSQNUZ_4.8.x/wsj/admin/admin-bulk-sync.html)
-
-##### 6.To see your catalogs' assets in the Knowledge Graph, you need to resync your lineage metadata. 
-[For steps to run the resync, see Resync of lineage metadata](https://www.ibm.com/docs/en/SSQNUZ_4.8.x/wsj/admin/admin-lineage-resync.html)
-
-
 #### 2.2.2 Upgrade MANTA service
 ```
 export COMPONENTS=mantaflow
@@ -1095,11 +1088,12 @@ cpd-cli service-instance list --profile=${CPD_PROFILE_NAME} --service-type=${COM
 
 ## Part 3: Post-upgrade
 
-### 3.1 Validate CPD & CPD services
+### 3.1 Configuring single sign-on
+If post upgrade login using SAML doesn't work, then follow This instruction. You need to use the "/user-home/_global_/config/saml/samlConfig.json" file that you save at the beginning of upgrade.
 
-Log into CPD web UI with admin and check out each services, including provision instance and functions of each service
+https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=environment-configuring-sso
 
-### Re-activate the RSI patches.
+### 3.2 Re-activate the RSI patches.
 1.Log the cpd-cli in to the Red Hat OpenShift Container Platform cluster.
 ```
 cpd-cli manage login-to-ocp \
@@ -1233,11 +1227,15 @@ cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --al
 
 cat cpd-cli-workspace/olm-utils-workspace/work/get_rsi_patch_info.log
 ```
- 
-### 3.2 Enabling users to upload JDBC drivers
+
+### 3.3 Validate CPD & CPD services
+
+Log into CPD web UI with admin and check out each services, including provision instance and functions of each service
+
+### 3.4 Enabling users to upload JDBC drivers
 Reference: https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=environment-enabling-users-upload-jdbc-drivers
 
-#### 3.2.1 Set the wdp_connect_connection_disable_jar_tab parameter to false
+#### 3.5.1 Set the wdp_connect_connection_disable_jar_tab parameter to false
 ```
 oc patch ccs ccs-cr \
 --namespace=${PROJECT_CPD_INST_OPERANDS} \
@@ -1245,20 +1243,42 @@ oc patch ccs ccs-cr \
 --patch '{"spec": {"wdp_connect_connection_jdbc_drivers_repository_mode": "enabled"}}'
 ```
 
-#### 3.2.2 Wait for the common core services status to be Completed
+#### 3.5.2 Wait for the common core services status to be Completed
 ```
 oc get ccs ccs-cr --namespace=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-### 3.3 Enable Relationship Explorer feature
-[Enable Relationship Explorer feature](https://github.com/sanjitc/Cloud-Pak-for-Data/blob/main/Upgrade/CPD%204.6%20to%204.8/Enabling_Relationship_Explorer_480%20-%20disclaimer%200208.pdf)
+### 3.6 Removing the shared operators
+Log the cpd-cli in to the Red Hat OpenShift Container Platform cluster.
+```
+cpd-cli manage login-to-ocp \
+--username=${OCP_USERNAME} \
+--password=${OCP_PASSWORD} \
+--server=${OCP_URL}
+```
 
-### 3.4 Configuring single sign-on
-If post upgrade login using SAML doesn't work, then follow This instruction. You need to use the "/user-home/_global_/config/saml/samlConfig.json" file that you save at the beginning of upgrade.
+Delete the operators from the ibm-common-services project:
+```
+cpd-cli manage delete-olm-artifacts \
+--cpd_operator_ns=ibm-common-services \
+--delete_all_components=true
+```
 
-https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=environment-configuring-sso
+Delete the operators from the ${PROJECT_CPD_OPS} project:
+```
+cpd-cli manage delete-olm-artifacts \
+--cpd_operator_ns=${PROJECT_CPD_OPS} \
+--delete_all_components=true \
+--delete_shared_catsrc=true
+```
+### 3.7 WKC post-upgrade tasks
+1.Run the bulk sync utility before start using Global Search indexed data for relationships
+Follow the step in [Bulk sync relationships for global search (IBM Knowledge Catalog)](https://www.ibm.com/docs/en/SSQNUZ_4.8.x/wsj/admin/admin-bulk-sync.html)
 
-### 3.5 Summarize and close out the upgrade
+2.To see your catalogs' assets in the Knowledge Graph, you need to resync your lineage metadata. 
+[For steps to run the resync, see Resync of lineage metadata](https://www.ibm.com/docs/en/SSQNUZ_4.8.x/wsj/admin/admin-lineage-resync.html)
+
+### 3.8 Summarize and close out the upgrade
 
 Schedule a wrap-up meeting and review the upgrade procedure and lessons learned from it.
 
