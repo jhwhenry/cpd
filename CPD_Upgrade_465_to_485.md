@@ -32,8 +32,31 @@ For details, see Backing up and restoring Cloud Pak for Data (https://www.ibm.co
 Make sure there are no scheduled backups conflicting with the scheduled upgrade.
   
 #### 2. The image mirroring completed successfully
-  If a private container registry is in-use to host the IBM Cloud Pak for Data software images, you must mirror the updated images from the IBM® Entitled Registry to the private container registry. <br>
-  Reference: https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=48-preparing-run-upgrades-from-private-container-registry 
+If a private container registry is in-use to host the IBM Cloud Pak for Data software images, you must mirror the updated images from the IBM® Entitled Registry to the private container registry. <br>
+Reference: https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=48-preparing-run-upgrades-from-private-container-registry <br>
+
+**Note:**
+There are some special images required to be mirrored. Please follow below steps for the image mirroring. <br>
+
+1) Log in to the IBM Entitled Registry entitled registry:
+```
+cpd-cli manage login-entitled-registry \
+${IBM_ENTITLEMENT_KEY}
+```
+
+2) Mirror image for RSI adm controller
+```
+cpd-cli manage copy-image \
+--from=icr.io/cpopen/cpd/zen-rsi-adm-controller:4.8.5-x86_64 \
+--to=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/zen-rsi-adm-controller:4.8.5-x86_64
+```
+3) Mirror image for Manta
+```
+cpd-cli manage copy-image \
+--from=cp.icr.io/cp/cpd/manta-init-migrate-h2@sha256:0bb84e3f2ebd2219afa860e4bd3d3aa3a3c642b3b58685880df2cff121d43583 \
+--to=${PRIVATE_REGISTRY_LOCATION}/cp/cpd/manta-init-migrate-h2@sha256:0bb84e3f2ebd2219afa860e4bd3d3aa3a3c642b3b58685880df2cff121d43583
+```
+
 #### 3. The permissions required for the upgrade is ready
 - Openshift cluster permissions
 An Openshift cluster administrator can complete all of the installation tasks.<br>
@@ -869,18 +892,18 @@ cpd-cli manage apply-cr \
 --upgrade=true
 ```
 
-##### Validate the upgrade
+##### 3.Validate the upgrade
 ```
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-##### Apply the hotfixes if available.
+##### 4.Apply the hotfixes if available.
 
 
-##### Run the bulk sync utility before start using Global Search indexed data for relationships
+##### 5.Run the bulk sync utility before start using Global Search indexed data for relationships
 Follow the step in [Bulk sync relationships for global search (IBM Knowledge Catalog)](https://www.ibm.com/docs/en/SSQNUZ_4.8.x/wsj/admin/admin-bulk-sync.html)
 
-##### To see your catalogs' assets in the Knowledge Graph, you need to resync your lineage metadata. 
+##### 6.To see your catalogs' assets in the Knowledge Graph, you need to resync your lineage metadata. 
 [For steps to run the resync, see Resync of lineage metadata](https://www.ibm.com/docs/en/SSQNUZ_4.8.x/wsj/admin/admin-lineage-resync.html)
 
 
@@ -897,6 +920,14 @@ cpd-cli manage login-to-ocp \
 --password=${OCP_PASSWORD} \
 --server=${OCP_URL}
 ```
+
+Patch the mantaflow custom resource (CR) by running the following command:
+```
+oc patch mantaflow mantaflow-wkc --type merge -p '{ "spec": { "migrations": { "h2-format-3": "true" }}}'
+```
+
+
+
 Run the command for upgrade MANTA service.
 
 ```
@@ -1140,7 +1171,7 @@ cpd-cli manage login-to-ocp \
 ```
 cpd-cli manage install-rsi \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
---rsi_image=${PRIVATE_REGISTRY_LOCATION}cpopen/cpd/zen-rsi-adm-controller:${VERSION}-x86_64
+--rsi_image=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/zen-rsi-adm-controller:${VERSION}-x86_64
 ```
 3.Enable RSI for the instance
 ```
