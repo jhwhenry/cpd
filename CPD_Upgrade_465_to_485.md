@@ -389,13 +389,35 @@ cpd-cli
 vi cpd_vars_485.sh
 ```
 
-To upgrade from Cloud Pak for Data Version 4.8.2 to Version 4.8.5, you must update the environment variable for VERSION. 
+1.Locate the VERSION entry and update the environment variable for VERSION. 
 
 ```
 export VERSION=4.8.5
-#export OLM_UTILS_IMAGE=${PRIVATE_REGISTRY_LOCATION}/cpd/olm-utils-v2:latest
 ```
+2.Locate the Projects section of the script and add the following environment variables. 
+**Note:** 
+<br>When adding the following environment variables, The value of PROJECT_CPD_INST_OPERANDS is the same as that of PROJECT_CPD_INSTANCE.
+```
+export PROJECT_CERT_MANAGER=ibm-cert-manager
+export PROJECT_LICENSE_SERVICE=ibm-licensing
+export PROJECT_CS_CONTROL=cs-control
+export PROJECT_CPD_INST_OPERATORS=cpd-operators
+export PROJECT_CPD_INST_OPERANDS=cpd-instance
+```
+3.Remove the PROJECT_CATSRC entry from the Projects section of the script.
+
+4.Locate the COMPONENTS entry and upate the COMPONENTS entry.
+If the advanced metadata import feature in IBM® Knowledge Catalog is used, add the mantaflow component to the COMPONENTS variable.
+```
+export COMPONENTS=ibm-cert-manager,ibm-licensing,cpfs,cpd_platform,ws,ws_runtimes,wml,datastage_ent,wkc,analyticsengine,mantaflow,openscale,db2wh,dp
+```
+
 Save the changes. <br>
+
+Confirm that the script does not contain any errors. For example, if you named the script cpd_vars.sh, run:
+```
+bash ./cpd_vars.sh
+```
 
 Run this command to apply cpd_vars_485.sh
 ```
@@ -403,7 +425,8 @@ source cpd_vars_485.sh
 ```
 
 #### 1.2.3 Make olm-utils available
-
+If the bastion node is internet connected, then you can ignore below steps in this section.
+<br>
 Go to the client workstation with internet
 
 ```
@@ -438,6 +461,12 @@ For details please refer to 4.8 doc (https://www.ibm.com/docs/en/SSQNUZ_4.8.x/cp
 podman stop olm-utils-play-v2
 cpd-cli manage restart-container
 ```
+**Note:**
+<br>Check the olm-utils-v2 image ID and ensure it's the latest one.
+```
+podman images
+```
+
 #### 1.2.6 Ensure the images were mirrored to the private container registry
 - Check the log files in the work directory generated during the image mirroring
 ```
@@ -487,21 +516,13 @@ cpd-cli manage login-entitled-registry \
 ${IBM_ENTITLEMENT_KEY}
 ```
 
-Download case package from either of the following locations:<br>
-Option 1 - GitHub (github.com)
+Download case package. <br>
 ```
 cpd-cli manage case-download \
 --components=${COMPONENTS} \
 --release=${VERSION}
 ```
 
-Option 2 - IBM Cloud Pak Open Container Initiative (icr.io)
-```
-cpd-cli manage case-download \
---components=${COMPONENTS} \
---release=${VERSION} \
---from_oci=true
-```
 ### 1.3 Health check OCP & CPD
 
 1. Check OCP status
