@@ -505,7 +505,7 @@ cpd-cli manage restart-container
 **Note:**
 <br>Check the olm-utils-v2 image ID and ensure it's the latest one.
 ```
-podman images | grep olm-utils-play-v2
+podman images | grep olm-utils-v2
 ```
 
 #### 1.2.5 Ensure the images were mirrored to the private container registry
