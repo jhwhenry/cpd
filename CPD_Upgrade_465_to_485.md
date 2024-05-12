@@ -54,7 +54,7 @@ cpd-cli manage copy-image \
 ```
 cpd-cli manage copy-image \
 --from=cp.icr.io/cp/cpd/manta-init-migrate-h2@sha256:0bb84e3f2ebd2219afa860e4bd3d3aa3a3c642b3b58685880df2cff121d43583 \
---to=${PRIVATE_REGISTRY_LOCATION}/cp/cpd/manta-init-migrate-h2@sha256:0bb84e3f2ebd2219afa860e4bd3d3aa3a3c642b3b58685880df2cff121d43583
+--to=${PRIVATE_REGISTRY_LOCATION}/cp/cpd/manta-init-migrate-h2
 ```
 
 #### 3. The permissions required for the upgrade is ready
