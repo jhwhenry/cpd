@@ -664,6 +664,7 @@ cpd-cli manage detach-cpd-instance \
 --specialized_operator_ns=${PROJECT_CPD_OPS}
 ```
 **Note**:
+<br>WARNING: This step will ask you to validated that your WKC legacy data can be migrated If you want to continue with the migration, please type: 'I have validated that I can migrate my metadata and I want to continue'
 <br>Monitor the install plan and approved them as needed.
 <br><br>Wait for the detach-cpd-instance command ran successfully before proceeding to the next step:
 <br>Confirm that the Certificate manager and License Service pods in the cs-control project are Running :
@@ -706,7 +707,8 @@ cpd-cli manage detach-cpd-instance \
 --control_ns=${PROJECT_CS_CONTROL} \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
-
+<br>WARNING: This step will ask you to validated that your WKC legacy data can be migrated If you want to continue with the migration, please type: 'I have validated that I can migrate my metadata and I want to continue'
+<br>
 Confirm ${PROJECT_CPD_INST_OPERANDS} has been isolated from the previous nss
 ```
 oc get cm -n $PROJECT_CPFS_OPS namespace-scope -o yaml
