@@ -198,38 +198,37 @@ cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --al
 cat cpd-cli-workspace/olm-utils-workspace/work/get_rsi_patch_info.log
 ```
 3.Set active patches to inactive.
-
 - Inactivate rsi-asset-files-api-annotation-selinux.
 ```
-cpd-cli manage enable-rsi \
+cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
 --patch_name=rsi-asset-files-api-annotation-selinux \
 --state=inactive
 ```
 - Inactivate rsi-asset-files-api-pod-spec-selinux.
 ```
-cpd-cli manage enable-rsi \
+cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
 --patch_name=rsi-asset-files-api-pod-spec-selinux \
 --state=inactive
 ```
 - Inactivate rsi-create-dap-directories-annotation-selinux.
 ```
-cpd-cli manage enable-rsi \
+cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
 --patch_name=rsi-create-dap-directories-annotation-selinux \
 --state=inactive
 ```
 - Inactivate rsi-create-dap-directories-pod-spec-selinux.
 ```
-cpd-cli manage enable-rsi \
+cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
 --patch_name=rsi-create-dap-directories-pod-spec-selinux \
 --state=inactive
 ```
 - Inactivate rsi-dp-api-annotation-selinux.
 ```
-cpd-cli manage enable-rsi \
+cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
 --patch_name=rsi-dp-api-annotation-selinux \
 --state=inactive
@@ -237,7 +236,7 @@ cpd-cli manage enable-rsi \
 
 - Inactivate rsi-dp-api-pod-spec-selinux.
 ```
-cpd-cli manage enable-rsi \
+cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
 --patch_name=rsi-dp-api-pod-spec-selinux \
 --state=inactive
@@ -245,7 +244,7 @@ cpd-cli manage enable-rsi \
 
 - Inactivate rsi-event-logger-api-annotation-selinux.
 ```
-cpd-cli manage enable-rsi \
+cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
 --patch_name=rsi-event-logger-api-annotation-selinux \
 --state=inactive
@@ -253,7 +252,7 @@ cpd-cli manage enable-rsi \
 
 - Inactivate rsi-event-logger-api-pod-spec-selinux.
 ```
-cpd-cli manage enable-rsi \
+cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
 --patch_name=rsi-event-logger-api-pod-spec-selinux \
 --state=inactive
@@ -261,7 +260,7 @@ cpd-cli manage enable-rsi \
 
 - Inactivate rsi-finley-public-service-patch.
 ```
-cpd-cli manage enable-rsi \
+cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
 --patch_name=rsi-finley-public-service-patch \
 --state=inactive
@@ -269,7 +268,7 @@ cpd-cli manage enable-rsi \
 
 - Inactivate rsi-iae-nginx-ephemeral-patch.
 ```
-cpd-cli manage enable-rsi \
+cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
 --patch_name=rsi-iae-nginx-ephemeral-patch \
 --state=inactive
@@ -277,7 +276,7 @@ cpd-cli manage enable-rsi \
 
 - Inactivate rsi-mde-service-manager-patch.
 ```
-cpd-cli manage enable-rsi \
+cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
 --patch_name=rsi-mde-service-manager-patch \
 --state=inactive
@@ -285,7 +284,7 @@ cpd-cli manage enable-rsi \
 
 - Inactivate rsi-mde-service-manager-patch-2.
 ```
-cpd-cli manage enable-rsi \
+cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
 --patch_name=rsi-mde-service-manager-patch-2 \
 --state=inactive
@@ -293,7 +292,7 @@ cpd-cli manage enable-rsi \
 
 - Inactivate rsi-spark-runtimes-annotation-selinux.
 ```
-cpd-cli manage enable-rsi \
+cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
 --patch_name=rsi-spark-runtimes-annotation-selinux \
 --state=inactive
@@ -301,7 +300,7 @@ cpd-cli manage enable-rsi \
 
 - Inactivate rsi-spark-runtimes-pod-spec-selinux.
 ```
-cpd-cli manage enable-rsi \
+cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
 --patch_name=rsi-spark-runtimes-pod-spec-selinux \
 --state=inactive
