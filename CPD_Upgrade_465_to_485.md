@@ -1285,10 +1285,22 @@ cpd-cli manage delete-olm-artifacts \
 --delete_shared_catsrc=true
 ```
 ### 3.7 WKC post-upgrade tasks
-1.Run the bulk sync utility before start using Global Search indexed data for relationships
+1.Migration cleanup - legacy features
+
+```
+oc -n ${NAMESPACE} patch wkc/wkc-cr --patch '{"spec":{"legacyCleanup":true}}' --type=merge
+oc delete scc wkc-iis-scc
+oc delete sa wkc-iis-sa
+```
+If the cleanup is successful, "legacyCleanup" will show Completed.
+```
+oc get wkc wkc-cr -oyaml | grep "legacyCleanup"
+```
+
+2.Run the bulk sync utility before start using Global Search indexed data for relationships
 Follow the step in [Bulk sync relationships for global search (IBM Knowledge Catalog)](https://www.ibm.com/docs/en/SSQNUZ_4.8.x/wsj/admin/admin-bulk-sync.html)
 
-2.To see your catalogs' assets in the Knowledge Graph, you need to resync your lineage metadata. 
+3.To see your catalogs' assets in the Knowledge Graph, you need to resync your lineage metadata. 
 [For steps to run the resync, see Resync of lineage metadata](https://www.ibm.com/docs/en/SSQNUZ_4.8.x/wsj/admin/admin-lineage-resync.html)
 
 ### 3.8 Summarize and close out the upgrade
