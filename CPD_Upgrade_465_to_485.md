@@ -1296,7 +1296,7 @@ If the cleanup is successful, "legacyCleanup" will show Completed.
 ```
 oc get wkc wkc-cr -oyaml | grep "legacyCleanup"
 ```
-
+Reference: https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=tasks-migration-cleanup#migration_cleanup__services__title__1
 2.Run the bulk sync utility before start using Global Search indexed data for relationships
 Follow the step in [Bulk sync relationships for global search (IBM Knowledge Catalog)](https://www.ibm.com/docs/en/SSQNUZ_4.8.x/wsj/admin/admin-bulk-sync.html)
 
