@@ -123,18 +123,23 @@ Review upgrade runbook
 
 #### 1.1.2 Backup before upgrade
 Note: Create a folder for 4.6.5 and maintain below created copies in that folder. <br>
+Login to the OCP cluster for cpd-cli utility.
+
+```
+cpd-cli manage login-to-ocp --username=${OCP_USERNAME} --password=${OCP_PASSWORD} --server=${OCP_URL}
+```
 
 Capture data for the CPD 4.6.5 instance. No sensitive information is collected. Only the operational state of the Kubernetes artifacts is collected.The output of the command is stored in a file named collect-state.tar.gz in the cpd-cli-workspace/olm-utils-workspace/work directory.
 
 ```
 cpd-cli manage collect-state \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE}
 ```
 
 Make a copy of existing custom resources (Recommended)
 
 ```
-oc project ${PROJECT_CPD_INST_OPERANDS}
+oc project ${PROJECT_CPD_INSTANCE}
 
 oc get ibmcpd ibmcpd-cr -o yaml > ibmcpd-cr.yaml
 
@@ -148,6 +153,19 @@ oc get analyticsengine analyticsengine-sample -o yaml > analyticsengine-cr.yaml
 
 oc get DataStage datastage -o yaml > datastage-cr.yaml
 
+```
+
+Backup the routes.
+
+```
+oc get routes -o yaml > routes.yaml
+```
+
+Backup the RSI patches.
+```
+cpd-cli manage get-rsi-patch-info \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--all
 ```
 
 Collect wkc db2u information.
