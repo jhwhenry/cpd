@@ -106,12 +106,11 @@ Part 2: Upgrade
 
 Part 3: Post-upgrade
 3.1 Configuring single sign-on
-3.2 Re-activate the RSI patches
-3.3 Validate CPD & CPD services
-3.4 Enabling users to upload JDBC drivers
-3.5 Removing the shared operators
-3.6 WKC post-upgrade tasks
-3.7 Summarize and close out the upgrade
+3.2 Validate CPD & CPD services
+3.3 Enabling users to upload JDBC drivers
+3.4 Removing the shared operators
+3.5 WKC post-upgrade tasks
+3.6 Summarize and close out the upgrade
 ```
 
 ## Part 1: Pre-upgrade
@@ -880,6 +879,141 @@ oc edit secretshare ibm-cpp-config \
 ```
 Remove the entry for the instance project from the sharewith list and save your changes to the SecretShare.
 
+6. **Re-activate the RSI patches.**
+1).Log the cpd-cli in to the Red Hat OpenShift Container Platform cluster.
+```
+cpd-cli manage login-to-ocp \
+--username=${OCP_USERNAME} \
+--password=${OCP_PASSWORD} \
+--server=${OCP_URL}
+```
+2).Install the RSI webhook.
+```
+cpd-cli manage install-rsi \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+--rsi_image=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/zen-rsi-adm-controller:${VERSION}-x86_64
+```
+3).Enable RSI for the instance
+```
+cpd-cli manage enable-rsi \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+```
+4).Set inactive patches to active.
+
+- Activate rsi-asset-files-api-annotation-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-asset-files-api-annotation-selinux \
+--state=active
+```
+- Activate rsi-asset-files-api-pod-spec-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-asset-files-api-pod-spec-selinux \
+--state=active
+```
+- Activate rsi-create-dap-directories-annotation-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-create-dap-directories-annotation-selinux \
+--state=active
+```
+- Activate rsi-create-dap-directories-pod-spec-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-create-dap-directories-pod-spec-selinux \
+--state=active
+```
+- Activate rsi-dp-api-annotation-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-dp-api-annotation-selinux \
+--state=active
+```
+
+- Activate rsi-dp-api-pod-spec-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-dp-api-pod-spec-selinux \
+--state=active
+```
+
+- Activate rsi-event-logger-api-annotation-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-event-logger-api-annotation-selinux \
+--state=active
+```
+
+- Activate rsi-event-logger-api-pod-spec-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-event-logger-api-pod-spec-selinux \
+--state=active
+```
+
+- Activate rsi-finley-public-service-patch.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-finley-public-service-patch \
+--state=active
+```
+
+- Activate rsi-iae-nginx-ephemeral-patch.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-iae-nginx-ephemeral-patch \
+--state=active
+```
+
+- Activate rsi-mde-service-manager-patch.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-mde-service-manager-patch \
+--state=active
+```
+
+- Activate rsi-mde-service-manager-patch-2.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-mde-service-manager-patch-2 \
+--state=active
+```
+
+- Activate rsi-spark-runtimes-annotation-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-spark-runtimes-annotation-selinux \
+--state=active
+```
+
+- Activate rsi-spark-runtimes-pod-spec-selinux.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-spark-runtimes-pod-spec-selinux \
+--state=active
+```
+5).Check the RSI patches status again:
+```
+cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --all
+
+cat cpd-cli-workspace/olm-utils-workspace/work/get_rsi_patch_info.log
+```
+
 ### 2.2 Upgrade CPD services to 4.8.5
 #### 2.2.1 Upgrade IBM Knowledge Catalog service
 Check if the IBM Knowledge Catalog service was installed with the custom install options. 
@@ -1124,149 +1258,14 @@ If post upgrade login using SAML doesn't work, then follow This instruction. You
 
 https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=environment-configuring-sso
 
-### 3.2 Re-activate the RSI patches.
-1.Log the cpd-cli in to the Red Hat OpenShift Container Platform cluster.
-```
-cpd-cli manage login-to-ocp \
---username=${OCP_USERNAME} \
---password=${OCP_PASSWORD} \
---server=${OCP_URL}
-```
-2.Install the RSI webhook.
-```
-cpd-cli manage install-rsi \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
---rsi_image=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/zen-rsi-adm-controller:${VERSION}-x86_64
-```
-3.Enable RSI for the instance
-```
-cpd-cli manage enable-rsi \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
-```
-4.Set inactive patches to active.
-
-- Activate rsi-asset-files-api-annotation-selinux.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=rsi-asset-files-api-annotation-selinux \
---state=active
-```
-- Activate rsi-asset-files-api-pod-spec-selinux.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=rsi-asset-files-api-pod-spec-selinux \
---state=active
-```
-- Activate rsi-create-dap-directories-annotation-selinux.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=rsi-create-dap-directories-annotation-selinux \
---state=active
-```
-- Activate rsi-create-dap-directories-pod-spec-selinux.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=rsi-create-dap-directories-pod-spec-selinux \
---state=active
-```
-- Activate rsi-dp-api-annotation-selinux.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=rsi-dp-api-annotation-selinux \
---state=active
-```
-
-- Activate rsi-dp-api-pod-spec-selinux.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=rsi-dp-api-pod-spec-selinux \
---state=active
-```
-
-- Activate rsi-event-logger-api-annotation-selinux.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=rsi-event-logger-api-annotation-selinux \
---state=active
-```
-
-- Activate rsi-event-logger-api-pod-spec-selinux.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=rsi-event-logger-api-pod-spec-selinux \
---state=active
-```
-
-- Activate rsi-finley-public-service-patch.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=rsi-finley-public-service-patch \
---state=active
-```
-
-- Activate rsi-iae-nginx-ephemeral-patch.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=rsi-iae-nginx-ephemeral-patch \
---state=active
-```
-
-- Activate rsi-mde-service-manager-patch.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=rsi-mde-service-manager-patch \
---state=active
-```
-
-- Activate rsi-mde-service-manager-patch-2.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=rsi-mde-service-manager-patch-2 \
---state=active
-```
-
-- Activate rsi-spark-runtimes-annotation-selinux.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=rsi-spark-runtimes-annotation-selinux \
---state=active
-```
-
-- Activate rsi-spark-runtimes-pod-spec-selinux.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=rsi-spark-runtimes-pod-spec-selinux \
---state=active
-```
-5.Check the RSI patches status again:
-```
-cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --all
-
-cat cpd-cli-workspace/olm-utils-workspace/work/get_rsi_patch_info.log
-```
-
-### 3.3 Validate CPD & CPD services
+### 3.2 Validate CPD & CPD services
 
 Log into CPD web UI with admin and check out each services, including provision instance and functions of each service
 
-### 3.4 Enabling users to upload JDBC drivers
+### 3.3 Enabling users to upload JDBC drivers
 Reference: https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=environment-enabling-users-upload-jdbc-drivers
 
-#### 3.5.1 Set the wdp_connect_connection_disable_jar_tab parameter to false
+#### 3.3.1 Set the wdp_connect_connection_disable_jar_tab parameter to false
 ```
 oc patch ccs ccs-cr \
 --namespace=${PROJECT_CPD_INST_OPERANDS} \
@@ -1274,12 +1273,12 @@ oc patch ccs ccs-cr \
 --patch '{"spec": {"wdp_connect_connection_jdbc_drivers_repository_mode": "enabled"}}'
 ```
 
-#### 3.5.2 Wait for the common core services status to be Completed
+#### 3.3.2 Wait for the common core services status to be Completed
 ```
 oc get ccs ccs-cr --namespace=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-### 3.6 Removing the shared operators
+### 3.4 Removing the shared operators
 Log the cpd-cli in to the Red Hat OpenShift Container Platform cluster.
 ```
 cpd-cli manage login-to-ocp \
@@ -1302,7 +1301,7 @@ cpd-cli manage delete-olm-artifacts \
 --delete_all_components=true \
 --delete_shared_catsrc=true
 ```
-### 3.7 WKC post-upgrade tasks
+### 3.5 WKC post-upgrade tasks
 1.Migration cleanup - legacy features
 
 ```
@@ -1321,7 +1320,7 @@ Follow the step in [Bulk sync relationships for global search (IBM Knowledge Cat
 3.To see your catalogs' assets in the Knowledge Graph, you need to resync your lineage metadata. 
 [For steps to run the resync, see Resync of lineage metadata](https://www.ibm.com/docs/en/SSQNUZ_4.8.x/wsj/admin/admin-lineage-resync.html)
 
-### 3.8 Summarize and close out the upgrade
+### 3.6 Summarize and close out the upgrade
 
 Schedule a wrap-up meeting and review the upgrade procedure and lessons learned from it.
 
