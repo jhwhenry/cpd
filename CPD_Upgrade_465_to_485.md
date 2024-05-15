@@ -342,7 +342,7 @@ cpd-cli manage uninstall-rsi \
 ```
 
 **Important:** 
-<br>We need to disable the RSI patches. While, We should not disable any selinux patches???? We can disable all non-selinux patches. Once the upgrade is complete we can enable them depending on if not fixed on 4.8.5.
+<br>We need to disable the RSI patches. Once the upgrade is complete we can enable them depending on if not fixed on 4.8.5.
 <br>If you plan to use the RSI feature in IBM Cloud Pak for Data Version 4.8, skip the step to delete the patches. You can re-activate the patches after you install the RSI-webhook at the instance-level.
 
 #### 1.1.5 If use SAML SSO, export SSO configuration
