@@ -84,9 +84,8 @@ Part 1: Pre-upgrade
 1.2.3 Make olm-utils available
 1.2.4 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
 1.2.5 Ensure the images were mirrored to the private container registry
-1.2.6 Updating the image content source policy
-1.2.7 Creating a profile for upgrading the service instances
-1.2.8 Download CASE files
+1.2.6 Creating a profile for upgrading the service instances
+1.2.7 Download CASE files
 1.3 Health check OCP & CPD
 
 Part 2: Upgrade
@@ -552,27 +551,8 @@ Check the output for errors:
 grep "level=fatal" ${CPD_CLI_MANAGE_WORKSPACE}/work/offline/${VERSION}/list_images.csv
 ```
 The command returns images that are missing or that cannot be inspected which needs to be addressed.
-#### 1.2.6 Updating the image content source policy
-If you use Analytics Engine powered by Apache Spark or IBM® Knowledge Catalog, you must update the existing image content source policy that you use for IBM Cloud Pak® for Data. 
-1.Run the cpd-cli manage login-to-ocp command to log in to the cluster
-```
-cpd-cli manage login-to-ocp \
---username=${OCP_USERNAME} \
---password=${OCP_PASSWORD} \
---server=${OCP_URL}
-```
-2.Create or update the required image content source policy or image digest mirror set:
-```
-cpd-cli manage apply-icsp \
---registry=${PRIVATE_REGISTRY_LOCATION}
-```
-3.Get the status of the nodes:
-```
-oc get nodes
-```
-Wait until all the nodes are Ready before you proceed to the next step. 
 
-#### 1.2.7 Creating a profile for upgrading the service instances
+#### 1.2.6 Creating a profile for upgrading the service instances
 Create a profile on the workstation from which you will upgrade the service instances. <br>
 
 The profile must be associated with a Cloud Pak for Data user who has either the following permissions:
@@ -582,7 +562,7 @@ The profile must be associated with a Cloud Pak for Data user who has either the
 
 Click this link and follow these steps for getting it done. https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=cli-creating-cpd-profile#taskcpd-profile-mgmt__steps__1
 
-#### 1.2.8 Download CASE files
+#### 1.2.7 Download CASE files
 
 1. Go to the client workstation with internet
 Log into IBM registry and list images
