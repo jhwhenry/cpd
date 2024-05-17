@@ -1281,9 +1281,11 @@ oc get wkc wkc-cr -oyaml | grep "legacyCleanup"
 ```
 Reference: https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=tasks-migration-cleanup#migration_cleanup__services__title__1
 2.Run the bulk sync utility before start using Global Search indexed data for relationships
+<br>
 Follow the step in [Bulk sync relationships for global search (IBM Knowledge Catalog)](https://www.ibm.com/docs/en/SSQNUZ_4.8.x/wsj/admin/admin-bulk-sync.html)
 
 3.To see your catalogs' assets in the Knowledge Graph, you need to resync your lineage metadata. 
+<br>
 [For steps to run the resync, see Resync of lineage metadata](https://www.ibm.com/docs/en/SSQNUZ_4.8.x/wsj/admin/admin-lineage-resync.html)
 
 ### 3.6 Summarize and close out the upgrade
