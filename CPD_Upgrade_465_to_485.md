@@ -482,35 +482,21 @@ export OC_LOGIN="oc login ${OCP_URL} ${LOGIN_ARGUMENTS}"
 ```
 
 #### 1.2.3 Make olm-utils available
-If the bastion node is internet connected, then you can ignore below steps in this section.
-<br>
-Go to the client workstation with internet
+**Note:** If the bastion node is internet connected, then you can ignore below steps in this section.
 
 ```
-cd ${CPD485_WORKSPACE}
-source cpd_vars_485.sh
+podman pull icr.io/cpopen/cpd/olm-utils-v2:latest --tls-verify=false
 
-cpd-cli manage save-image \
---from=icr.io/cpopen/cpd/olm-utils-v2:latest
-```
+podman login ${PRIVATE_REGISTRY_LOCATION} -u ${PRIVATE_REGISTRY_PULL_USER} -p ${PRIVATE_REGISTRY_PULL_PASSWORD}
 
-This command saves the image as a compressed TAR file named icr.io_cpopen_cpd_olm-utils-v2_latest.tar.gz in the cpd-cli-workspace/olm-utils-workspace/work/offline directory
+podman tag icr.io/cpopen/cpd/olm-utils-v2:latest ${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v2:latest
 
-Ship the tarbll into bastion node
+podman push ${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v2:latest --remove-signatures 
 
-Go to bastion node
+export OLM_UTILS_IMAGE=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v2:latest
+export OLM_UTILS_LAUNCH_ARGS=" --network=host"
 
 ```
-cpd-cli manage load-image \
---source-image=icr.io/cpopen/cpd/olm-utils-v2:latest
-```
-
-The command returns the following message when the image is loaded:
-
-```
-Loaded image: icr.io/cpopen/cpd/olm-utils-v2:latest
-```
-
 For details please refer to 4.8 doc (https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=46-updating-client-workstations)
 
 #### 1.2.4 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
