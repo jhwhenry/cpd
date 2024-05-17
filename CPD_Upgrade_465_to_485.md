@@ -511,7 +511,7 @@ The command returns the following message when the image is loaded:
 Loaded image: icr.io/cpopen/cpd/olm-utils-v2:latest
 ```
 
-For details please refer to 4.8 doc (https://www.ibm.com/docs/en/SSQNUZ_4.8.x/cpd/upgrade/v48-setup-client.html)
+For details please refer to 4.8 doc (https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=46-updating-client-workstations)
 
 #### 1.2.4 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
 ```
