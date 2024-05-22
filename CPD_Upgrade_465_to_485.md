@@ -1288,6 +1288,10 @@ Follow the step in [Bulk sync relationships for global search (IBM Knowledge Cat
 <br>
 [For steps to run the resync, see Resync of lineage metadata](https://www.ibm.com/docs/en/SSQNUZ_4.8.x/wsj/admin/admin-lineage-resync.html)
 
+4.Enable Relationship Explorer feature
+
+[Enable Relationship Explorer feature] (https://github.com/sanjitc/Cloud-Pak-for-Data/blob/main/Upgrade/CPD%204.6%20to%204.8/Enabling_Relationship_Explorer_480%20-%20disclaimer%200208.pdf)
+
 ### 3.6 Summarize and close out the upgrade
 
 Schedule a wrap-up meeting and review the upgrade procedure and lessons learned from it.
