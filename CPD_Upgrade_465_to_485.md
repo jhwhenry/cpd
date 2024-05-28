@@ -75,9 +75,10 @@ Part 1: Pre-upgrade
 1.1.1 Review the upgrade runbook
 1.1.2 Backup before upgrade
 1.1.3 If you installed hotfixes, uninstall all hotfixes
-1.1.4 1.1.4 If you installed the resource specification injection (RSI) feature, uninstall the cluster-scoped webhook
-1.1.5 If use SAML SSO, export SSO configuration
-1.1.6 Enable default admin user if it's disabled. Once upgrade complet you can disable it again.
+1.1.4 Uninstall useless service(s)
+1.1.5 If you installed the resource specification injection (RSI) feature, uninstall the cluster-scoped webhook
+1.1.6 If use SAML SSO, export SSO configuration
+1.1.7 Enable default admin user if it's disabled. Once upgrade complet you can disable it again.
 1.2 Set up client workstation 
 1.2.1 Prepare a client workstation
 1.2.2 Update cpd_vars.sh for the upgrade to Version 4.8.5
@@ -199,7 +200,29 @@ Save the output to a file named wkc-db2u-log-conf.txt .
 #### 1.1.3 If you installed hotfixes, uninstall all hotfixes
 Edit custom resources (e.g. Zensevice, CCS, WKC, AE) and remove all hotfix references if any.
 
-#### 1.1.4 If you installed the resource specification injection (RSI) feature, uninstall the cluster-scoped webhook
+#### 1.1.4 Uninstall useless service(s)
+**Uninstall the Data Privacy service**
+<br>
+1.Run the cpd-cli manage login-to-ocp command to log in to the cluster as a user with sufficient permissions.
+```
+cpd-cli manage login-to-ocp \
+--username=${OCP_USERNAME} \
+--password=${OCP_PASSWORD} \
+--server=${OCP_URL}
+```
+2.Delete the custom resource for Data Privacy
+```
+cpd-cli manage delete-cr \
+--components=dp \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE}
+```
+3.Uninstall the operator and other OLM object
+```
+cpd-cli manage delete-olm-artifacts \
+--cpd_operator_ns=${PROJECT_CPD_OPS} \
+--components=dp
+```
+#### 1.1.5 If you installed the resource specification injection (RSI) feature, uninstall the cluster-scoped webhook
 1.Run the cpd-cli manage login-to-ocp command to log in to the cluster as a user with sufficient permissions.
 ```
 cpd-cli manage login-to-ocp \
@@ -344,7 +367,7 @@ cpd-cli manage uninstall-rsi \
 <br>We need to disable the RSI patches. Once the upgrade is complete we can enable them depending on if not fixed on 4.8.5.
 <br>If you plan to use the RSI feature in IBM Cloud Pak for Data Version 4.8, skip the step to delete the patches. You can re-activate the patches after you install the RSI-webhook at the instance-level.
 
-#### 1.1.5 If use SAML SSO, export SSO configuration
+#### 1.1.6 If use SAML SSO, export SSO configuration
 
 If you use SAML SSO, export your SSO configuration. You will need to reapply your SAML SSO configuration after you upgrade to Version 4.8. Skip this step if you use the IBM Cloud Pak foundational services Identity Management Service
 
@@ -353,7 +376,7 @@ oc cp -n=${PROJECT_CPD_INSTANCE} \
 $(oc get pods -l component=usermgmt -n ${PROJECT_CPD_INSTANCE} \
 -o jsonpath='{.items[0].metadata.name}'):/user-home/_global_/config/saml ./samlConfig.json
 ```
-#### 1.1.6 Enable default admin user if it's disabled. Once upgrade complet you can disable it again.
+#### 1.1.7 Enable default admin user if it's disabled. Once upgrade complet you can disable it again.
 
 https://www.ibm.com/docs/en/cloud-paks/cp-data/4.6.x?topic=users-disabling-default-admin-user#taskremove-admin__postreq__1
 
