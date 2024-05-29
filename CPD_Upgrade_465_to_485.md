@@ -468,6 +468,7 @@ vi cpd_vars_485.sh
 export VERSION=4.8.5
 ```
 2.Locate the Projects section of the script and add the following environment variables. 
+<br>
 **Note:** 
 <br>When adding the following environment variables, The value of PROJECT_CPD_INST_OPERANDS is the same as that of PROJECT_CPD_INSTANCE.
 ```
@@ -482,7 +483,7 @@ export PROJECT_CPD_INST_OPERANDS=cpd-instance
 4.Locate the COMPONENTS entry and upate the COMPONENTS entry.
 If the advanced metadata import feature in IBM® Knowledge Catalog is used, add the mantaflow component to the COMPONENTS variable.
 ```
-export COMPONENTS=ibm-cert-manager,ibm-licensing,cpfs,cpd_platform,ws,ws_runtimes,wml,datastage_ent,wkc,analyticsengine,mantaflow,openscale,db2wh,dp
+export COMPONENTS=ibm-cert-manager,ibm-licensing,cpfs,cpd_platform,ws,ws_runtimes,wml,datastage_ent,wkc,analyticsengine,mantaflow,openscale,db2wh
 ```
 
 Save the changes. <br>
