@@ -75,7 +75,7 @@ Part 1: Pre-upgrade
 1.1.1 Review the upgrade runbook
 1.1.2 Backup before upgrade
 1.1.3 If you installed hotfixes, uninstall all hotfixes
-1.1.4 Uninstall useless service(s)
+1.1.4 Uninstall the service(s) not in use
 1.1.5 If you installed the resource specification injection (RSI) feature, uninstall the cluster-scoped webhook
 1.1.6 If use SAML SSO, export SSO configuration
 1.1.7 Enable default admin user if it's disabled. Once upgrade complet you can disable it again.
@@ -200,7 +200,7 @@ Save the output to a file named wkc-db2u-log-conf.txt .
 #### 1.1.3 If you installed hotfixes, uninstall all hotfixes
 Edit custom resources (e.g. Zensevice, CCS, WKC, AE) and remove all hotfix references if any.
 
-#### 1.1.4 Uninstall useless service(s)
+#### 1.1.4 Uninstall the service(s) not in use
 **Uninstall the Data Privacy service**
 <br>
 1.Run the cpd-cli manage login-to-ocp command to log in to the cluster as a user with sufficient permissions.
