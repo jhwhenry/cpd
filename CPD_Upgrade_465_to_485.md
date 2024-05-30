@@ -11,7 +11,7 @@ From
 OCP: 4.12
 CPD: 4.6.5
 Storage: Storage Fusion 2.7.2
-Componenets: cpfs,cpd_platform,ws,ws_runtimes,wml,datastage_ent,wkc,analyticsengine,openscale,db2wh,dp
+Componenets: cpfs,cpd_platform,ws,ws_runtimes,wml,datastage_ent,wkc,analyticsengine,openscale,db2wh
 ```
 
 To
@@ -20,7 +20,7 @@ To
 OCP: 4.12
 CPD: 4.8.5
 Storage: Storage Fusion 2.7.2
-Componenets: cpfs,cpd_platform,ws,ws_runtimes,wml,datastage_ent,wkc,analyticsengine,openscale,db2wh,dp
+Componenets: cpfs,cpd_platform,ws,ws_runtimes,wml,datastage_ent,wkc,analyticsengine,openscale,db2wh
 ```
 
 ## Pre-requisites
