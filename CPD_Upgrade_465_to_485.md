@@ -198,7 +198,7 @@ for db in LINEAGE BGDB ILGDB WFDB; do echo "(*) dbname: $db"; db2 "get db cfg fo
 Save the output to a file named wkc-db2u-log-conf.txt .
 
 #### 1.1.3 If you installed hotfixes, uninstall all hotfixes
-Edit custom resources (e.g. Zensevice, CCS, WKC, AE) and remove all hotfix references if any.
+Edit custom resources including CCS, WKC, AnalyticsEngine and remove all hotfix references if any.
 
 #### 1.1.4 Uninstall the service(s) not in use
 **Uninstall the Data Privacy service**
