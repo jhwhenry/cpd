@@ -203,7 +203,7 @@ Remove the hotfixes by removing the images from the CRs.
 1.Uninstall WKC hot fixes.
 1)Edit the wkc-cr with below command.
 ```
-oc get WKC wkc-cr
+oc edit WKC wkc-cr
 ```
 2)Remove the hot fix images from the WKC custom resource
 ```
@@ -250,8 +250,82 @@ oc get WKC wkc-cr
 ```
 oc get WKC wkc-cr -o yaml
 ```
+2.Uninstall the AnalyticsEngine hot fixes.
+1)Edit the analyticsengine-sample with below command.
+```
+oc edit AnalyticsEngine analyticsengine-sample
+```
+2)Remove the hot fix images from the AnalyticsEngine custom resource
+```
+ image_digests:
+    spark-hb-control-plane: sha256:ef46de7224c6c37b2eadf2bfbbbaeef5be7b2e7e7c05d55c4f8b0eba1fb4e9e4
+    spark-hb-jkg-v33: sha256:4b4eefb10d2a45ed1acab708a28f2c9d3619432f4417cfbfdc056f2ca3c085f7
+```
+3)Save and Exit. Wait untile the AnalyticsEngine Operator reconcilation completed and also the analyticsengine-sample in 'Completed' status. 
+```
+oc get AnalyticsEngine analyticsengine-sample -o yaml
+```
+3.Uninstall the CCS hot fixes.
+1)Edit the analyticsengine-sample with below command.
+```
+oc edit CCS ccs-cr
+```
+2)Remove the hot fix images from the CCS custom resource
+```
+  asset_files_api_image:
+    name: asset-files-api@sha256
+    tag: a1525c29bebed6e9a982f3a06b3190654df7cf6028438f58c96d0c8f69e674c1
+    tag_metadata: 4.6.5.4.155-amd64
 
-2.Remove the hot fix images from the AnalyticsEngine custom resource.
+  catalog_api_aux_image:
+    name: catalog-api-aux_master@sha256
+    tag: e221df32209340617763897d6acbdcbae6a29d75bd0fd2af65ba6448c430534d
+    tag_metadata: 2.0.0-20240311173712-babe16ea94
+
+  catalog_api_image:
+    name: catalog_master@sha256
+    tag: a5f2b44fbe532b9fecd4f67b00c937becde897e1030b7aa48087cbc2c8505707
+    tag_metadata: 2.0.0-20240311173712-babe16ea94
+
+  jobs_ui_image:
+    name: jobs-ui@sha256
+    tag: 7758afa382ce3302fb2d8fb020cfe7baab5d960da3896ef4eb4bb2187cb477e3
+    tag_metadata: 4.6.5.2.167
+
+  portal_catalog_image:
+    name: portal-catalog@sha256
+    tag: 4646053d470dbb7edc90069f1d7e0b1d26da76edd7325d22af50535a61e42fed
+    tag_metadata: 0.4.2817
+
+  portal_projects_image:
+    name: portal-projects@sha256
+    tag: d3722fb9a7e4a97f6f6de7d2b92837475e62cd064aa6d7590342e05620b16a6a
+    tag_metadata: 4.6.5.4.2504-amd64
+
+  wdp_connect_connection_image:
+    name: wdp-connect-connection@sha256
+    tag: 3d5fadf3ec1645dae10136226d37542a9d087782663344a1f78e0ee3af7b5aa6
+    tag_metadata: 6.3.325
+
+  wdp_connect_connector_image:
+    name: wdp-connect-connector@sha256
+    tag: 1b7ecb102c8461b1b9b0df9a377695b71164b00ab72391ddf4b063bd45da670c
+    tag_metadata: 6.3.325
+
+  wdp_connect_flight_image:
+    name: wdp-connect-flight@sha256
+    tag: a1558a88258719da7414e345550210ab6e013c45af54c22bf01d37851f94dc9f
+    tag_metadata: 6.3.324
+
+  wkc_search_image:
+    name: wkc-search_master@sha256
+    tag: 08105e65f1b0091499366d8f15b6a6d045bc1319bbae463619737172afed1dc1
+    tag_metadata: 4.6.194
+```
+3)Save and Exit. Wait untile the CCS Operator reconcilation completed and also the ccs-cr in 'Completed' status. 
+```
+oc get CCS ccs-cr -o yaml
+```
 
 
 #### 1.1.4 Uninstall the service(s) not in use
