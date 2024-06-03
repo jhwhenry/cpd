@@ -200,7 +200,8 @@ Save the output to a file named wkc-db2u-log-conf.txt .
 #### 1.1.3 If you installed hotfixes, uninstall all hotfixes
 Remove the hotfixes by removing the images from the CRs.
 <br>
-- 1.Uninstall WKC hot fixes. 
+- 1.Uninstall WKC hot fixes.
+<br>
 1)Edit the wkc-cr with below command.
 ```
 oc edit WKC wkc-cr
@@ -251,6 +252,7 @@ oc edit WKC wkc-cr
 oc get WKC wkc-cr -o yaml
 ```
 - 2.Uninstall the AnalyticsEngine hot fixes.
+<br>
 1)Edit the analyticsengine-sample with below command.
 ```
 oc edit AnalyticsEngine analyticsengine-sample
@@ -266,6 +268,7 @@ oc edit AnalyticsEngine analyticsengine-sample
 oc get AnalyticsEngine analyticsengine-sample -o yaml
 ```
 - 3.Uninstall the CCS hot fixes.
+<br>
 1)Edit the analyticsengine-sample with below command.
 ```
 oc edit CCS ccs-cr
