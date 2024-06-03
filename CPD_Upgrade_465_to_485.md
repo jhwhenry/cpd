@@ -198,7 +198,61 @@ for db in LINEAGE BGDB ILGDB WFDB; do echo "(*) dbname: $db"; db2 "get db cfg fo
 Save the output to a file named wkc-db2u-log-conf.txt .
 
 #### 1.1.3 If you installed hotfixes, uninstall all hotfixes
-Edit custom resources including CCS, WKC, AnalyticsEngine and remove all hotfix references if any.
+Remove the hotfixes by removing the images from the CRs.
+<br>
+1.Uninstall WKC hot fixes.
+1)Edit the wkc-cr with below command.
+```
+oc get WKC wkc-cr
+```
+2)Remove the hot fix images from the WKC custom resource
+```
+ finley_public_image:
+    name: finley-public@sha256
+    tag: 9b5b907b054ca4bd355bc7180216d14fb40dc401ade120875e8ff6bc9d0f354a
+    tag_metadata: 2.5.8-amd64
+
+  metadata_discovery_image:
+    name: metadata-discovery@sha256
+    tag: 02a1923656678cd74f32329ff18bfe0f1b7e7716eae5a9cb25203fcfd23fcc35
+    tag_metadata: 4.6.519
+
+  wdp_profiling_image:
+    name: wdp-profiling@sha256
+    tag: ecc845503e45b4f8a0c83dce077d41c9a816cb9116d3aa411b000ec0eb916620
+    tag_metadata: 4.6.5031-amd64
+
+  wdp_profiling_ui_image:
+    name: wdp-profiling-ui@sha256
+    tag: 85e36bf943bc4ccd7cb2af0c524d5430ceabc90f2d5a5fb7e1696dbc251e5cc0
+    tag_metadata: 4.6.1203
+
+  wkc_bi_data_service_image:
+    name: wkc-bi-data-service@sha256
+    tag: 90837d26d108d3d086f71d6a9e36fbf7999caa4563404ee0e03d5735dfa2f3d3
+    tag_metadata: 4.6.120
+
+  wkc_mde_service_manager_image:
+    name: wkc-mde-service-manager@sha256
+    tag: 713684c36db568e0c9d5a3be40010b0f732fa73ede7177d9613bc040c53d6ab9
+    tag_metadata: 1.2.55
+  wkc_metadata_imports_ui_image:
+    name: wkc-metadata-imports-ui@sha256
+    tag: 53c8e2a0def2aa48c11bc702fc1ddd0dda089585f65597d0e64ec6cfba3a103e
+    tag_metadata: 4.6.5511
+
+  wkc_term_assignment_image:
+    name: term-assignment-service@sha256
+    tag: 80df5ba17fe08be48da4089d165bc29205009c79dde7f3ae3832db2edb7c54ce
+    tag_metadata: 2.5.20-amd64
+```
+3)Save and Exit. Wait untile the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status. 
+```
+oc get WKC wkc-cr -o yaml
+```
+
+2.Remove the hot fix images from the AnalyticsEngine custom resource.
+
 
 #### 1.1.4 Uninstall the service(s) not in use
 **Uninstall the Data Privacy service**
