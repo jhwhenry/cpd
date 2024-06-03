@@ -657,6 +657,14 @@ oc get pvc | grep aiopenscale-ibm-aios-payload-pvc
 
 If there are any customization of the PVC, we'll need to evaluate and make sure this is addressed before the upgrade.
 
+5. Check for wkc-search pod.
+
+```
+oc get pods -n dev | grep wkc-search
+```
+
+Remove the wkc-search pods which is in completed state ( if there are any ). We should have wkc-search pod only in Running state.
+
 ## Part 2: Upgrade
 
 ### 2.1 Upgrade CPD to 4.8.5
