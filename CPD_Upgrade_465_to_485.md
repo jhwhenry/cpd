@@ -329,7 +329,10 @@ oc edit CCS ccs-cr
 ```
 oc get CCS ccs-cr -o yaml
 ```
-
+4)Wait untile the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status. 
+```
+oc get WKC wkc-cr -o yaml
+```
 
 #### 1.1.4 Uninstall the service(s) not in use
 **Uninstall the Data Privacy service**
