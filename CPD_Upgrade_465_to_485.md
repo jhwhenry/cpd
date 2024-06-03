@@ -643,6 +643,20 @@ You can run this command to verify the images in private container registry.
 curl -k -u ${PRIVATE_REGISTRY_PULL_USER}:${PRIVATE_REGISTRY_PULL_PASSWORD} https://${PRIVATE_REGISTRY_LOCATION}/v2/_catalog?n=6000 | jq .
 ```
 
+4. Check if there are any customization of the PVC size.
+
+Check the pvc size of the zen-metastoredb. Default size is 10Gi.
+```
+oc get pvc | grep zen-metastore
+```
+
+Check the pvc size of the OpenScale payload pvc. Default size is 4Gi.
+```
+oc get pvc | grep aiopenscale-ibm-aios-payload-pvc
+```
+
+If there are any customization of the PVC, we'll need to evaluate and make sure this is addressed before the upgrade.
+
 ## Part 2: Upgrade
 
 ### 2.1 Upgrade CPD to 4.8.5
