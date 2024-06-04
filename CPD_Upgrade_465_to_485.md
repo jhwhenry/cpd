@@ -515,7 +515,7 @@ cpd-cli manage disable-rsi \
 ```
 cpd-cli manage uninstall-rsi \
 --cs_ns=${PROJECT_CPFS_OPS} \
---rsi_image=${PRIVATE_REGISTRY_LOCATION}/cpd/zen-rsi-adm-controller:4.6.5-x86_64
+--rsi_image=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/zen-rsi-adm-controller:4.6.5-x86_64
 ```
 
 **Important:** 
