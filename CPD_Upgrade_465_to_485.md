@@ -200,13 +200,18 @@ Save the output to a file named wkc-db2u-log-conf.txt .
 #### 1.1.3 If you installed hotfixes, uninstall all hotfixes
 Remove the hotfixes by removing the images from the CRs.
 <br>
+
 - 1.Uninstall WKC hot fixes.
+
 <br>
+
 1)Edit the wkc-cr with below command.
 ```
 oc edit WKC wkc-cr
 ```
+
 2)Remove the hot fix images from the WKC custom resource
+
 ```
  finley_public_image:
     name: finley-public@sha256
@@ -247,33 +252,45 @@ oc edit WKC wkc-cr
     tag: 80df5ba17fe08be48da4089d165bc29205009c79dde7f3ae3832db2edb7c54ce
     tag_metadata: 2.5.20-amd64
 ```
+
 3)Save and Exit. Wait untile the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status. 
+
 ```
 oc get WKC wkc-cr -o yaml
 ```
+
 - 2.Uninstall the AnalyticsEngine hot fixes.
 <br>
 1)Edit the analyticsengine-sample with below command.
+  
 ```
 oc edit AnalyticsEngine analyticsengine-sample
 ```
+
 2)Remove the hot fix images from the AnalyticsEngine custom resource
+
 ```
  image_digests:
     spark-hb-control-plane: sha256:ef46de7224c6c37b2eadf2bfbbbaeef5be7b2e7e7c05d55c4f8b0eba1fb4e9e4
     spark-hb-jkg-v33: sha256:4b4eefb10d2a45ed1acab708a28f2c9d3619432f4417cfbfdc056f2ca3c085f7
 ```
+
 3)Save and Exit. Wait untile the AnalyticsEngine Operator reconcilation completed and also the analyticsengine-sample in 'Completed' status. 
+
 ```
 oc get AnalyticsEngine analyticsengine-sample -o yaml
 ```
+
 - 3.Uninstall the CCS hot fixes.
 <br>
 1)Edit the analyticsengine-sample with below command.
+  
 ```
 oc edit CCS ccs-cr
 ```
+
 2)Remove the hot fix images from the CCS custom resource
+
 ```
   asset_files_api_image:
     name: asset-files-api@sha256
@@ -325,11 +342,15 @@ oc edit CCS ccs-cr
     tag: 08105e65f1b0091499366d8f15b6a6d045bc1319bbae463619737172afed1dc1
     tag_metadata: 4.6.194
 ```
+
 3)Save and Exit. Wait untile the CCS Operator reconcilation completed and also the ccs-cr in 'Completed' status. 
+
 ```
 oc get CCS ccs-cr -o yaml
 ```
+
 4)Wait untile the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status. 
+
 ```
 oc get WKC wkc-cr -o yaml
 ```
