@@ -529,7 +529,7 @@ If you use SAML SSO, export your SSO configuration. You will need to reapply you
 ```
 oc cp -n=${PROJECT_CPD_INSTANCE} \
 $(oc get pods -l component=usermgmt -n ${PROJECT_CPD_INSTANCE} \
--o jsonpath='{.items[0].metadata.name}'):/user-home/_global_/config/saml ./samlConfig.json
+-o jsonpath='{.items[0].metadata.name}'):/user-home/_global_/config/saml ./samlConfig
 ```
 #### 1.1.7 Enable default admin user if it's disabled. Once upgrade complet you can disable it again.
 
