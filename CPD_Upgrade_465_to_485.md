@@ -972,7 +972,8 @@ cpd-cli manage setup-instance-topology \
 --release=${VERSION} \
 --cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---license_acceptance=true
+--license_acceptance=true \
+--block_storage_class=${STG_CLASS_BLOCK}
 ```
  
 Confirm common-service, namespace-scope, opencloud and odlm operator migrated to ${PROJECT_CPD_INST_OPERATORS} namespace
