@@ -1166,6 +1166,30 @@ cpd-cli manage create-rsi-patch \
 --state=active
 ```
 
+- Activate mde-service-manager-env-patch-publish-batch-size.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=mde-service-manager-env-patch-publish-batch-size \
+--state=active
+```
+
+- Activate rsi-env-term-assignment-4.6.5-patch-2-april2024.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=rsi-env-term-assignment-4.6.5-patch-2-april2024 \
+--state=active
+```
+
+- Activate term-assignment-env-patch-1-march2024.
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=term-assignment-env-patch-1-march2024 \
+--state=active
+```
+
 - Activate spark-runtimes-annotation-selinux.
 ```
 cpd-cli manage create-rsi-patch \
