@@ -44,13 +44,20 @@ cpd-cli manage login-entitled-registry \
 ${IBM_ENTITLEMENT_KEY}
 ```
 
-2) Mirror image for RSI adm controller
+2)Log in to the private image registry :
+```
+cpd-cli manage login-private-registry \
+${PRIVATE_REGISTRY_LOCATION} \
+${PRIVATE_REGISTRY_PULL_USER} \
+${PRIVATE_REGISTRY_PULL_PASSWORD}
+```
+3) Mirror image for RSI adm controller
 ```
 cpd-cli manage copy-image \
 --from=icr.io/cpopen/cpd/zen-rsi-adm-controller:4.8.5-x86_64 \
 --to=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/zen-rsi-adm-controller:4.8.5-x86_64
 ```
-3) Mirror image for Manta
+4) Mirror image for Manta
 ```
 cpd-cli manage copy-image \
 --from=cp.icr.io/cp/cpd/manta-init-migrate-h2@sha256:0bb84e3f2ebd2219afa860e4bd3d3aa3a3c642b3b58685880df2cff121d43583 \
