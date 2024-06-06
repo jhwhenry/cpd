@@ -1514,13 +1514,6 @@ Delete the operators from the ibm-common-services project:
 ```
 cpd-cli manage delete-olm-artifacts \
 --cpd_operator_ns=ibm-common-services \
---delete_all_components=true
-```
-
-Delete the operators from the ${PROJECT_CPD_OPS} project:
-```
-cpd-cli manage delete-olm-artifacts \
---cpd_operator_ns=${PROJECT_CPD_OPS} \
 --delete_all_components=true \
 --delete_shared_catsrc=true
 ```
