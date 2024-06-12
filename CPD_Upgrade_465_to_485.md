@@ -1482,8 +1482,24 @@ If post upgrade login using SAML doesn't work, then follow This instruction. You
 https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=environment-configuring-sso
 
 ### 3.2 Validate CPD & CPD services
+1)Validate the environment variables of zen-core-api
 
-Log into CPD web UI with admin and check out each services, including provision instance and functions of each service
+Found out the following variables set to false
+```
+oc set env deployment/zen-core-api --list | grep -i vault
+```
+If values are false like this:
+```
+VAULT_BRIDGE_TOLERATE_SELF_SIGNED=false
+VAULT_BRIDGE_TLS_RENEGOTIATE=false
+```
+Then we need to change them to true as below.
+```
+oc set env deployment/zen-core-api VAULT_BRIDGE_TOLERATE_SELF_SIGNED=true
+oc set env deployment/zen-core-api VAULT_BRIDGE_TLS_RENEGOTIATE=true
+```
+
+2)Log into CPD web UI with admin and check out each services, including provision instance and functions of each service
 
 ### 3.3 Enabling users to upload JDBC drivers
 Reference: https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=environment-enabling-users-upload-jdbc-drivers
@@ -1541,6 +1557,7 @@ Reference: https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=tasks-migr
 2.Enable Relationship Explorer feature
 
 [Enable Relationship Explorer feature] (https://github.com/sanjitc/Cloud-Pak-for-Data/blob/main/Upgrade/CPD%204.6%20to%204.8/Enabling_Relationship_Explorer_480%20-%20disclaimer%200208.pdf)
+
 
 3.To see your catalogs' assets in the Knowledge Graph, you need to resync your lineage metadata. 
 <br>
