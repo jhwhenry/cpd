@@ -105,9 +105,8 @@ Part 2: Upgrade
 2.2.1 Upgrade IBM Knowledge Catalog service
 2.2.2 Upgrade MANTA service
 2.2.3 Upgrade Analytics Engine service
-2.2.4 Upgrade DataStage Enterprise
-2.2.5 Upgrade Watson Studio, Watson Studio Runtimes and Watson Machine Learning
-2.2.6 Upgrade Db2 Warehouse
+2.2.4 Upgrade Watson Studio, Watson Studio Runtimes and Watson Machine Learning
+2.2.5 Upgrade Db2 Warehouse
 
 Part 3: Post-upgrade
 3.1 Configuring single sign-on
