@@ -1473,7 +1473,7 @@ If post upgrade login using SAML doesn't work, then follow This instruction. You
 https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=environment-configuring-sso
 
 ### 3.2 Validate CPD & CPD services
-1)Validate the environment variables of zen-core-api
+1)Validate and ensure the patch for external vault connection applied.
 
 Found out the following variables set to false
 ```
@@ -1486,9 +1486,19 @@ VAULT_BRIDGE_TLS_RENEGOTIATE=false
 ```
 Then we need to change them to true as below.
 ```
-oc set env deployment/zen-core-api VAULT_BRIDGE_TOLERATE_SELF_SIGNED=true
-oc set env deployment/zen-core-api VAULT_BRIDGE_TLS_RENEGOTIATE=true
+oc patch zenservices lite-cr -p '{"spec":{"vault_bridge_tls_tolerate_private_ca": true}}' --type=merge
 ```
+
+After the Zen operator reconcilation completed, then run this command for validating whether the following variables set to true.
+```
+oc set env deployment/zen-core-api --list | grep -i vault
+```
+The values should look like this:
+```
+VAULT_BRIDGE_TOLERATE_SELF_SIGNED=true
+VAULT_BRIDGE_TLS_RENEGOTIATE=true
+```
+
 
 2)Log into CPD web UI with admin and check out each services, including provision instance and functions of each service
 
