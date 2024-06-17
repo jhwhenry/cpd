@@ -780,7 +780,7 @@ export PROJECT_CERT_MANAGER=ibm-cert-manager
 export PROJECT_LICENSE_SERVICE=ibm-licensing
 export PROJECT_CS_CONTROL=ibm-licensing
 export PROJECT_CPD_INST_OPERATORS=cpd-operators
-export PROJECT_CPD_INST_OPERANDS=cpd-instance
+export PROJECT_CPD_INST_OPERANDS=hptv-stgcloudpak
 ```
 3.Remove the PROJECT_CATSRC entry from the Projects section of the script.
 
