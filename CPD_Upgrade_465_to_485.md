@@ -1374,27 +1374,9 @@ export COMPONENTS=analyticsengine
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 ```
 
-If the Analytics Engine service version is **not 4.8.5**, then run below commands for the upgrade. <br>
+The Analytics Engine serive should have been upgraded as part of the WKC service upgrade. If the Analytics Engine service version is **not 4.8.5**, then run below commands for the upgrade. <br>
 
 Check if the Analytics Engine service was installed with the custom install options. <br>
-
-- If it's custom installation, check the previous install-options.yaml or analyticsengine-sample yaml, make sure to keep original custom settings.
-```
-vim cpd-cli-workspace/olm-utils-workspace/work/install-options.yml
-```
-
-Then run this upgrade command.
-```
-cpd-cli manage apply-cr \
---components=analyticsengine \
---release=${VERSION} \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---param-file=/tmp/work/install-options.yml \
---license_acceptance=true \
---upgrade=true
-```
-
-- If it's **NOT** custom installation, then run this upgrade command.
 
 ```
 cpd-cli manage apply-cr \
@@ -1430,27 +1412,7 @@ cpd-cli service-instance list \
 --service-type=spark \
 --profile=${CPD_PROFILE_NAME}
 ```
-
-#### 2.2.4 Upgrade DataStage Enterprise 
-Check the DataStage Enterprise service version and status.
-```
-export COMPONENTS=datastage_ent
-
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
-```
-
-If the DataStage Enterprise service version is **not 4.8.5**, then run below commands for the upgrade. <br>
-
-```
-cpd-cli manage apply-cr --components=${COMPONENTS} --release=${VERSION} --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --block_storage_class=${STG_CLASS_BLOCK} --file_storage_class=${STG_CLASS_FILE} --license_acceptance=true --upgrade=true
-```
-
-Validate the upgrade status.
-```
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
-```
-
-#### 2.2.5 Upgrade Watson Studio, Watson Studio Runtimes and Watson Machine Learning 
+#### 2.2.4 Upgrade Watson Studio, Watson Studio Runtimes and Watson Machine Learning 
 ```
 export COMPONENTS=ws,ws_runtimes,wml,openscale
 ```
@@ -1480,7 +1442,7 @@ Validate the service upgrade status.
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 ```
 
-#### 2.2.6 Upgrade Db2 Warehouse
+#### 2.2.5 Upgrade Db2 Warehouse
 ```
 # 1.Upgrade the service
 export COMPONENTS=db2wh
@@ -1493,10 +1455,7 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --co
 # 2.1. Get a list of your Db2 Warehouse service instances
 cpd-cli service-instance list --profile=${CPD_PROFILE_NAME} --service-type=${COMPONENTS}
 
-# 2.2. If you have applied any custom patches to override scripts, remove them. This will restart Db2 Warehouse pods. 
-oc set volume statefulset/c-${DB2U_ID}-db2u -n ${PROJECT_CPD_INST_OPERANDS} --remove --name=<volume_name>
-
-# 2.3. Upgrade Db2 Warehouse service instances
+# 2.2. Upgrade Db2 Warehouse service instances
 cpd-cli service-instance upgrade --profile=${CPD_PROFILE_NAME} --instance-name=${INSTANCE_NAME} --service-type=${COMPONENTS}
 
 # 3. Verifying the service instance upgrade
