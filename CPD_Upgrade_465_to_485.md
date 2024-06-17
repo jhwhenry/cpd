@@ -1200,7 +1200,7 @@ cpd-cli manage enable-rsi \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 4).Reinstall the RSI patches
-
+<br>
 - Reinstall the asset-files-api-annotation-selinux.
 ```
 cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --patch_type=rsi_pod_annotation --patch_name=asset-files-api-annotation-selinux --description="This is annotation patch is for selinux relabeling disabling on CSI based storages for asset-files-api" --include_labels=app:asset-files-api --state=active --spec_format=json --patch_spec=/tmp/work/rsi/annotation-spec.json
