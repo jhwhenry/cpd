@@ -1304,7 +1304,11 @@ custom_spec:
     enableKnowledgeGraph: True
     enableDataQuality: True
 ```
-##### 2.Upgrade WKC with custom installation
+
+##### 2.Apply the timeout settings in CCS Operator for avoiding the elstic search timeout issue
+
+
+##### 3.Upgrade WKC with custom installation
 
 ```
 export COMPONENTS=wkc
@@ -1332,7 +1336,7 @@ cpd-cli manage apply-cr \
 --upgrade=true
 ```
 
-##### 3.Validate the upgrade
+##### 4.Validate the upgrade
 ```
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
