@@ -876,22 +876,6 @@ The profile must be associated with a Cloud Pak for Data user who has either the
 
 Click this link and follow these steps for getting it done. https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=cli-creating-cpd-profile#taskcpd-profile-mgmt__steps__1
 
-#### 1.2.7 Download CASE files
-
-1. Go to the client workstation with internet
-Log into IBM registry and list images
-
-```
-cpd-cli manage login-entitled-registry \
-${IBM_ENTITLEMENT_KEY}
-```
-
-Download case package. <br>
-```
-cpd-cli manage case-download \
---components=${COMPONENTS} \
---release=${VERSION}
-```
 
 ### 1.3 Health check OCP & CPD
 
@@ -1196,7 +1180,7 @@ oc edit secretshare ibm-cpp-config \
 ```
 Remove the entry for the instance project from the sharewith list and save your changes to the SecretShare.
 
-6. **Re-activate the RSI patches.**
+6. **Reinstall the RSI patches.**
 1).Log the cpd-cli in to the Red Hat OpenShift Container Platform cluster.
 ```
 cpd-cli manage login-to-ocp \
@@ -1215,138 +1199,69 @@ cpd-cli manage install-rsi \
 cpd-cli manage enable-rsi \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
-4).Set inactive patches to active.
+4).Reinstall the RSI patches
 
-- Activate asset-files-api-annotation-selinux.
+- Reinstall the asset-files-api-annotation-selinux.
+```
+cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --patch_type=rsi_pod_annotation --patch_name=asset-files-api-annotation-selinux --description="This is annotation patch is for selinux relabeling disabling on CSI based storages for asset-files-api" --include_labels=app:asset-files-api --state=active --spec_format=json --patch_spec=/tmp/work/rsi/annotation-spec.json
+```
+- Reinstall asset-files-api-pod-spec-selinux.
+```
+cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --patch_type=rsi_pod_spec --patch_name=asset-files-api-pod-spec-selinux --description="This is spec patch is for selinux relabeling disabling on CSI based storages for asset-files-api" --include_labels=app:asset-files-api --state=active --spec_format=json --patch_spec=/tmp/work/rsi/specpatch.json
+```
+- Reinstall create-dap-directories-annotation-selinux.
+```
+cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --patch_type=rsi_pod_annotation --patch_name=create-dap-directories-annotation-selinux --description="This is annotation patch is for selinux relabeling disabling on CSI based storages for create-dap-directories-job" --include_labels=app:create-dap-directories --state=active --spec_format=json --patch_spec=/tmp/work/rsi/annotation-spec.json
+```
+- Reinstall create-dap-directories-pod-spec-selinux.
+```
+cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --patch_type=rsi_pod_spec --patch_name=create-dap-directories-pod-spec-selinux --description="This is spec patch is for selinux relabeling disabling on CSI based storages for create-dap-directories job" --include_labels=app:create-dap-directories --state=active --spec_format=json --patch_spec=/tmp/work/rsi/specpatch.json
+```
+- Reinstall event-logger-api-annotation-selinux.
 ```
 cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=asset-files-api-annotation-selinux \
---state=active
-```
-- Activate asset-files-api-pod-spec-selinux.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=asset-files-api-pod-spec-selinux \
---state=active
-```
-- Activate create-dap-directories-annotation-selinux.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=create-dap-directories-annotation-selinux \
---state=active
-```
-- Activate create-dap-directories-pod-spec-selinux.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=create-dap-directories-pod-spec-selinux \
---state=active
-```
-- Activate dp-api-annotation-selinux.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=dp-api-annotation-selinux \
---state=active
-```
-
-- Activate dp-api-pod-spec-selinux.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=dp-api-pod-spec-selinux \
---state=active
-```
-
-- Activate event-logger-api-annotation-selinux.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--patch_type=rsi_pod_annotation \
 --patch_name=event-logger-api-annotation-selinux \
---state=active
+--description="This is annotation patch is for selinux relabeling disabling on CSI based storages for event-logger-api" \
+--include_labels=app:event-logger-api \
+--state=active \
+--spec_format=json \
+--patch_spec=/tmp/work/rsi/annotation-spec.json
 ```
 
-- Activate event-logger-api-pod-spec-selinux.
+- Reinstall event-logger-api-pod-spec-selinux.
 ```
 cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--patch_type=rsi_pod_spec \
 --patch_name=event-logger-api-pod-spec-selinux \
---state=active
+--description="This is spec patch is for selinux relabeling disabling on CSI based storages for event-logger-api" --include_labels=app:event-logger-api \
+--state=active \
+--spec_format=json \
+--patch_spec=/tmp/work/rsi/specpatch.json
 ```
-
-- Activate finley-public-service-patch.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=finley-public-service-patch \
---state=active
-```
-
-- Activate iae-nginx-ephemeral-patch.
+- Reinstall spark-runtimes-annotation-selinux.
 ```
 cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=iae-nginx-ephemeral-patch \
---state=active
-```
-
-- Activate mde-service-manager-patch.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=mde-service-manager-patch \
---state=active
-```
-
-- Activate mde-service-manager-patch-2.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=mde-service-manager-patch-2 \
---state=active
-```
-
-- Activate mde-service-manager-env-patch-publish-batch-size.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=mde-service-manager-env-patch-publish-batch-size \
---state=active
-```
-
-- Activate rsi-env-term-assignment-4.6.5-patch-2-april2024.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=rsi-env-term-assignment-4.6.5-patch-2-april2024 \
---state=active
-```
-
-- Activate term-assignment-env-patch-1-march2024.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=term-assignment-env-patch-1-march2024 \
---state=active
-```
-
-- Activate spark-runtimes-annotation-selinux.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--patch_type=rsi_pod_annotation \
 --patch_name=spark-runtimes-annotation-selinux \
---state=active
+--description="This is annotation patch is for selinux relabeling disabling on CSI based storages for spark worker and master pods" \
+--include_labels=spark/exclude-from-backup:true \
+--state=active --spec_format=json --patch_spec=/tmp/work/rsi/annotation-spec.json
 ```
-
-- Activate spark-runtimes-pod-spec-selinux.
+- Reinstall spark-runtimes-pod-spec-selinux.
 ```
 cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--patch_type=rsi_pod_spec \
 --patch_name=spark-runtimes-pod-spec-selinux \
---state=active
+--description="This is spec patch is for selinux relabeling disabling on CSI based storages for spark worker and master pods" \
+--include_labels=spark/exclude-from-backup:true \
+--state=active \
+--spec_format=json \
+--patch_spec=/tmp/work/rsi/specpatch.json
 ```
 5).Check the RSI patches status again:
 ```
