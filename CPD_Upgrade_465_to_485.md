@@ -371,6 +371,7 @@ cpd-cli manage login-to-ocp \
 ```
 2.Set active patches to inactive.
 - Delete asset-files-api-annotation-selinux.
+<br>
 Inactivate:
 
 ```
