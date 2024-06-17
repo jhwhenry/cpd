@@ -390,6 +390,7 @@ cpd-cli manage delete-rsi-patch \
 ```
 
 - Delete asset-files-api-pod-spec-selinux.
+<br>
 Inactivate:
 
 ```
@@ -409,6 +410,7 @@ cpd-cli manage delete-rsi-patch \
 
 - Delete create-dap-directories-annotation-selinux.
 
+<br>
 Inactivate:
 
 ```
@@ -428,6 +430,7 @@ cpd-cli manage delete-rsi-patch \
 
 - Delete create-dap-directories-pod-spec-selinux.
 
+<br>
 Inactivate:
 
 ```
@@ -447,6 +450,7 @@ cpd-cli manage delete-rsi-patch \
 
 - Delete event-logger-api-annotation-selinux.
 
+<br>
 Inactivate:
 
 ```
@@ -466,6 +470,7 @@ cpd-cli manage delete-rsi-patch \
 
 - Delete event-logger-api-pod-spec-selinux.
 
+<br>
 Inactivate:
 
 ```
@@ -485,6 +490,7 @@ cpd-cli manage delete-rsi-patch \
 
 - Delete finley-public-service-patch.
 
+<br>
 Inactivate:
 
 ```
@@ -504,6 +510,7 @@ cpd-cli manage delete-rsi-patch \
 
 - Delete iae-nginx-ephemeral-patch.
 
+<br>
 Inactivate:
 
 ```
@@ -523,6 +530,7 @@ cpd-cli manage delete-rsi-patch \
 
 - Delete mde-service-manager-patch.
 
+<br>
 Inactivate:
 
 ```
@@ -542,6 +550,7 @@ cpd-cli manage delete-rsi-patch \
 
 - Delete mde-service-manager-patch-2.
   
+<br>
 Inactivate:
 
 ```
@@ -561,6 +570,7 @@ cpd-cli manage delete-rsi-patch \
 
 - Delete mde-service-manager-env-patch-publish-batch-size.
 
+<br>
 Inactivate:
 
 ```
@@ -580,6 +590,7 @@ cpd-cli manage delete-rsi-patch \
 
 - Delete rsi-env-term-assignment-4.6.5-patch-2-april2024.
 
+<br>
 Inactivate:
 
 ```
@@ -607,6 +618,7 @@ cpd-cli manage create-rsi-patch \
 
 - Delete spark-runtimes-annotation-selinux.
 
+<br>
 Inactivate:
 
 ```
@@ -626,6 +638,7 @@ cpd-cli manage delete-rsi-patch \
 
 - Delete spark-runtimes-pod-spec-selinux.
 
+<br>
 Inactivate:
 
 ```
