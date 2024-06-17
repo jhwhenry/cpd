@@ -362,29 +362,7 @@ oc get CCS ccs-cr -o yaml
 oc get WKC wkc-cr -o yaml
 ```
 
-#### 1.1.4 Uninstall the service(s) not in use
-**Uninstall the Data Privacy service**
-<br>
-1.Run the cpd-cli manage login-to-ocp command to log in to the cluster as a user with sufficient permissions.
-```
-cpd-cli manage login-to-ocp \
---username=${OCP_USERNAME} \
---password=${OCP_PASSWORD} \
---server=${OCP_URL}
-```
-2.Delete the custom resource for Data Privacy
-```
-cpd-cli manage delete-cr \
---components=dp \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE}
-```
-3.Uninstall the operator and other OLM object
-```
-cpd-cli manage delete-olm-artifacts \
---cpd_operator_ns=${PROJECT_CPD_OPS} \
---components=dp
-```
-#### 1.1.5 If you installed the resource specification injection (RSI) feature, uninstall the cluster-scoped webhook
+#### 1.1.4 Uninstall the RSI patches and the cluster-scoped webhook
 1.Run the cpd-cli manage login-to-ocp command to log in to the cluster as a user with sufficient permissions.
 ```
 cpd-cli manage login-to-ocp \
@@ -399,51 +377,84 @@ cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --al
 cat cpd-cli-workspace/olm-utils-workspace/work/get_rsi_patch_info.log
 ```
 3.Set active patches to inactive.
-- Inactivate asset-files-api-annotation-selinux.
+- Delete asset-files-api-annotation-selinux.
+Inactivate:
+
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
 --patch_name=asset-files-api-annotation-selinux \
 --state=inactive
 ```
-- Inactivate asset-files-api-pod-spec-selinux.
+
+Delete:
+
+```
+cpd-cli manage delete-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=asset-files-api-annotation-selinux
+```
+
+- Delete asset-files-api-pod-spec-selinux.
+Inactivate:
+
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
 --patch_name=asset-files-api-pod-spec-selinux \
 --state=inactive
 ```
-- Inactivate create-dap-directories-annotation-selinux.
+
+Delete:
+
+```
+cpd-cli manage delete-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=asset-files-api-pod-spec-selinux
+```
+
+- Delete create-dap-directories-annotation-selinux.
+
+Inactivate:
+
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
 --patch_name=create-dap-directories-annotation-selinux \
 --state=inactive
 ```
-- Inactivate create-dap-directories-pod-spec-selinux.
+
+Delete:
+
+```
+cpd-cli manage delete-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=create-dap-directories-annotation-selinux
+```
+
+- Delete create-dap-directories-pod-spec-selinux.
+
+Inactivate:
+
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
 --patch_name=create-dap-directories-pod-spec-selinux \
 --state=inactive
 ```
-- Inactivate dp-api-annotation-selinux.
+
+Delete:
+
 ```
-cpd-cli manage create-rsi-patch \
+cpd-cli manage delete-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=dp-api-annotation-selinux \
---state=inactive
+--patch_name=create-dap-directories-pod-spec-selinux
 ```
 
-- Inactivate dp-api-pod-spec-selinux.
-```
-cpd-cli manage create-rsi-patch \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=dp-api-pod-spec-selinux \
---state=inactive
-```
+- Delete event-logger-api-annotation-selinux.
 
-- Inactivate event-logger-api-annotation-selinux.
+Inactivate:
+
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
@@ -451,7 +462,18 @@ cpd-cli manage create-rsi-patch \
 --state=inactive
 ```
 
-- Inactivate event-logger-api-pod-spec-selinux.
+Delete:
+
+```
+cpd-cli manage delete-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=event-logger-api-annotation-selinux
+```
+
+- Delete event-logger-api-pod-spec-selinux.
+
+Inactivate:
+
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
@@ -459,7 +481,18 @@ cpd-cli manage create-rsi-patch \
 --state=inactive
 ```
 
-- Inactivate finley-public-service-patch.
+Delete:
+
+```
+cpd-cli manage delete-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=event-logger-api-pod-spec-selinux
+```
+
+- Delete finley-public-service-patch.
+
+Inactivate:
+
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
@@ -467,7 +500,18 @@ cpd-cli manage create-rsi-patch \
 --state=inactive
 ```
 
-- Inactivate iae-nginx-ephemeral-patch.
+Delete:
+
+```
+cpd-cli manage delete-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=finley-public-service-patch
+```
+
+- Delete iae-nginx-ephemeral-patch.
+
+Inactivate:
+
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
@@ -475,7 +519,18 @@ cpd-cli manage create-rsi-patch \
 --state=inactive
 ```
 
-- Inactivate mde-service-manager-patch.
+Delete:
+
+```
+cpd-cli manage delete-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=iae-nginx-ephemeral-patch
+```
+
+- Delete mde-service-manager-patch.
+
+Inactivate:
+
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
@@ -483,7 +538,18 @@ cpd-cli manage create-rsi-patch \
 --state=inactive
 ```
 
-- Inactivate mde-service-manager-patch-2.
+Delete:
+
+```
+cpd-cli manage delete-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=mde-service-manager-patch
+```
+
+- Delete mde-service-manager-patch-2.
+  
+Inactivate:
+
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
@@ -491,7 +557,18 @@ cpd-cli manage create-rsi-patch \
 --state=inactive
 ```
 
-- Activate mde-service-manager-env-patch-publish-batch-size.
+Delete:
+
+```
+cpd-cli manage delete-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=mde-service-manager-patch-2
+```
+
+- Delete mde-service-manager-env-patch-publish-batch-size.
+
+Inactivate:
+
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
@@ -499,12 +576,31 @@ cpd-cli manage create-rsi-patch \
 --state=inactive
 ```
 
-- Activate rsi-env-term-assignment-4.6.5-patch-2-april2024.
+Delete:
+
+```
+cpd-cli manage delete-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=mde-service-manager-env-patch-publish-batch-size
+```
+
+- Delete rsi-env-term-assignment-4.6.5-patch-2-april2024.
+
+Inactivate:
+
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---patch_name=rsi-env-term-assignment-4.6.5-patch-2-april2024 \
+--patch_name=env-term-assignment-4.6.5-patch-2-april2024 \
 --state=inactive
+```
+
+Delete:
+
+```
+cpd-cli manage delete-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=env-term-assignment-4.6.5-patch-2-april2024
 ```
 
 - Activate term-assignment-env-patch-1-march2024.
@@ -515,7 +611,10 @@ cpd-cli manage create-rsi-patch \
 --state=inactive
 ```
 
-- Inactivate spark-runtimes-annotation-selinux.
+- Delete spark-runtimes-annotation-selinux.
+
+Inactivate:
+
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
@@ -523,13 +622,33 @@ cpd-cli manage create-rsi-patch \
 --state=inactive
 ```
 
-- Inactivate spark-runtimes-pod-spec-selinux.
+Delete:
+
+```
+cpd-cli manage delete-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=spark-runtimes-annotation-selinux
+```
+
+- Delete spark-runtimes-pod-spec-selinux.
+
+Inactivate:
+
 ```
 cpd-cli manage create-rsi-patch \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
 --patch_name=spark-runtimes-pod-spec-selinux \
 --state=inactive
 ```
+
+Delete:
+
+```
+cpd-cli manage delete-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=spark-runtimes-pod-spec-selinux
+```
+
 4.Check the RSI patches status again:
 ```
 cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --all
