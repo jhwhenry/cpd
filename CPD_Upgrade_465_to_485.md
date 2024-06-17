@@ -369,13 +369,7 @@ cpd-cli manage login-to-ocp \
 --password=${OCP_PASSWORD} \
 --server=${OCP_URL}
 ```
-2.Get a list of all patches in the project:
-```
-cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --all
-
-cat cpd-cli-workspace/olm-utils-workspace/work/get_rsi_patch_info.log
-```
-3.Set active patches to inactive.
+2.Set active patches to inactive.
 - Delete asset-files-api-annotation-selinux.
 Inactivate:
 
