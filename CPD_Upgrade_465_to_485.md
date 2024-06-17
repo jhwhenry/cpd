@@ -82,8 +82,7 @@ Part 1: Pre-upgrade
 1.1.1 Review the upgrade runbook
 1.1.2 Backup before upgrade
 1.1.3 If you installed hotfixes, uninstall all hotfixes
-1.1.4 Uninstall the service(s) not in use
-1.1.5 If you installed the resource specification injection (RSI) feature, uninstall the cluster-scoped webhook
+1.1.4 Uninstall the RSI patches and the cluster-scoped webhook
 1.1.6 If use SAML SSO, export SSO configuration
 1.1.7 Enable default admin user if it's disabled. Once upgrade complet you can disable it again.
 1.2 Set up client workstation 
