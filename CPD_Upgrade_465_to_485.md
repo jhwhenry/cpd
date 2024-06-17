@@ -1262,6 +1262,24 @@ cpd-cli manage create-rsi-patch \
 --spec_format=json \
 --patch_spec=/tmp/work/rsi/specpatch.json
 ```
+
+- Reinstall the RSI patch for the couchdb pvc mounting issue.
+<br>
+Create a patch file named `couch-fsGroupChangePolicy.json` under `cpd-cli-workspace/olm-utils-workspace/work/rsi` with the following content:
+```
+[{"op":"add","path":"/spec/securityContext/fsGroupChangePolicy","value":"OnRootMismatch"}]
+```
+
+```
+cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--patch_type=rsi_pod_spec \
+--patch_name=couchdb-pod-spec-fsgroupchangepolicy \
+--description="This is spec patch for couchdb fsGroupChangePolicy" \
+--include_labels=app:couchdb \
+--state=active \
+--spec_format=json \
+--patch_spec=/tmp/work/rsi/couch-fsGroupChangePolicy.json
+```
 5).Check the RSI patches status again:
 ```
 cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --all
