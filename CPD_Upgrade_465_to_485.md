@@ -1523,8 +1523,9 @@ VAULT_BRIDGE_TOLERATE_SELF_SIGNED=true
 VAULT_BRIDGE_TLS_RENEGOTIATE=true
 ```
 
-
 2)Log into CPD web UI with admin and check out each services, including provision instance and functions of each service
+<br>
+Validate if there are home card issue.
 
 ### 3.3 Enabling users to upload JDBC drivers
 Reference: https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=environment-enabling-users-upload-jdbc-drivers
