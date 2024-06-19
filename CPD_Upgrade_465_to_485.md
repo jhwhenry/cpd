@@ -1180,6 +1180,7 @@ oc edit secretshare ibm-cpp-config \
 Remove the entry for the instance project from the sharewith list and save your changes to the SecretShare.
 
 6. **Reinstall the RSI patches.**
+<br>
 1).Log the cpd-cli in to the Red Hat OpenShift Container Platform cluster.
 ```
 cpd-cli manage login-to-ocp \
