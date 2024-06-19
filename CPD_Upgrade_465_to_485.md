@@ -1524,8 +1524,26 @@ The values should look like this:
 VAULT_BRIDGE_TOLERATE_SELF_SIGNED=true
 VAULT_BRIDGE_TLS_RENEGOTIATE=true
 ```
+2)Validate whether the Homepage dashboard displays the "Recent projects" and "Notifications" cards.
+<br>
+If there's no "Recent projects" and "Notifications" cards displayed, then do further check as follows.
+<br>
+a)Log into the metastore pod.
+```
+oc rsh zen-metastore-edb-1
+```
+b)Set up for running the SQL 
+```
+psql -U postgres -d zen
+```
+c)Collect the database state for the "Recent projects" and the "Notifications" cards.
+```
+select * from extensions_view where extension_name='homepage_card_projects';
+select * from custom_extensions where extension_name='homepage_card_notifications';
+```
+If 3 or 4 active records returned by either of the above SQLs, then there could be a problem. The solution in the support ticket TS015636165 should be applied for fixing this problem.
 
-2)Log into CPD web UI with admin and check out each services, including provision instance and functions of each service
+3)Log into CPD web UI with admin and check out each services, including provision instance and functions of each service
 <br>
 Validate if there are home card issue.
 
