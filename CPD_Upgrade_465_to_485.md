@@ -347,13 +347,45 @@ oc edit CCS ccs-cr
     tag_metadata: 4.6.194
 ```
 
-3)Save and Exit. Wait untile the CCS Operator reconcilation completed and also the ccs-cr in 'Completed' status. 
+3)Preventative measures for Elastic Search pvc customization problem 
+This step is for applying the preventative measures for Elastic Search problem. Applying the preventative measures in this timing can also help to minimize the number of CCS operator reconcilations.
+<br>
+List Elasticsearch PVC sizes, and make sure to preserve the type, and the size of the largest one (PVC names may be different depending on client environment):
+```bash
+oc get pvc | grep elastic | grep RWO
+
+hptv-stgcloudpak               elasticsearch-master-elasticsearch-master-0        Bound    pvc-63691093-c6a8-4de8-806e-b1946b4c7d1c   100Gi      RWO            ocs-storagecluster-ceph-rbd   23d
+hptv-stgcloudpak               elasticsearch-master-elasticsearch-master-1        Bound    pvc-fb69e627-a05f-4a5a-b24b-58dbd02d65a0   125Gi      RWO            ocs-storagecluster-ceph-rbd   23d
+hptv-stgcloudpak               elasticsearch-master-elasticsearch-master-2        Bound    pvc-680d4cea-929d-4c10-9e68-b9068e49c136   100Gi      RWO            ocs-storagecluster-ceph-rbd   23d
+
+```
+
+In the above example, block storage `ocs-storagecluster-ceph-rbd` is the storage type, and `125Gi` is the largest size. 
+<br>
+**Note** if PVCs are of different sizes, we want to make sure to take the biggest one. 
+<br>
+
+In CCS CR make sure to set the following properties, with above values used as example:
+```
+elasticsearch_persistence_size: "125Gi"
+elasticsearch_storage_class_name: "ocs-storagecluster-ceph-rbd"
+```
+
+This will make sure that the Opensearch operator will properly reconcile, - as provided values will match the state of the cluster. 
+
+4)Preventative measures for Elastic Search backup time out problem
+The time out issue that may occur during the backup operation. This problem can be avoided by setting the following property in CCS CR:
+```
+elasticsearch_cpdbr_timeout_seconds: 100000
+```
+
+5)Save and Exit. Wait untile the CCS Operator reconcilation completed and also the ccs-cr in 'Completed' status. 
 
 ```
 oc get CCS ccs-cr -o yaml
 ```
 
-4)Wait untile the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status. 
+6)Wait untile the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status. 
 
 ```
 oc get WKC wkc-cr -o yaml
