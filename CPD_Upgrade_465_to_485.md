@@ -1344,7 +1344,7 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
 ##### 5.Apply the hotfixes if available.
-
+Sanjit can help on this.
 
 #### 2.2.2 Upgrade MANTA service
 ```
