@@ -81,7 +81,7 @@ Part 1: Pre-upgrade
 1.1 Collect information and review upgrade runbook
 1.1.1 Review the upgrade runbook
 1.1.2 Backup before upgrade
-1.1.3 If you installed hotfixes, uninstall all hotfixes
+1.1.3 Uninstall all hotfixes and apply preventative measures
 1.1.4 Uninstall the RSI patches and the cluster-scoped webhook
 1.1.5 If use SAML SSO, export SSO configuration
 1.2 Set up client workstation 
@@ -347,11 +347,13 @@ oc edit CCS ccs-cr
     tag_metadata: 4.6.194
 ```
 
-3)Preventative measures for Elastic Search pvc customization problem 
+3)Apply preventative measures for Elastic Search pvc customization problem 
 This step is for applying the preventative measures for Elastic Search problem. Applying the preventative measures in this timing can also help to minimize the number of CCS operator reconcilations.
 <br>
 List Elasticsearch PVC sizes, and make sure to preserve the type, and the size of the largest one (PVC names may be different depending on client environment):
-```bash
+<br>
+
+```
 oc get pvc | grep elastic | grep RWO
 
 hptv-stgcloudpak               elasticsearch-master-elasticsearch-master-0        Bound    pvc-63691093-c6a8-4de8-806e-b1946b4c7d1c   100Gi      RWO            ocs-storagecluster-ceph-rbd   23d
@@ -366,6 +368,7 @@ In the above example, block storage `ocs-storagecluster-ceph-rbd` is the storage
 <br>
 
 In CCS CR make sure to set the following properties, with above values used as example:
+
 ```
 elasticsearch_persistence_size: "125Gi"
 elasticsearch_storage_class_name: "ocs-storagecluster-ceph-rbd"
@@ -373,8 +376,9 @@ elasticsearch_storage_class_name: "ocs-storagecluster-ceph-rbd"
 
 This will make sure that the Opensearch operator will properly reconcile, - as provided values will match the state of the cluster. 
 
-4)Preventative measures for Elastic Search backup time out problem
+4)Apply preventative measures for Elastic Search backup time out problem
 The time out issue that may occur during the backup operation. This problem can be avoided by setting the following property in CCS CR:
+
 ```
 elasticsearch_cpdbr_timeout_seconds: 100000
 ```
