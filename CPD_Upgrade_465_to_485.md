@@ -1304,7 +1304,7 @@ vim cpd-cli-workspace/olm-utils-workspace/work/install-options.yml
 custom_spec:
   wkc:
     enableKnowledgeGraph: True
-    enableDataQuality: True
+    enableDataQuality: False
 ```
 
 ##### 2.Apply the timeout settings in CCS Operator for avoiding the elstic search timeout issue
