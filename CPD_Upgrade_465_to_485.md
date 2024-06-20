@@ -347,7 +347,8 @@ oc edit CCS ccs-cr
     tag_metadata: 4.6.194
 ```
 
-3)Apply preventative measures for Elastic Search pvc customization problem 
+3)Apply preventative measures for Elastic Search pvc customization problem
+<br>
 This step is for applying the preventative measures for Elastic Search problem. Applying the preventative measures in this timing can also help to minimize the number of CCS operator reconcilations.
 <br>
 List Elasticsearch PVC sizes, and make sure to preserve the type, and the size of the largest one (PVC names may be different depending on client environment):
@@ -377,6 +378,8 @@ elasticsearch_storage_class_name: "ocs-storagecluster-ceph-rbd"
 This will make sure that the Opensearch operator will properly reconcile, - as provided values will match the state of the cluster. 
 
 4)Apply preventative measures for Elastic Search backup time out problem
+<br>
+
 The time out issue that may occur during the backup operation. This problem can be avoided by setting the following property in CCS CR:
 
 ```
