@@ -201,7 +201,7 @@ for db in LINEAGE BGDB ILGDB WFDB; do echo "(*) dbname: $db"; db2 "get db cfg fo
 ```
 Save the output to a file named wkc-db2u-log-conf.txt .
 
-#### 1.1.3 If you installed hotfixes, uninstall all hotfixes
+#### 1.1.3 Uninstall all hotfixes and apply preventative measures 
 Remove the hotfixes by removing the images from the CRs.
 <br>
 
