@@ -1658,7 +1658,7 @@ Reference: https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=tasks-migr
 
 2.Enable Relationship Explorer feature
 
-[Enable Relationship Explorer feature] (https://github.com/sanjitc/Cloud-Pak-for-Data/blob/main/Upgrade/CPD%204.6%20to%204.8/Enabling_Relationship_Explorer_480%20-%20disclaimer%200208.pdf)
+[Enable Relationship Explorer feature](https://github.com/sanjitc/Cloud-Pak-for-Data/blob/main/Upgrade/CPD%204.6%20to%204.8/Enabling_Relationship_Explorer_480%20-%20disclaimer%200208.pdf)
 
 
 3.To see your catalogs' assets in the Knowledge Graph, you need to resync your lineage metadata. 
