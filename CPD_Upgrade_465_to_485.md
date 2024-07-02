@@ -1383,7 +1383,24 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
 ##### 5.Apply the hotfixes if available.
-Sanjit can help on this.
+April & May combined CCS patch command: <br>
+
+```
+oc patch ccs ccs-cr -n ${PROJECT_CPD_INSTANCE} --type=merge -p '{"spec":{"image_digests":{"portal_projects_image":"sha256:93c38bf9870a5e8f9399b1e90e09f32e5f556d5f6e03b4a447a400eddb08dc4e","asset_files_api_image":"sha256:bfa820ffebcf55b87f7827037daee7ec074d0435139e57acbb494df19aee0e98","catalog_api_image":"sha256:4ee6645dd5d9160150f3ad21298e85b28bfe45f6bfff3298861552ccf0897903","wkc_search_image":"sha256:3e95e932b2d2a186cab56b5073e2f9d1b70f1ac24a6ff48c1ae322e8727bdcb3","portal_catalog_image":"sha256:33e51a0c7eb16ac4b5dbbcd57b2ebe62313435bab2c0c789a1801a1c2c00c77d"}}}'
+```
+
+April & May combined WKC patch command:<br>
+
+```
+oc patch wkc wkc-cr -n ${PROJECT_CPD_INSTANCE} --type=merge -p '{"spec":{"image_digests":{"wkc_metadata_imports_ui_image":"sha256:a1997d9a9cde9ecc9f16eb02099a272d7ba2e8d88cb05a9f52f32533e4d633ef","wdp_profiling_image":"sha256:d5491cc8c8c8bd45f2605f299ecc96b9461cd5017c7861f22735e3a4d0073abd","wkc_mde_service_manager_image":"sha256:35e6f6ede3383df5c0b2a3d27c146cc121bed32d26ab7fa8870c4aa4fbc6e993","finley_public_image":"sha256:e89b59e16c4c10fce5ae07774686d349d17b2d21bf9263c50b49a7a290499c6d"},"wkc_term_assignment_rest_retry_config":"cams\\\\.write:400|3|2;cams\\\\.attachment\\\\.markcomplete:400|3|2,404|3|2;finley\\\\.predict:500|18|10,502|18|10,503|18|10,504|1|10,507|18|10;.*:408|3|2,409|3|2,425|3|2,429|3|2,500|6|10,502|6|10,503|6|10,504|6|10,507|6|10,-1|3|2","wkc_term_assignment_finley_page_size_reduction_divisor":"5","finley_public_gunicorn_worker_timeout":"65","wdp_profiling_flight_enabled":"false"}}'
+
+```
+
+June Zenservice patch command: <br>
+
+```
+oc patch ZenService lite-cr -n ${PROJECT_CPD_INSTANCE} --type merge -p '{"spec":{"image_digests":{"icp4data_nginx_repo":"sha256:2ab2c0cfecdf46b072c9b3ec20de80a0c74767321c96409f3825a1f4e7efb788","icpd_requisite":"sha256:5a7082482c1bcf0b23390d36b0800cc04cfaa32acf7e16413f92304c36a51f02","privatecloud_usermgmt":"sha256:e7b0dda15fa3905e4f242b66b18bc9cf2d27ea46e267e5a8d6a3d7da011bddb1","zen_audit":"sha256:ccf61039298186555fd18f568e715ca9e12f07805f42eb39008f851500c0f024","zen_core":"sha256:67f4d92a6e1f39675856fe3b46b36b34e9f0ae25679f75a1628c9d7d44790bad","zen_core_api":"sha256:b3ba3250a228d5f1ba3ea93ccf8b0f018e557f0f4828ed773b57075b842c30e9","zen_iam_config":"sha256:5abf2bf3f29ca28c72c64ab23ee981e8ad122c0de94ca7702980e1d40841d91a","zen_minio":"sha256:f66e6c17d1ed9d90a90e9a1280a18aacb9012bbdb604c5230d97db4cffcb4b48","zen_utils":"sha256:6d906104a8bd8b15f3ebcb2c3ae6a5f93c8d88ce6cfcae4b3eed6657562dc9f3","zen_watchdog":"sha256:4f73b382687bd4de6754292670f6281a7944b6b0903396ed78f1de2da54bc8c0"}}}'
+```
 
 #### 2.2.2 Upgrade MANTA service
 ```
