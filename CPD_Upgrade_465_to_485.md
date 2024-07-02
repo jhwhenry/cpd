@@ -1566,6 +1566,7 @@ If values are false like this:
 VAULT_BRIDGE_TOLERATE_SELF_SIGNED=false
 VAULT_BRIDGE_TLS_RENEGOTIATE=false
 ```
+
 Then we need to change them to true as below.
 ```
 oc patch zenservices lite-cr -p '{"spec":{"vault_bridge_tls_tolerate_private_ca": true}}' --type=merge
@@ -1606,15 +1607,12 @@ Validate if there are home card issue.
 ### 3.3 Enabling users to upload JDBC drivers
 Reference: https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=environment-enabling-users-upload-jdbc-drivers
 
-#### 3.3.1 Set the wdp_connect_connection_disable_jar_tab parameter to false
+#### 3.3.1 Check if the wdp_connect_connection_disable_jar_tab parameter set to false
 ```
-oc patch ccs ccs-cr \
---namespace=${PROJECT_CPD_INST_OPERANDS} \
---type=merge \
---patch '{"spec": {"wdp_connect_connection_jdbc_drivers_repository_mode": "enabled"}}'
+oc get ccs ccs-cr -o yaml | grep -i wdp_connect_connection_jdbc_drivers_repository_mode
 ```
 
-#### 3.3.2 Wait for the common core services status to be Completed
+#### 3.3.2 Make sure the common core services status is Completed
 ```
 oc get ccs ccs-cr --namespace=${PROJECT_CPD_INST_OPERANDS}
 ```
