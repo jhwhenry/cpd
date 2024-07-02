@@ -1648,11 +1648,15 @@ Reference: https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=tasks-migr
 <br>
 [For steps to run the resync, see Resync of lineage metadata](https://www.ibm.com/docs/en/SSQNUZ_4.8.x/wsj/admin/admin-lineage-resync.html)
 
+
 ### 3.6 Summarize and close out the upgrade
 
-Schedule a wrap-up meeting and review the upgrade procedure and lessons learned from it.
+1)Schedule a wrap-up meeting and review the upgrade procedure and lessons learned from it.
 
-Evaluate the outcome of upgrade with pre-defined goals.
+2)Evaluate the outcome of upgrade with pre-defined goals.
+
+3)Note - Handling embedded Postgres license expiry for CPD 4.8.5
+https://www.ibm.com/support/pages/node/7158524
 
 ---
 
