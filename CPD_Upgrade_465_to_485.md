@@ -1682,7 +1682,7 @@ Validate if there are home card issue.
 ### 3.3 Enabling users to upload JDBC drivers
 Reference: https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=environment-enabling-users-upload-jdbc-drivers
 
-#### 3.3.1 Check if the wdp_connect_connection_disable_jar_tab parameter set to false
+#### 3.3.1 Check if the wdp_connect_connection_jdbc_drivers_repository_mode parameter set to be enabled
 ```
 oc get ccs ccs-cr -o yaml | grep -i wdp_connect_connection_jdbc_drivers_repository_mode
 ```
