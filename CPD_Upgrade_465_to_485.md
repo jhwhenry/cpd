@@ -1462,6 +1462,18 @@ oc patch wkc wkc-cr -n ${PROJECT_CPD_INSTANCE} --type=merge -p '{"spec":{"image_
 
 ```
 
+Double check if ENFORCE_AUTHORIZE_REPORTING is set to be true.
+
+```
+oc set env deployment/wkc-bi-data-service --list | grep -i ENFORCE_AUTHORIZE_REPORTING
+```
+
+If not, then run below command.
+
+```
+oc set env deployment/wkc-bi-data-service ENFORCE_AUTHORIZE_REPORTING=true
+```
+
 #### 2.2.2 Upgrade MANTA service
 ```
 export COMPONENTS=mantaflow
