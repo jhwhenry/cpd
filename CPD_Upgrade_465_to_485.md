@@ -99,8 +99,6 @@ Part 2: Upgrade
 2.1.1 Migrate to private topology
 2.1.2 Preparing to upgrade an CPD instance
 2.1.3 Upgrade foundation service and CPD platform to 4.8.5
-2.1.3 Upgrade foundation service
-2.1.4 Upgrade CPD platform
 2.2 Upgrade CPD services
 2.2.1 Upgrade IBM Knowledge Catalog service
 2.2.2 Upgrade MANTA service
