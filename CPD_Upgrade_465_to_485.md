@@ -1546,6 +1546,9 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --co
 ```
 
 ##### 2.2.3.2 Upgrade the service instances
+
+**Note:**  cpd profile api key may expire after upgrade. If we are not able to list the instances, should be attempted once the Custom route is created so that the Admin can login. 
+<br>
 Find the proper CPD user profile to use.
 ```
 cpd-cli config profiles list
