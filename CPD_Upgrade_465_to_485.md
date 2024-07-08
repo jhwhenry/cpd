@@ -114,7 +114,8 @@ Part 3: Post-upgrade
 3.3 Enabling users to upload JDBC drivers
 3.4 Removing the shared operators
 3.5 WKC post-upgrade tasks
-3.6 Summarize and close out the upgrade
+3.6 Handling embedded Postgres license expiry for CPD 4.8.5
+3.7 Summarize and close out the upgrade
 ```
 
 ## Part 1: Pre-upgrade
@@ -1738,15 +1739,14 @@ Reference: https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=tasks-migr
 <br>
 [For steps to run the resync, see Resync of lineage metadata](https://www.ibm.com/docs/en/SSQNUZ_4.8.x/wsj/admin/admin-lineage-resync.html)
 
+### 3.6 Handling embedded Postgres license expiry for CPD 4.8.5
+https://www.ibm.com/support/pages/node/7158524
 
-### 3.6 Summarize and close out the upgrade
+### 3.7 Summarize and close out the upgrade
 
 1)Schedule a wrap-up meeting and review the upgrade procedure and lessons learned from it.
 
 2)Evaluate the outcome of upgrade with pre-defined goals.
-
-3)Note - Handling embedded Postgres license expiry for CPD 4.8.5
-https://www.ibm.com/support/pages/node/7158524
 
 ---
 
