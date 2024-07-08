@@ -1315,16 +1315,74 @@ Create a patch file named `couch-fsGroupChangePolicy.json` under `cpd-cli-worksp
 [{"op":"add","path":"/spec/securityContext/fsGroupChangePolicy","value":"OnRootMismatch"}]
 ```
 
+Apply the RSI patch about fsGroupChangePolicy for CouchDB.
+
 ```
 cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---patch_type=rsi_pod_spec \
---patch_name=couchdb-pod-spec-fsgroupchangepolicy \
---description="This is spec patch for couchdb fsGroupChangePolicy" \
---include_labels=app:couchdb \
---state=active \
---spec_format=json \
---patch_spec=/tmp/work/rsi/couch-fsGroupChangePolicy.json
+  --patch_type=rsi_pod_spec \
+  --patch_name=couchdb-pod-spec-fsgroupchangepolicy \
+  --description="This is spec patch for couchdb fsGroupChangePolicy" \
+  --include_labels=app:couchdb \
+  --state=active \
+  --spec_format=json \
+  --patch_spec=/tmp/work/rsi/couch-fsGroupChangePolicy.json
 ```
+
+Apply the RSI patch about annotation selinux for CouchDB.
+
+```
+cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+  --patch_type=rsi_pod_annotation \
+  --patch_name=couchdb-pod-annotation-selinux \
+  --description="This annotation patch is for selinux relabeling disabling on CSI based storages for couchdb" \
+  --include_labels=app:couchdb \
+  --state=active \
+  --spec_format=json \
+  --patch_spec=/tmp/work/rsi/annotation-spec.json
+```
+
+Apply the RSI patch about spec selinux for CouchDB.
+
+```
+cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+  --patch_type=rsi_pod_spec \
+  --patch_name=couchdb-pod-spec-selinux \
+  --description="This spec patch is for selinux relabeling disabling on CSI based storages for couchdb" \
+  --include_labels=app:couchdb \
+  --state=active \
+  --spec_format=json \
+  --patch_spec=/tmp/work/rsi/specpatch.json
+```
+
+- Install the patch for finley-public.
+
+Create a patch file named `patch-rsi-env-finley-public-4.8.5-patch-1-may2024.json` under `cpd-cli-workspace/olm-utils-workspace/work/rsi` with the following content:
+
+```
+[
+  {
+    "name": "ENABLE_SLIDING_WINDOW_FOR_WORD_BREAK_PRE_PROCESS",
+    "value": "true"
+  },
+  {
+    "name": "FINAL_PREDICTION_SIZE_LIMIT",
+    "value": "1000"
+  }
+]
+```
+Apply the RSI patch about finley-public.
+
+```
+cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--patch_type=rsi_pod_env_var \
+--patch_name=finley-public-env-patch-1-may2024 \
+--description="Finley_public_patch_1_May_2024" \
+--include_labels=app:finley-public \
+--state=active \
+--spec_format=set-env \
+--patch_spec=/tmp/work/rsi/patch-rsi-env-finley-public-4.8.5-patch-1-may2024.json
+```
+
 5).Check the RSI patches status again:
 ```
 cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --all
