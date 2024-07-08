@@ -81,9 +81,7 @@ Part 1: Pre-upgrade
 1.1 Collect information and review upgrade runbook
 1.1.1 Review the upgrade runbook
 1.1.2 Backup before upgrade
-1.1.3 Uninstall all hotfixes and apply preventative measures
-1.1.4 Uninstall the RSI patches and the cluster-scoped webhook
-1.1.5 If use SAML SSO, export SSO configuration
+1.1.3 If use SAML SSO, export SSO configuration
 1.2 Set up client workstation 
 1.2.1 Prepare a client workstation
 1.2.2 Update cpd_vars.sh for the upgrade to Version 4.8.5
@@ -91,25 +89,27 @@ Part 1: Pre-upgrade
 1.2.4 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
 1.2.5 Ensure the images were mirrored to the private container registry
 1.2.6 Creating a profile for upgrading the service instances
-1.2.7 Download CASE files
 1.3 Health check OCP & CPD
 
 Part 2: Upgrade
-2.1 Upgrade CPD to 4.8.5
-2.1.1 Migrate to private topology
-2.1.2 Preparing to upgrade an CPD instance
-2.1.3 Upgrade foundation service and CPD platform to 4.8.5
-2.2 Upgrade CPD services
-2.2.1 Upgrade IBM Knowledge Catalog service
-2.2.2 Upgrade MANTA service
-2.2.3 Upgrade Analytics Engine service
-2.2.4 Upgrade Watson Studio, Watson Studio Runtimes and Watson Machine Learning
-2.2.5 Upgrade Db2 Warehouse
+2.1 Uninstall all hotfixes and apply preventative measures
+2.2 Uninstall the RSI patches and the cluster-scoped webhook
+2.3 Upgrade CPD to 4.8.5
+2.3.1 Migrate to private topology
+2.3.2 Preparing to upgrade the CPD instance
+2.3.3 Upgrade foundation service and CPD platform to 4.8.5
+2.3.4 Install the RSI patches
+2.4 Upgrade CPD services
+2.4.1 Upgrade IBM Knowledge Catalog service and apply hot fixes
+2.4.2 Upgrade MANTA service
+2.4.3 Upgrade Analytics Engine service
+2.4.4 Upgrade Watson Studio, Watson Studio Runtimes and Watson Machine Learning
+2.4.5 Upgrade Db2 Warehouse
 
 Part 3: Post-upgrade
 3.1 Configuring single sign-on
 3.2 Validate CPD & CPD services
-3.3 Enabling users to upload JDBC drivers
+3.3 Check whether uploading JDBC drivers is enabled
 3.4 Removing the shared operators
 3.5 WKC post-upgrade tasks
 3.6 Handling embedded Postgres license expiry for CPD 4.8.5
@@ -202,7 +202,287 @@ for db in LINEAGE BGDB ILGDB WFDB; do echo "(*) dbname: $db"; db2 "get db cfg fo
 ```
 Save the output to a file named wkc-db2u-log-conf.txt .
 
-#### 1.1.3 Uninstall all hotfixes and apply preventative measures 
+#### 1.1.3 If use SAML SSO, export SSO configuration
+
+If you use SAML SSO, export your SSO configuration. You will need to reapply your SAML SSO configuration after you upgrade to Version 4.8. Skip this step if you use the IBM Cloud Pak foundational services Identity Management Service
+
+```
+oc cp -n=${PROJECT_CPD_INSTANCE} \
+$(oc get pods -l component=usermgmt -n ${PROJECT_CPD_INSTANCE} \
+-o jsonpath='{.items[0].metadata.name}'):/user-home/_global_/config/saml ./samlConfig
+```
+
+### 1.2 Set up client workstation
+
+#### 1.2.1 Prepare a client workstation
+
+1. Prepare a RHEL 8 machine with internet
+
+Create a directory for the cpd-cli utility.
+```
+export CPD485_WORKSPACE=/ibm/cpd/485
+mkdir -p ${CPD485_WORKSPACE}
+cd ${CPD485_WORKSPACE}
+```
+
+Download the cpd-cli for 4.8.5.
+
+```
+wget https://github.com/IBM/cpd-cli/releases/download/v13.1.5/cpd-cli-linux-EE-13.1.5.tgz
+```
+
+2. Install tools.
+
+```
+yum install openssl httpd-tools podman skopeo wget -y
+```
+
+```
+tar xvf cpd-cli-linux-EE-13.1.5.tgz
+mv cpd-cli-linux-EE-13.1.5-176/* .
+rm -rf cpd-cli-linux-EE-13.1.5-176
+```
+
+3. Copy the cpd_vars.sh file used by the CPD 4.8.2 to the folder ${CPD485_WORKSPACE}.
+
+```
+cd ${CPD485_WORKSPACE}
+cp <the file path of the cpd_vars.sh file used by the CPD 4.8.2 > cpd_vars_485.sh
+```
+4. Make cpd-cli executable anywhere
+```
+vi cpd_vars_485.sh
+```
+
+Add below two lines into the head of cpd_vars_485.sh
+
+```
+export CPD485_WORKSPACE=/ibm/cpd/485
+export PATH=${CPD485_WORKSPACE}:$PATH
+```
+
+Update the CPD_CLI_MANAGE_WORKSPACE variable
+
+```
+export CPD_CLI_MANAGE_WORKSPACE=${CPD485_WORKSPACE}
+```
+
+Run this command to apply cpd_vars_485.sh
+
+```
+source cpd_vars_485.sh
+```
+
+Check out with this commands
+
+```
+cpd-cli version
+```
+
+Output like this
+
+```
+cpd-cli
+	Version: 13.1.5
+	Build Date: 
+	Build Number: nn
+	CPD Release Version: 4.8.5
+```
+#### 1.2.2 Update cpd_vars.sh for the upgrade to Version 4.8.5
+
+```
+vi cpd_vars_485.sh
+```
+
+1.Locate the VERSION entry and update the environment variable for VERSION. 
+
+```
+export VERSION=4.8.5
+```
+2.Locate the Projects section of the script and add the following environment variables. 
+<br>
+**Note:** 
+<br>When adding the following environment variables, The value of PROJECT_CPD_INST_OPERANDS is the same as that of PROJECT_CPD_INSTANCE.
+```
+export PROJECT_CERT_MANAGER=ibm-cert-manager
+export PROJECT_LICENSE_SERVICE=ibm-licensing
+export PROJECT_CS_CONTROL=ibm-licensing
+export PROJECT_CPD_INST_OPERATORS=cpd-operators
+export PROJECT_CPD_INST_OPERANDS=hptv-stgcloudpak
+```
+3.Remove the PROJECT_CATSRC entry from the Projects section of the script.
+
+4.Locate the COMPONENTS entry and upate the COMPONENTS entry.
+If the advanced metadata import feature in IBM® Knowledge Catalog is used, add the mantaflow component to the COMPONENTS variable.
+```
+export COMPONENTS=ibm-cert-manager,ibm-licensing,cpfs,cpd_platform,ws,ws_runtimes,wml,datastage_ent,wkc,analyticsengine,mantaflow,openscale,db2wh
+```
+
+Save the changes. <br>
+
+Confirm that the script does not contain any errors. For example, if you named the script cpd_vars.sh, run:
+```
+bash ./cpd_vars.sh
+```
+
+Run this command to apply cpd_vars_485.sh
+```
+source cpd_vars_485.sh
+```
+5.Locate the Cluster section of the script and add the following environment variables.
+```
+export SERVER_ARGUMENTS="--server=${OCP_URL}"
+export LOGIN_ARGUMENTS="--username=${OCP_USERNAME} --password=${OCP_PASSWORD}"
+export CPDM_OC_LOGIN="cpd-cli manage login-to-ocp ${SERVER_ARGUMENTS} ${LOGIN_ARGUMENTS}"
+export OC_LOGIN="oc login ${OCP_URL} ${LOGIN_ARGUMENTS}"
+```
+
+#### 1.2.3 Make olm-utils available
+**Note:** If the bastion node is internet connected, then you can ignore below steps in this section.
+
+```
+podman pull icr.io/cpopen/cpd/olm-utils-v2:latest --tls-verify=false
+
+podman login ${PRIVATE_REGISTRY_LOCATION} -u ${PRIVATE_REGISTRY_PULL_USER} -p ${PRIVATE_REGISTRY_PULL_PASSWORD}
+
+podman tag icr.io/cpopen/cpd/olm-utils-v2:latest ${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v2:latest
+
+podman push ${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v2:latest --remove-signatures 
+
+export OLM_UTILS_IMAGE=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v2:latest
+export OLM_UTILS_LAUNCH_ARGS=" --network=host"
+
+```
+For details please refer to 4.8 doc (https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=46-updating-client-workstations)
+
+#### 1.2.4 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
+```
+podman stop olm-utils-play-v2
+cpd-cli manage restart-container
+```
+**Note:**
+<br>Check the olm-utils-v2 image ID and ensure it's the latest one.
+```
+podman images | grep olm-utils-v2
+```
+
+#### 1.2.5 Ensure the images were mirrored to the private container registry
+- Check the log files in the work directory generated during the image mirroring
+```
+grep "error" ${CPD_CLI_MANAGE_WORKSPACE}/work/mirror_*.log
+```
+- Log in to the private container registry.
+```
+cpd-cli manage login-private-registry \
+${PRIVATE_REGISTRY_LOCATION} \
+${PRIVATE_REGISTRY_PULL_USER} \
+${PRIVATE_REGISTRY_PULL_PASSWORD}
+```
+- Confirm that the images were mirrored to the private container registry:
+Inspect the contents of the private container registry:
+```
+cpd-cli manage list-images \
+--components=${COMPONENTS} \
+--release=${VERSION} \
+--target_registry=${PRIVATE_REGISTRY_LOCATION} \
+--case_download=false
+```
+The output is saved to the list_images.csv file in the work/offline/${VERSION} directory.<br>
+Check the output for errors:
+```
+grep "level=fatal" ${CPD_CLI_MANAGE_WORKSPACE}/work/offline/${VERSION}/list_images.csv
+```
+The command returns images that are missing or that cannot be inspected which needs to be addressed.
+
+#### 1.2.6 Creating a profile for upgrading the service instances
+Create a profile on the workstation from which you will upgrade the service instances. <br>
+
+The profile must be associated with a Cloud Pak for Data user who has either the following permissions:
+
+- Create service instances (can_provision)
+- Manage service instances (manage_service_instances)
+
+Click this link and follow these steps for getting it done. https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=cli-creating-cpd-profile#taskcpd-profile-mgmt__steps__1
+
+
+### 1.3 Health check OCP & CPD
+
+1. Check OCP status
+
+Log onto bastion node, in the termial log into OCP and run this command.
+
+```
+oc get co
+```
+
+Make sure All the cluster operators should be in AVAILABLE status. And not in PROGRESSING or DEGRADED status.
+
+Run this command and make sure all nodes in Ready status.
+
+```
+oc get nodes
+```
+
+Run this command and make sure all the machine configure pool are in healthy status.
+
+```
+oc get mcp
+```
+
+2. Check Cloud Pak for Data status
+
+Log onto bastion node, and make sure IBM Cloud Pak for Data command-line interface installed properly.
+Run this command in terminal and make sure the Lite and all the services' status are in Ready status.
+
+```
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+```
+
+Run this command and make sure all pods healthy.
+
+```
+oc get po --no-headers --all-namespaces -o wide | grep -Ev '([[:digit:]])/\1.*R' | grep -v 'Completed'
+```
+
+3. Check private container registry status if installed
+
+Log into bastion node, where the private container registry is usually installed, as root.
+Run this command in terminal and make sure it can succeed.
+
+```
+podman login --username $PRIVATE_REGISTRY_PULL_USER --password $PRIVATE_REGISTRY_PULL_PASSWORD $PRIVATE_REGISTRY_LOCATION --tls-verify=false
+```
+
+You can run this command to verify the images in private container registry.
+
+```
+curl -k -u ${PRIVATE_REGISTRY_PULL_USER}:${PRIVATE_REGISTRY_PULL_PASSWORD} https://${PRIVATE_REGISTRY_LOCATION}/v2/_catalog?n=6000 | jq .
+```
+
+4. Check if there are any customization of the PVC size.
+
+Check the pvc size of the zen-metastoredb. Default size is 10Gi.
+```
+oc get pvc | grep zen-metastore
+```
+
+Check the pvc size of the OpenScale payload pvc. Default size is 4Gi.
+```
+oc get pvc | grep aiopenscale-ibm-aios-payload-pvc
+```
+
+If there are any customization of the PVC, we'll need to evaluate and make sure this is addressed before the upgrade.
+
+5. Check for wkc-search pod.
+
+```
+oc get pods -n ${PROJECT_CPD_INSTANCE} | grep wkc-search
+```
+
+Remove the wkc-search pods which is in completed state ( if there are any ). We should have wkc-search pod only in Running state.
+
+## Part 2: Upgrade
+#### 2.1 Uninstall all hotfixes and apply preventative measures 
 Remove the hotfixes by removing the images from the CRs.
 <br>
 
@@ -399,7 +679,7 @@ oc get CCS ccs-cr -o yaml
 oc get WKC wkc-cr -o yaml
 ```
 
-#### 1.1.4 Uninstall the RSI patches and the cluster-scoped webhook
+#### 2.2 Uninstall the RSI patches and the cluster-scoped webhook
 1.Run the cpd-cli manage login-to-ocp command to log in to the cluster as a user with sufficient permissions.
 ```
 cpd-cli manage login-to-ocp \
@@ -695,11 +975,23 @@ cpd-cli manage delete-rsi-patch \
 ```
 
 4.Check the RSI patches status again:
+<br>
+Get all RSI patches' status
 ```
 cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --all
+```
+Check the RSI patches' status
 
+```
 cat cpd-cli-workspace/olm-utils-workspace/work/get_rsi_patch_info.log
 ```
+
+Check whether all the RSI patches' zenextensions are removed.
+
+```
+oc get zenextension -n ${PROJECT_CPD_INSTANCE} | grep -i rsi
+```
+
 5.Disable the RSI feature in the project
 If IBM Cloud Pak foundational services is installed in ibm-common-services
 ```
@@ -713,290 +1005,9 @@ cpd-cli manage uninstall-rsi \
 --rsi_image=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/zen-rsi-adm-controller:4.6.5-x86_64
 ```
 
-#### 1.1.5 If use SAML SSO, export SSO configuration
+### 2.3 Upgrade CPD to 4.8.5
 
-If you use SAML SSO, export your SSO configuration. You will need to reapply your SAML SSO configuration after you upgrade to Version 4.8. Skip this step if you use the IBM Cloud Pak foundational services Identity Management Service
-
-```
-oc cp -n=${PROJECT_CPD_INSTANCE} \
-$(oc get pods -l component=usermgmt -n ${PROJECT_CPD_INSTANCE} \
--o jsonpath='{.items[0].metadata.name}'):/user-home/_global_/config/saml ./samlConfig
-```
-
-### 1.2 Set up client workstation
-
-#### 1.2.1 Prepare a client workstation
-
-1. Prepare a RHEL 8 machine with internet
-
-Create a directory for the cpd-cli utility.
-```
-export CPD485_WORKSPACE=/ibm/cpd/485
-mkdir -p ${CPD485_WORKSPACE}
-cd ${CPD485_WORKSPACE}
-```
-
-Download the cpd-cli for 4.8.5.
-
-```
-wget https://github.com/IBM/cpd-cli/releases/download/v13.1.5/cpd-cli-linux-EE-13.1.5.tgz
-```
-
-2. Install tools.
-
-```
-yum install openssl httpd-tools podman skopeo wget -y
-```
-
-```
-tar xvf cpd-cli-linux-EE-13.1.5.tgz
-mv cpd-cli-linux-EE-13.1.5-176/* .
-rm -rf cpd-cli-linux-EE-13.1.5-176
-```
-
-3. Copy the cpd_vars.sh file used by the CPD 4.8.2 to the folder ${CPD485_WORKSPACE}.
-
-```
-cd ${CPD485_WORKSPACE}
-cp <the file path of the cpd_vars.sh file used by the CPD 4.8.2 > cpd_vars_485.sh
-```
-4. Make cpd-cli executable anywhere
-```
-vi cpd_vars_485.sh
-```
-
-Add below two lines into the head of cpd_vars_485.sh
-
-```
-export CPD485_WORKSPACE=/ibm/cpd/485
-export PATH=${CPD485_WORKSPACE}:$PATH
-```
-
-Update the CPD_CLI_MANAGE_WORKSPACE variable
-
-```
-export CPD_CLI_MANAGE_WORKSPACE=${CPD485_WORKSPACE}
-```
-
-Run this command to apply cpd_vars_485.sh
-
-```
-source cpd_vars_485.sh
-```
-
-Check out with this commands
-
-```
-cpd-cli version
-```
-
-Output like this
-
-```
-cpd-cli
-	Version: 13.1.5
-	Build Date: 
-	Build Number: nn
-	CPD Release Version: 4.8.5
-```
-#### 1.2.2 Update cpd_vars.sh for the upgrade to Version 4.8.5
-
-```
-vi cpd_vars_485.sh
-```
-
-1.Locate the VERSION entry and update the environment variable for VERSION. 
-
-```
-export VERSION=4.8.5
-```
-2.Locate the Projects section of the script and add the following environment variables. 
-<br>
-**Note:** 
-<br>When adding the following environment variables, The value of PROJECT_CPD_INST_OPERANDS is the same as that of PROJECT_CPD_INSTANCE.
-```
-export PROJECT_CERT_MANAGER=ibm-cert-manager
-export PROJECT_LICENSE_SERVICE=ibm-licensing
-export PROJECT_CS_CONTROL=ibm-licensing
-export PROJECT_CPD_INST_OPERATORS=cpd-operators
-export PROJECT_CPD_INST_OPERANDS=hptv-stgcloudpak
-```
-3.Remove the PROJECT_CATSRC entry from the Projects section of the script.
-
-4.Locate the COMPONENTS entry and upate the COMPONENTS entry.
-If the advanced metadata import feature in IBM® Knowledge Catalog is used, add the mantaflow component to the COMPONENTS variable.
-```
-export COMPONENTS=ibm-cert-manager,ibm-licensing,cpfs,cpd_platform,ws,ws_runtimes,wml,datastage_ent,wkc,analyticsengine,mantaflow,openscale,db2wh
-```
-
-Save the changes. <br>
-
-Confirm that the script does not contain any errors. For example, if you named the script cpd_vars.sh, run:
-```
-bash ./cpd_vars.sh
-```
-
-Run this command to apply cpd_vars_485.sh
-```
-source cpd_vars_485.sh
-```
-5.Locate the Cluster section of the script and add the following environment variables.
-```
-export SERVER_ARGUMENTS="--server=${OCP_URL}"
-export LOGIN_ARGUMENTS="--username=${OCP_USERNAME} --password=${OCP_PASSWORD}"
-export CPDM_OC_LOGIN="cpd-cli manage login-to-ocp ${SERVER_ARGUMENTS} ${LOGIN_ARGUMENTS}"
-export OC_LOGIN="oc login ${OCP_URL} ${LOGIN_ARGUMENTS}"
-```
-
-#### 1.2.3 Make olm-utils available
-**Note:** If the bastion node is internet connected, then you can ignore below steps in this section.
-
-```
-podman pull icr.io/cpopen/cpd/olm-utils-v2:latest --tls-verify=false
-
-podman login ${PRIVATE_REGISTRY_LOCATION} -u ${PRIVATE_REGISTRY_PULL_USER} -p ${PRIVATE_REGISTRY_PULL_PASSWORD}
-
-podman tag icr.io/cpopen/cpd/olm-utils-v2:latest ${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v2:latest
-
-podman push ${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v2:latest --remove-signatures 
-
-export OLM_UTILS_IMAGE=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v2:latest
-export OLM_UTILS_LAUNCH_ARGS=" --network=host"
-
-```
-For details please refer to 4.8 doc (https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=46-updating-client-workstations)
-
-#### 1.2.4 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
-```
-podman stop olm-utils-play-v2
-cpd-cli manage restart-container
-```
-**Note:**
-<br>Check the olm-utils-v2 image ID and ensure it's the latest one.
-```
-podman images | grep olm-utils-v2
-```
-
-#### 1.2.5 Ensure the images were mirrored to the private container registry
-- Check the log files in the work directory generated during the image mirroring
-```
-grep "error" ${CPD_CLI_MANAGE_WORKSPACE}/work/mirror_*.log
-```
-- Log in to the private container registry.
-```
-cpd-cli manage login-private-registry \
-${PRIVATE_REGISTRY_LOCATION} \
-${PRIVATE_REGISTRY_PULL_USER} \
-${PRIVATE_REGISTRY_PULL_PASSWORD}
-```
-- Confirm that the images were mirrored to the private container registry:
-Inspect the contents of the private container registry:
-```
-cpd-cli manage list-images \
---components=${COMPONENTS} \
---release=${VERSION} \
---target_registry=${PRIVATE_REGISTRY_LOCATION} \
---case_download=false
-```
-The output is saved to the list_images.csv file in the work/offline/${VERSION} directory.<br>
-Check the output for errors:
-```
-grep "level=fatal" ${CPD_CLI_MANAGE_WORKSPACE}/work/offline/${VERSION}/list_images.csv
-```
-The command returns images that are missing or that cannot be inspected which needs to be addressed.
-
-#### 1.2.6 Creating a profile for upgrading the service instances
-Create a profile on the workstation from which you will upgrade the service instances. <br>
-
-The profile must be associated with a Cloud Pak for Data user who has either the following permissions:
-
-- Create service instances (can_provision)
-- Manage service instances (manage_service_instances)
-
-Click this link and follow these steps for getting it done. https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=cli-creating-cpd-profile#taskcpd-profile-mgmt__steps__1
-
-
-### 1.3 Health check OCP & CPD
-
-1. Check OCP status
-
-Log onto bastion node, in the termial log into OCP and run this command.
-
-```
-oc get co
-```
-
-Make sure All the cluster operators should be in AVAILABLE status. And not in PROGRESSING or DEGRADED status.
-
-Run this command and make sure all nodes in Ready status.
-
-```
-oc get nodes
-```
-
-Run this command and make sure all the machine configure pool are in healthy status.
-
-```
-oc get mcp
-```
-
-2. Check Cloud Pak for Data status
-
-Log onto bastion node, and make sure IBM Cloud Pak for Data command-line interface installed properly.
-Run this command in terminal and make sure the Lite and all the services' status are in Ready status.
-
-```
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
-```
-
-Run this command and make sure all pods healthy.
-
-```
-oc get po --no-headers --all-namespaces -o wide | grep -Ev '([[:digit:]])/\1.*R' | grep -v 'Completed'
-```
-
-3. Check private container registry status if installed
-
-Log into bastion node, where the private container registry is usually installed, as root.
-Run this command in terminal and make sure it can succeed.
-
-```
-podman login --username $PRIVATE_REGISTRY_PULL_USER --password $PRIVATE_REGISTRY_PULL_PASSWORD $PRIVATE_REGISTRY_LOCATION --tls-verify=false
-```
-
-You can run this command to verify the images in private container registry.
-
-```
-curl -k -u ${PRIVATE_REGISTRY_PULL_USER}:${PRIVATE_REGISTRY_PULL_PASSWORD} https://${PRIVATE_REGISTRY_LOCATION}/v2/_catalog?n=6000 | jq .
-```
-
-4. Check if there are any customization of the PVC size.
-
-Check the pvc size of the zen-metastoredb. Default size is 10Gi.
-```
-oc get pvc | grep zen-metastore
-```
-
-Check the pvc size of the OpenScale payload pvc. Default size is 4Gi.
-```
-oc get pvc | grep aiopenscale-ibm-aios-payload-pvc
-```
-
-If there are any customization of the PVC, we'll need to evaluate and make sure this is addressed before the upgrade.
-
-5. Check for wkc-search pod.
-
-```
-oc get pods -n dev | grep wkc-search
-```
-
-Remove the wkc-search pods which is in completed state ( if there are any ). We should have wkc-search pod only in Running state.
-
-## Part 2: Upgrade
-
-### 2.1 Upgrade CPD to 4.8.5
-
-#### 2.1.1 Migrate to private topology
+#### 2.3.1 Migrate to private topology
 1.Create new projects
 ```
 ${OC_LOGIN}
@@ -1046,7 +1057,7 @@ Confirm that the License Service pods in the ${PROJECT_CS_CONTROL} project are R
 oc get pods --namespace=${PROJECT_CS_CONTROL}
 ```
 
-#### 2.1.2 Preparing to upgrade an CPD instance
+#### 2.3.2 Preparing to upgrade an CPD instance
 1.Run the cpd-cli manage login-to-ocp command to log in to the cluster
 ```
 cpd-cli manage login-to-ocp \
@@ -1098,7 +1109,7 @@ cpd-cli manage authorize-instance-topology \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-#### 2.1.3 Upgrade foundation service and CPD platform to 4.8.5
+#### 2.3.3 Upgrade foundation service and CPD platform to 4.8.5
 
 1.Run the cpd-cli manage login-to-ocp command to log in to the cluster.
 ```
@@ -1219,8 +1230,7 @@ oc edit secretshare ibm-cpp-config \
 ```
 Remove the entry for the instance project from the sharewith list and save your changes to the SecretShare.
 
-6. **Reinstall the RSI patches.**
-<br>
+#### 2.3.4 Install the RSI patches
 
 1).Log the cpd-cli in to the Red Hat OpenShift Container Platform cluster.
 ```
@@ -1240,7 +1250,20 @@ cpd-cli manage install-rsi \
 cpd-cli manage enable-rsi \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
-4).Reinstall the RSI patches
+4).Install the RSI patches
+<br>
+Create a json patch file named `annotation-spec.json` under `cpd-cli-workspace/olm-utils-workspace/work/rsi` with the following content:
+
+```
+[{"op":"add","path":"/metadata/annotations/io.kubernetes.cri-o.TrySkipVolumeSELinuxLabel","value":"true"}]
+```
+
+Create a json patch file named `specpatch.json` under `cpd-cli-workspace/olm-utils-workspace/work/rsi` with the following content:
+
+```
+[{"op":"add","path":"/spec/runtimeClassName","value":"selinux"}]
+```
+
 <br>
 - Reinstall the asset-files-api-annotation-selinux.
 ```
@@ -1389,8 +1412,8 @@ cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INSTANCE} --al
 cat cpd-cli-workspace/olm-utils-workspace/work/get_rsi_patch_info.log
 ```
 
-### 2.2 Upgrade CPD services to 4.8.5
-#### 2.2.1 Upgrade IBM Knowledge Catalog service
+### 2.4 Upgrade CPD services to 4.8.5
+#### 2.4.1 Upgrade IBM Knowledge Catalog service and apply hot fixes
 Check if the IBM Knowledge Catalog service was installed with the custom install options. 
 ##### 1. For custom installation, check the previous install-options.yaml or wkc-cr yaml, make sure to keep original custom settings
 ```
@@ -1441,7 +1464,7 @@ cpd-cli manage apply-cr \
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-##### 5.Apply the hotfixes if available.
+##### 5.Apply the hotfixes
 June Zenservice patch command (including external vault connection for reducing the number of operator reconcilations): <br>
 
 ```
@@ -1473,7 +1496,7 @@ If not, then run below command.
 oc set env deployment/wkc-bi-data-service ENFORCE_AUTHORIZE_REPORTING=true
 ```
 
-#### 2.2.2 Upgrade MANTA service
+#### 2.4.2 Upgrade MANTA service
 ```
 export COMPONENTS=mantaflow
 ```
@@ -1516,8 +1539,8 @@ Validating the upgrade.
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 ```
 
-#### 2.2.3 Upgrade Analytics Engine service
-##### 2.2.3.1 Upgrade the service
+#### 2.4.3 Upgrade Analytics Engine service
+##### 2.4.3.1 Upgrade the service
 
 Check the Analytics Engine service version and status. 
 ```
@@ -1544,7 +1567,7 @@ Validate the service upgrade status.
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 ```
 
-##### 2.2.3.2 Upgrade the service instances
+##### 2.4.3.2 Upgrade the service instances
 
 **Note:**  cpd profile api key may expire after upgrade. If we are not able to list the instances, should be attempted once the Custom route is created so that the Admin can login. 
 <br>
@@ -1567,7 +1590,7 @@ cpd-cli service-instance list \
 --service-type=spark \
 --profile=${CPD_PROFILE_NAME}
 ```
-#### 2.2.4 Upgrade Watson Studio, Watson Studio Runtimes and Watson Machine Learning 
+#### 2.4.4 Upgrade Watson Studio, Watson Studio Runtimes and Watson Machine Learning 
 ```
 export COMPONENTS=ws,ws_runtimes,wml,openscale
 ```
@@ -1597,7 +1620,7 @@ Validate the service upgrade status.
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 ```
 
-#### 2.2.5 Upgrade Db2 Warehouse
+#### 2.4.5 Upgrade Db2 Warehouse
 ```
 # 1.Upgrade the service
 export COMPONENTS=db2wh
@@ -1678,7 +1701,7 @@ If 3 or 4 active records returned by either of the above SQLs, then there could 
 <br>
 Validate if there are home card issue.
 
-### 3.3 Enabling users to upload JDBC drivers
+### 3.3 Check if uploading JDBC drivers enabled
 Reference: https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=environment-enabling-users-upload-jdbc-drivers
 
 #### 3.3.1 Check if the wdp_connect_connection_jdbc_drivers_repository_mode parameter set to be enabled
