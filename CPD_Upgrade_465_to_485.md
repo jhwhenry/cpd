@@ -1266,21 +1266,28 @@ Create a json patch file named `specpatch.json` under `cpd-cli-workspace/olm-uti
 
 <br>
 - Reinstall the asset-files-api-annotation-selinux.
+
 ```
 cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --patch_type=rsi_pod_annotation --patch_name=asset-files-api-annotation-selinux --description="This is annotation patch is for selinux relabeling disabling on CSI based storages for asset-files-api" --include_labels=app:asset-files-api --state=active --spec_format=json --patch_spec=/tmp/work/rsi/annotation-spec.json
 ```
 - Reinstall asset-files-api-pod-spec-selinux.
+  
 ```
 cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --patch_type=rsi_pod_spec --patch_name=asset-files-api-pod-spec-selinux --description="This is spec patch is for selinux relabeling disabling on CSI based storages for asset-files-api" --include_labels=app:asset-files-api --state=active --spec_format=json --patch_spec=/tmp/work/rsi/specpatch.json
 ```
+
 - Reinstall create-dap-directories-annotation-selinux.
+  
 ```
 cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --patch_type=rsi_pod_annotation --patch_name=create-dap-directories-annotation-selinux --description="This is annotation patch is for selinux relabeling disabling on CSI based storages for create-dap-directories-job" --include_labels=app:create-dap-directories --state=active --spec_format=json --patch_spec=/tmp/work/rsi/annotation-spec.json
 ```
+
 - Reinstall create-dap-directories-pod-spec-selinux.
+
 ```
 cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --patch_type=rsi_pod_spec --patch_name=create-dap-directories-pod-spec-selinux --description="This is spec patch is for selinux relabeling disabling on CSI based storages for create-dap-directories job" --include_labels=app:create-dap-directories --state=active --spec_format=json --patch_spec=/tmp/work/rsi/specpatch.json
 ```
+
 - Reinstall event-logger-api-annotation-selinux.
 ```
 cpd-cli manage create-rsi-patch \
@@ -1305,6 +1312,7 @@ cpd-cli manage create-rsi-patch \
 --spec_format=json \
 --patch_spec=/tmp/work/rsi/specpatch.json
 ```
+
 - Reinstall spark-runtimes-annotation-selinux.
 ```
 cpd-cli manage create-rsi-patch \
@@ -1315,6 +1323,7 @@ cpd-cli manage create-rsi-patch \
 --include_labels=spark/exclude-from-backup:true \
 --state=active --spec_format=json --patch_spec=/tmp/work/rsi/annotation-spec.json
 ```
+
 - Reinstall spark-runtimes-pod-spec-selinux.
 ```
 cpd-cli manage create-rsi-patch \
