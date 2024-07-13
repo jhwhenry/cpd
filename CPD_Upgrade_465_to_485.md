@@ -974,6 +974,26 @@ cpd-cli manage delete-rsi-patch \
 --patch_name=spark-runtimes-pod-spec-selinux
 ```
 
+- Delete finley-public-env-patch-1-may2024.
+  
+<br>
+Inactivate:
+
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=finley-public-env-patch-1-may2024 \
+--state=inactive
+```
+
+Delete:
+
+```
+cpd-cli manage delete-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
+--patch_name=finley-public-env-patch-1-may2024
+```
+
 4.Check the RSI patches status again:
 <br>
 Get all RSI patches' status
