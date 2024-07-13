@@ -638,9 +638,9 @@ List Elasticsearch PVC sizes, and make sure to preserve the type, and the size o
 ```
 oc get pvc | grep elastic | grep RWO
 
-hptv-stgcloudpak               elasticsearch-master-elasticsearch-master-0        Bound    pvc-63691093-c6a8-4de8-806e-b1946b4c7d1c   100Gi      RWO            ocs-storagecluster-ceph-rbd   23d
-hptv-stgcloudpak               elasticsearch-master-elasticsearch-master-1        Bound    pvc-fb69e627-a05f-4a5a-b24b-58dbd02d65a0   125Gi      RWO            ocs-storagecluster-ceph-rbd   23d
-hptv-stgcloudpak               elasticsearch-master-elasticsearch-master-2        Bound    pvc-680d4cea-929d-4c10-9e68-b9068e49c136   100Gi      RWO            ocs-storagecluster-ceph-rbd   23d
+hptv-prodcloudpak              elasticsearch-master-elasticsearch-master-0        Bound    pvc-b7e7db35-2deb-4ebb-949e-8f01abc6649f   1126Gi     RWO            ocs-storagecluster-ceph-rbd   329d
+hptv-prodcloudpak              elasticsearch-master-elasticsearch-master-1        Bound    pvc-28652bea-503f-4034-a29e-00e7bb5cf63e   1126Gi     RWO            ocs-storagecluster-ceph-rbd   329d
+hptv-prodcloudpak              elasticsearch-master-elasticsearch-master-2        Bound    pvc-03258821-8839-4600-8529-853125f99195   1126Gi     RWO            ocs-storagecluster-ceph-rbd   329d
 
 ```
 
@@ -652,7 +652,7 @@ In the above example, block storage `ocs-storagecluster-ceph-rbd` is the storage
 In CCS CR make sure to set the following properties, with above values used as example:
 
 ```
-elasticsearch_persistence_size: "125Gi"
+elasticsearch_persistence_size: "1126Gi"
 elasticsearch_storage_class_name: "ocs-storagecluster-ceph-rbd"
 ```
 
