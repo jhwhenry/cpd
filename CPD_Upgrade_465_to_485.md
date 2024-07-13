@@ -1034,7 +1034,6 @@ ${OC_LOGIN}
 oc new-project ${PROJECT_CS_CONTROL}             # This is for ibm-licensing operator and instance
 oc new-project ${PROJECT_CERT_MANAGER}           # This is for ibm-cert-manager operator and instance
 oc new-project ${PROJECT_LICENSE_SERVICE}        # This is for the License Service
-oc new-project ${PROJECT_CPD_INST_OPERATORS}     # This is for migrated cpd operator
 ```
 2.Run the cpd-cli manage login-to-ocp command to log in to the cluster
 ```
