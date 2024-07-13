@@ -1426,7 +1426,7 @@ Apply the RSI patch about finley-public.
 cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --patch_type=rsi_pod_env_var \
 --patch_name=finley-public-env-patch-1-may2024 \
---description="Finley_public_patch_1_May_2024" \
+--description=Finley_public_patch_1_May_2024 \
 --include_labels=app:finley-public \
 --state=active \
 --spec_format=set-env \
