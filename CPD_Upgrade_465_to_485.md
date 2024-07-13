@@ -1459,6 +1459,32 @@ custom_spec:
 
 ##### 2.Apply the timeout settings in CCS Operator for avoiding the elstic search timeout issue
 
+Considering the large volume of data in the elsticsearch pvc, the backup job may take longer than the default `100` status checks that the CCS operator alots it by default. Unfortunately this is not a setting that is exposed directly as a CCS parameter and a manual change has to be carried out before upgrade to ensure that enough time is give to the backup process:
+
+1). Copy `roles/wkc-base/tasks/elasticsearch_migration.yml` out of the CCS operator pod for further modification. 
+
+```bash
+# get the name of the operator pod in the operator namespace
+oc get pod -n ${PROJECT_CPD_INST_OPERATORS} | grep ibm-cpd-ccs-operator | grep -v catalog | grep Running
+
+ibm-cpd-ccs-operator-77568d6655-qvbj8                             1/1     Running                  0              5d4h
+
+# use the name of the operator pod to copy out the elasticsearch_migration.yml to a temporary location
+oc cp -n wkc-operators ibm-cpd-ccs-operator-77568d6655-qvbj8:/opt/ansible/8.5.0/roles/wkc-base/tasks/elasticsearch_migration.yml elasticsearch_migration.yml
+```
+
+2). Create a backup of the file.
+```
+cp elasticsearch_migration.yml elasticsearch_migration_bak.yml
+```
+
+4. Modify line `238` replacing value `100` by `10000`. This should give sufficient amount of time for event the largest backup sizes. 
+
+5. Replace the version insided of the CCS operator pod with the updated one - using the following command:
+```bash
+oc cp -n wkc-operators elasticsearch_migration.yml ibm-cpd-ccs-operator-77568d6655-qvbj8:/opt/ansible/8.5.0/roles/wkc-base/tasks/elasticsearch_migration.yml
+```
+
 
 ##### 3.Upgrade WKC with custom installation
 
