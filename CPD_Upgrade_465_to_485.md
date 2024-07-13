@@ -1469,7 +1469,7 @@ oc get pod -n ${PROJECT_CPD_INST_OPERATORS} | grep ibm-cpd-ccs-operator | grep -
 ibm-cpd-ccs-operator-77568d6655-qvbj8                             1/1     Running                  0              5d4h
 
 # use the name of the operator pod to copy out the elasticsearch_migration.yml to a temporary location
-oc cp -n wkc-operators ibm-cpd-ccs-operator-77568d6655-qvbj8:/opt/ansible/8.5.0/roles/wkc-base/tasks/elasticsearch_migration.yml elasticsearch_migration.yml
+oc cp -n ${PROJECT_CPD_INST_OPERATORS} ibm-cpd-ccs-operator-77568d6655-qvbj8:/opt/ansible/8.5.0/roles/wkc-base/tasks/elasticsearch_migration.yml elasticsearch_migration.yml
 ```
 
 2). Create a backup of the file.
@@ -1481,7 +1481,7 @@ cp elasticsearch_migration.yml elasticsearch_migration_bak.yml
 
 5. Replace the version insided of the CCS operator pod with the updated one - using the following command:
 ```bash
-oc cp -n wkc-operators elasticsearch_migration.yml ibm-cpd-ccs-operator-77568d6655-qvbj8:/opt/ansible/8.5.0/roles/wkc-base/tasks/elasticsearch_migration.yml
+oc cp -n ${PROJECT_CPD_INST_OPERATORS} elasticsearch_migration.yml ibm-cpd-ccs-operator-77568d6655-qvbj8:/opt/ansible/8.5.0/roles/wkc-base/tasks/elasticsearch_migration.yml
 ```
 
 
