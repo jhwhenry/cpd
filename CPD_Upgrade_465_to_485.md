@@ -364,7 +364,7 @@ hptv-prodcloudpak              elasticsearch-master-elasticsearch-master-2      
 
 ```
 
-In the above example, block storage `ocs-storagecluster-ceph-rbd` is the storage type, and `125Gi` is the largest size. 
+In the above example, block storage `ocs-storagecluster-ceph-rbd` is the storage type, and `1126Gi` is the largest size. 
 <br>
 **Note** if PVCs are of different sizes, we want to make sure to take the biggest one. 
 <br>
