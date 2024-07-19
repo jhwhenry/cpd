@@ -1919,6 +1919,12 @@ oc get cm spark-hb-deployment-properties -o yaml | grep -i deploymentStatusRetry
 <br>
 [For steps to run the resync, see Resync of lineage metadata](https://www.ibm.com/docs/en/SSQNUZ_4.8.x/wsj/admin/admin-lineage-resync.html)
 
+**7.Expand the Minio PVC size for accomondendatindg the hourly diagnostics collection.** 
+<br>
+1)Increase the PVC size to 100Gi.
+<br>
+2)adding the `zenMinioReqSize: 100Gi` property to the lite-cr. This step can be done in another maintenance time window as it may trigger reconcilation.
+
 ### 3.6 Handling embedded Postgres license expiry for CPD 4.8.5
 https://www.ibm.com/support/pages/node/7158524
 
