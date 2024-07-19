@@ -1840,7 +1840,7 @@ oc set env deployment/catalog-api --list | grep -i asset_files_call_socket_timeo
 ```
 
 ### 3.5 WKC post-upgrade tasks
-1.Migration cleanup - legacy features
+**1.Migration cleanup - legacy features**
 
 ```
 oc delete scc wkc-iis-scc
@@ -1862,11 +1862,11 @@ Delete the leftovers if there are any.
 
 [Reference - migration cleanup](https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=tasks-migration-cleanup#migration_cleanup__services__title__1)
 
-2.Enable Relationship Explorer feature
+**2.Enable Relationship Explorer feature**
 <br>
 [Enable Relationship Explorer feature](https://github.com/sanjitc/Cloud-Pak-for-Data/blob/main/Upgrade/CPD%204.6%20to%204.8/Enabling_Relationship_Explorer_480%20-%20disclaimer%200208.pdf)
 
-3.Enable 'Allow Reporting' settings for Catalogs and Projects
+**3.Enable 'Allow Reporting' settings for Catalogs and Projects**
 <br>
 1)Put wkc-cr in maintenance mode.
 ```
@@ -1881,7 +1881,7 @@ oc set env deployment/wkc-bi-data-service ENFORCE_AUTHORIZE_REPORTING=true
 oc set env deployment/wkc-bi-data-service --list | grep -i ENFORCE_AUTHORIZE_REPORTING
 ```
 
-4.Customized change for Finley affinity
+**4.Customized change for Finley affinity**
 <br>
 1)Put wkc-cr in maintenance mode.
 ```
@@ -1895,8 +1895,27 @@ oc get svc finley-public -o yaml > svc-finley-public-bak.yaml
 ```
 oc patch svc finley-public --type='json' -p='[{"op": "replace", "path": "/spec/sessionAffinity", "value": "None" },{ "op": "remove", "path": "/spec/sessionAffinityConfig"}]'
 ```
+4)Make sure the finley-public service patched successfully
+```
+oc get svc finley-public -o yaml | grep -i sessionAffinity
+```
 
-5.To see your catalogs' assets in the Knowledge Graph, you need to resync your lineage metadata. 
+**5.Apply the workaround for the problem - MDE Job failed with error "Deployment not found with given id"**
+<br>
+1)Put analyticsengine-sample in maintenance mode.
+```
+oc patch analyticsengine analyticsengine-sample --type=merge --patch='{"spec":{"ignoreForMaintenance":true}}'
+```
+2)Edit the `spark-hb-deployment-properties` config map and add the property `deploymentStatusRetryCount=6`
+```
+oc edit cm spark-hb-deployment-properties
+```
+3)Make sure the property `deploymentStatusRetryCount=6` added successfully
+```
+oc get cm spark-hb-deployment-properties -o yaml | grep -i deploymentStatusRetryCount
+```
+
+**6.To see your catalogs' assets in the Knowledge Graph, you need to resync your lineage metadata.** 
 <br>
 [For steps to run the resync, see Resync of lineage metadata](https://www.ibm.com/docs/en/SSQNUZ_4.8.x/wsj/admin/admin-lineage-resync.html)
 
