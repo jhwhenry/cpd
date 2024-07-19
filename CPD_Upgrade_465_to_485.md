@@ -214,7 +214,6 @@ Remove the hotfixes by removing the images from the CRs.
 ```
 oc edit WKC wkc-cr
 ```
-
 2)Remove the hot fix images from the WKC custom resource
 
 ```
@@ -258,7 +257,9 @@ oc edit WKC wkc-cr
     tag_metadata: 2.5.20-amd64
 ```
 
-3)Save and Exit. Wait untile the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status. 
+3)Remove the `ignoreForMaintenance: true` from the WKC custom resource
+
+4)Save and Exit. Wait untile the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status. 
 
 ```
 oc get WKC wkc-cr -o yaml
@@ -348,7 +349,9 @@ oc edit CCS ccs-cr
     tag_metadata: 4.6.194
 ```
 
-3)Apply preventative measures for Elastic Search pvc customization problem
+3)Remove the `ignoreForMaintenance: true` from the CCS custom resource
+
+4)Apply preventative measures for Elastic Search pvc customization problem
 <br>
 This step is for applying the preventative measures for Elastic Search problem. Applying the preventative measures in this timing can also help to minimize the number of CCS operator reconcilations.
 <br>
@@ -398,6 +401,16 @@ oc get CCS ccs-cr -o yaml
 ```
 oc get WKC wkc-cr -o yaml
 ```
+
+- 4.Get ZenService custom resource out of the InMaintenance mode.
+1)Edit the analyticsengine-sample with below command.
+  
+```
+oc edit ZenService lite-cr
+```
+Remove the `ignoreForMaintenance: true` from the ZenService custom resource
+
+2)Save and Exit. Wait untile the ZenService Operator reconcilation completed and also the lite-cr in 'Completed' status. 
 
 #### 1.1.4 Uninstall the RSI patches and the cluster-scoped webhook
 1.Run the cpd-cli manage login-to-ocp command to log in to the cluster as a user with sufficient permissions.
