@@ -437,13 +437,11 @@ oc get CCS ccs-cr -o yaml
 oc get WKC wkc-cr -o yaml
 ```
 
-- 4.Get ZenService custom resource out of the InMaintenance mode.
-1)Edit the analyticsengine-sample with below command.
-  
+- 4.Remove the `ignoreForMaintenance: true` from the ZenService custom resource.
+
 ```
 oc edit ZenService lite-cr
 ```
-Remove the `ignoreForMaintenance: true` from the ZenService custom resource
 
 2)Save and Exit. Wait untile the ZenService Operator reconcilation completed and also the lite-cr in 'Completed' status. 
 
