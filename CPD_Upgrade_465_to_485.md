@@ -109,8 +109,8 @@ Part 2: Upgrade
 Part 3: Post-upgrade
 3.1 Configuring single sign-on
 3.2 Validate CPD & CPD services
-3.3 Check whether uploading JDBC drivers is enabled
-3.4 Removing the shared operators
+3.3 Removing the shared operators
+3.4 CCS post-upgrade tasks
 3.5 WKC post-upgrade tasks
 3.6 Handling embedded Postgres license expiry for CPD 4.8.5
 3.7 Summarize and close out the upgrade
@@ -1801,20 +1801,7 @@ If 3 or 4 active records returned by either of the above SQLs, then there could 
 <br>
 Validate if there are home card issue.
 
-### 3.3 Check if uploading JDBC drivers enabled
-Reference: https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=environment-enabling-users-upload-jdbc-drivers
-
-#### 3.3.1 Check if the wdp_connect_connection_jdbc_drivers_repository_mode parameter set to be enabled
-```
-oc get ccs ccs-cr -o yaml | grep -i wdp_connect_connection_jdbc_drivers_repository_mode
-```
-
-#### 3.3.2 Make sure the common core services status is Completed
-```
-oc get ccs ccs-cr --namespace=${PROJECT_CPD_INST_OPERANDS}
-```
-
-### 3.4 Removing the shared operators
+### 3.3 Removing the shared operators
 Log the cpd-cli in to the Red Hat OpenShift Container Platform cluster.
 ```
 cpd-cli manage login-to-ocp \
@@ -1830,6 +1817,28 @@ cpd-cli manage delete-olm-artifacts \
 --delete_all_components=true \
 --delete_shared_catsrc=true
 ```
+### 3.4 CCS post-upgrade tasks
+1.Check if uploading JDBC drivers enabled
+```
+oc get ccs ccs-cr -o yaml | grep -i wdp_connect_connection_jdbc_drivers_repository_mode
+```
+Make sure the `wdp_connect_connection_jdbc_drivers_repository_mode` parameter set to be enabled.
+
+2.Customized change for the catalog-api deployment.
+<br>
+1)Put ccs-cr in maintenance mode.
+```
+oc patch ccs ccs-cr --type=merge --patch='{"spec":{"ignoreForMaintenance":true}}'
+```
+2)Set environment variable `asset_files_call_socket_timeout_ms` for the catalog-api deployment
+```
+oc set env deployment/catalog-api asset_files_call_socket_timeout_ms=60000
+```
+3)Double check if `asset_files_call_socket_timeout_ms` is set as expected.
+```
+oc set env deployment/catalog-api --list | grep -i asset_files_call_socket_timeout_ms
+```
+
 ### 3.5 WKC post-upgrade tasks
 1.Migration cleanup - legacy features
 
