@@ -1855,8 +1855,20 @@ Reference: https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=tasks-migr
 
 [Enable Relationship Explorer feature](https://github.com/sanjitc/Cloud-Pak-for-Data/blob/main/Upgrade/CPD%204.6%20to%204.8/Enabling_Relationship_Explorer_480%20-%20disclaimer%200208.pdf)
 
-
-3.To see your catalogs' assets in the Knowledge Graph, you need to resync your lineage metadata. 
+3.Enable 'Allow Reporting' settings for Catalogs and Projects
+1)Put wkc-cr in maintenance mode.
+```
+oc patch wkc wkc-cr --type=merge --patch='{"spec":{"ignoreForMaintenance":true}}'
+```
+2)Set environment variable ENFORCE_AUTHORIZE_REPORTING for the wkc-bi-data-service deployment
+```
+oc set env deployment/wkc-bi-data-service ENFORCE_AUTHORIZE_REPORTING=true
+```
+3)Double check if ENFORCE_AUTHORIZE_REPORTING is set to be true.
+```
+oc set env deployment/wkc-bi-data-service --list | grep -i ENFORCE_AUTHORIZE_REPORTING
+```
+5.To see your catalogs' assets in the Knowledge Graph, you need to resync your lineage metadata. 
 <br>
 [For steps to run the resync, see Resync of lineage metadata](https://www.ibm.com/docs/en/SSQNUZ_4.8.x/wsj/admin/admin-lineage-resync.html)
 
