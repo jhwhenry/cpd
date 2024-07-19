@@ -257,9 +257,44 @@ oc edit WKC wkc-cr
     tag_metadata: 2.5.20-amd64
 ```
 
-3)Remove the `ignoreForMaintenance: true` from the WKC custom resource
+3)Add below entry for setting the number of wkc_bi_data_service replicas to be 3
 
-4)Save and Exit. Wait untile the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status. 
+```
+wkc_bi_data_service_max_replicas: 3
+wkc_bi_data_service_min_replicas: 3
+```
+
+4)Add the `kg_resources` section under spec in the wkc-cr
+
+```
+kg_resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 6
+    memory: 8000Mi
+```
+
+5)Remove the `wdp-kg-ingestion-service` section from the wkc-cr spec
+
+```
+  wdp-kg-ingestion-service:
+    limits:
+      cpu: 6
+      memory: 8000Mi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+```
+
+6)Remove the `ignoreForMaintenance: true` from the WKC custom resource
+
+```
+ignoreForMaintenance: true
+```
+
+7)Save and Exit. Wait untile the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status. 
 
 ```
 oc get WKC wkc-cr -o yaml
