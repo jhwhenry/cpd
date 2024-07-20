@@ -1818,13 +1818,13 @@ cpd-cli manage delete-olm-artifacts \
 --delete_shared_catsrc=true
 ```
 ### 3.4 CCS post-upgrade tasks
-1.Check if uploading JDBC drivers enabled
+**1.Check if uploading JDBC drivers enabled**
 ```
 oc get ccs ccs-cr -o yaml | grep -i wdp_connect_connection_jdbc_drivers_repository_mode
 ```
 Make sure the `wdp_connect_connection_jdbc_drivers_repository_mode` parameter set to be enabled.
 
-2.Customized change for the catalog-api deployment.
+**2.Customized change for the catalog-api deployment.**
 <br>
 1)Put ccs-cr in maintenance mode.
 ```
@@ -1837,6 +1837,45 @@ oc set env deployment/catalog-api asset_files_call_socket_timeout_ms=60000
 3)Double check if `asset_files_call_socket_timeout_ms` is set as expected.
 ```
 oc set env deployment/catalog-api --list | grep -i asset_files_call_socket_timeout_ms
+```
+**3.Change heap size in asset-files-api deployment**
+1)Put ccs-cr in maintenance mode.
+```
+oc patch ccs ccs-cr --type=merge --patch='{"spec":{"ignoreForMaintenance":true}}'
+```
+2)Add below section to the asset-files-api deployment and put it under the `containers` of the spec.
+```
+oc edit deployment asset-files-api
+```
+```
+    - args:
+      - -c
+      - |
+        cd /home/node/${MICROSERVICENAME}
+        source /scripts/exportSecrets.sh
+        export npm_config_cache=~node
+        node --max-old-space-size=12288 --max-http-header-size=32768 index.js
+      command:
+      - /bin/bash
+```
+When added, it looks like this.
+```
+    containers:
+    - args:
+      - -c
+      - |
+        cd /home/node/${MICROSERVICENAME}
+        source /scripts/exportSecrets.sh
+        export npm_config_cache=~node
+        node --max-old-space-size=12288 --max-http-header-size=32768 index.js
+      command:
+      - /bin/bash
+```
+3)Save and exit.
+<br>
+4)Double check if the heap size change is set as expected.
+```
+oc get deployment/catalog-api --list | grep -i "--max-old-space-size=12288" -A 5 -B 5
 ```
 
 ### 3.5 WKC post-upgrade tasks
