@@ -443,7 +443,20 @@ oc get WKC wkc-cr -o yaml
 oc edit ZenService lite-cr
 ```
 
-2)Save and Exit. Wait untile the ZenService Operator reconcilation completed and also the lite-cr in 'Completed' status. 
+Save and Exit. Wait untile the ZenService Operator reconcilation completed and also the lite-cr in 'Completed' status. 
+
+- 5.Apply preventative measures for potential time-consuming CCS reconcilation caused by large number of cronjobs.
+<br>
+Backup of all cronjob 
+```
+for cj in $(oc get cronjob -l runtimeAssembly --no-headers | grep "<none>" | awk '{print $1}'); do oc get cronjob $cj -oyaml >  $cj.yaml;done
+```
+
+Deleting label from all cronjobs
+```
+for cj in $(oc get cronjob -l runtimeAssembly --no-headers | grep "<none>" | awk '{print $1}'); do oc label cronjob $cj created-by- 2>/dev/null; done
+
+```
 
 #### 1.1.4 Uninstall the RSI patches and the cluster-scoped webhook
 1.Run the cpd-cli manage login-to-ocp command to log in to the cluster as a user with sufficient permissions.
@@ -1838,7 +1851,14 @@ oc set env deployment/catalog-api asset_files_call_socket_timeout_ms=60000
 ```
 oc set env deployment/catalog-api --list | grep -i asset_files_call_socket_timeout_ms
 ```
-**3.Change heap size in asset-files-api deployment**
+**3.Add the label back back to cronjobs**
+<br>
+After the reconciliation is completed, add the label back back to cronjobs
+```
+for cj in $(oc get cronjob -l runtimeAssembly --no-headers | grep "<none>" | awk '{print $1}'); do oc label cronjob $cj created-by=spawner 2>/dev/null; done
+```
+**4.Change heap size in asset-files-api deployment**
+<br>
 1)Put ccs-cr in maintenance mode.
 ```
 oc patch ccs ccs-cr --type=merge --patch='{"spec":{"ignoreForMaintenance":true}}'
