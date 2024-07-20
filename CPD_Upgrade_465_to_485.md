@@ -1851,7 +1851,7 @@ oc set env deployment/catalog-api asset_files_call_socket_timeout_ms=60000
 ```
 oc set env deployment/catalog-api --list | grep -i asset_files_call_socket_timeout_ms
 ```
-**3.Add the label back back to cronjobs**
+**3.Add the label back to cronjobs**
 <br>
 After the reconciliation is completed, add the label back back to cronjobs
 ```
