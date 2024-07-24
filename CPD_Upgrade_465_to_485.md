@@ -44,7 +44,7 @@ cpd-cli manage login-entitled-registry \
 ${IBM_ENTITLEMENT_KEY}
 ```
 
-2)Log in to the private image registry :
+2) Log in to the private image registry :
 ```
 cpd-cli manage login-private-registry \
 ${PRIVATE_REGISTRY_LOCATION} \
