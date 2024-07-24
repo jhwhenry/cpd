@@ -449,15 +449,19 @@ oc edit ZenService lite-cr
 ```
 
 Save and Exit. Wait untile the ZenService Operator reconcilation completed and also the lite-cr in 'Completed' status. 
+<br>
 
 - 5.Apply preventative measures for potential time-consuming CCS reconcilation caused by large number of cronjobs.
 <br>
-Backup of all cronjob 
+
+Backup of all cronjob
+
 ```
 for cj in $(oc get cronjob -l runtimeAssembly --no-headers | grep "<none>" | awk '{print $1}'); do oc get cronjob $cj -oyaml >  $cj.yaml;done
 ```
 
 Deleting label from all cronjobs
+
 ```
 for cj in $(oc get cronjob -l runtimeAssembly --no-headers | grep "<none>" | awk '{print $1}'); do oc label cronjob $cj created-by- 2>/dev/null; done
 
