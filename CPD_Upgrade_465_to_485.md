@@ -461,13 +461,16 @@ mkdir cronjob_bak
 cd cronjob_bak
 ```
 
-**Backup of all cronjob**
+**Important:**
+<br>
+
+Backup of all cronjob
 
 ```
 for cj in $(oc get cronjob -l runtimeAssembly --no-headers | grep "<none>" | awk '{print $1}'); do oc get cronjob $cj -oyaml >  $cj.yaml;done
 ```
 
-**Deleting label from all cronjobs**
+Deleting label from all cronjobs
 
 ```
 for cj in $(oc get cronjob -l runtimeAssembly --no-headers | grep "<none>" | awk '{print $1}'); do oc label cronjob $cj created-by- 2>/dev/null; done
@@ -488,7 +491,8 @@ cpd-cli manage login-to-ocp \
 --password=${OCP_PASSWORD} \
 --server=${OCP_URL}
 ```
-2.Set active patches to inactive.
+2.Delete all RSI patches.
+<br>
 - Delete asset-files-api-annotation-selinux.
 <br>
 Inactivate:
