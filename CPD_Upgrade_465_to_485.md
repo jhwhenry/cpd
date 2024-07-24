@@ -1780,22 +1780,7 @@ Found out the following variables set to false
 ```
 oc set env deployment/zen-core-api --list | grep -i vault
 ```
-If values are false like this:
-```
-VAULT_BRIDGE_TOLERATE_SELF_SIGNED=false
-VAULT_BRIDGE_TLS_RENEGOTIATE=false
-```
-
-Then we need to change them to true as below.
-```
-oc patch zenservices lite-cr -p '{"spec":{"vault_bridge_tls_tolerate_private_ca": true}}' --type=merge
-```
-
-After the Zen operator reconcilation completed, then run this command for validating whether the following variables set to true.
-```
-oc set env deployment/zen-core-api --list | grep -i vault
-```
-The values should look like this:
+The values are true like this:
 ```
 VAULT_BRIDGE_TOLERATE_SELF_SIGNED=true
 VAULT_BRIDGE_TLS_RENEGOTIATE=true
@@ -1840,33 +1825,19 @@ cpd-cli manage delete-olm-artifacts \
 --delete_shared_catsrc=true
 ```
 ### 3.4 CCS post-upgrade tasks
-**1.Check if uploading JDBC drivers enabled**
-```
-oc get ccs ccs-cr -o yaml | grep -i wdp_connect_connection_jdbc_drivers_repository_mode
-```
-Make sure the `wdp_connect_connection_jdbc_drivers_repository_mode` parameter set to be enabled.
-
-**2.Customized change for the catalog-api deployment.**
-<br>
-1)Put ccs-cr in maintenance mode.
-```
-oc patch ccs ccs-cr --type=merge --patch='{"spec":{"ignoreForMaintenance":true}}'
-```
-2)Set environment variable `asset_files_call_socket_timeout_ms` for the catalog-api deployment
-```
-oc set env deployment/catalog-api asset_files_call_socket_timeout_ms=60000
-```
-3)Double check if `asset_files_call_socket_timeout_ms` is set as expected.
-```
-oc set env deployment/catalog-api --list | grep -i asset_files_call_socket_timeout_ms
-```
-**3.Add the label back to cronjobs**
+**1.Add the label back to cronjobs**
 <br>
 After the reconciliation is completed, add the label back back to cronjobs
 ```
 for cj in $(oc get cronjob -l runtimeAssembly --no-headers | grep "<none>" | awk '{print $1}'); do oc label cronjob $cj created-by=spawner 2>/dev/null; done
 ```
-**4.Change heap size in asset-files-api deployment**
+**2.Check if uploading JDBC drivers enabled**
+```
+oc get ccs ccs-cr -o yaml | grep -i wdp_connect_connection_jdbc_drivers_repository_mode
+```
+Make sure the `wdp_connect_connection_jdbc_drivers_repository_mode` parameter set to be enabled.
+
+**3.Change heap size in asset-files-api deployment**
 <br>
 1)Put ccs-cr in maintenance mode.
 ```
