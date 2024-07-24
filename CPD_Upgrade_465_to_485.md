@@ -1843,18 +1843,21 @@ Make sure the `wdp_connect_connection_jdbc_drivers_repository_mode` parameter se
 ```
 oc patch ccs ccs-cr --type=merge --patch='{"spec":{"ignoreForMaintenance":true}}'
 ```
-2)Add below section to the asset-files-api deployment and put it under the `name` of the spec.
+
+2)Edit the deployment asset-files-api
+
 ```
 oc edit deployment asset-files-api
 ```
-```
-    args:
-      - -c
-      - |
-        cd /home/node/${MICROSERVICENAME}
-        source /scripts/exportSecrets.sh
-        export npm_config_cache=~node
-        node --max-old-space-size=12288 --max-http-header-size=32768 index.js
+
+3)Add below section to the asset-files-api deployment and put it under the `name` of the spec.
+```  args:
+       - -c
+       - |
+         cd /home/node/${MICROSERVICENAME}
+         source /scripts/exportSecrets.sh
+         export npm_config_cache=~node
+         node --max-old-space-size=12288 --max-http-header-size=32768 index.js
      command:
      - /bin/bash
 ```
@@ -1871,9 +1874,9 @@ When added, it looks like this.
      command:
      - /bin/bash
 ```
-3)Save and exit.
+4)Save and exit.
 <br>
-4)Double check if the heap size change is set as expected.
+5)Double check if the heap size change is set as expected.
 ```
 oc get deployment/catalog-api --list | grep -i "--max-old-space-size=12288" -A 5 -B 5
 ```
