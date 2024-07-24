@@ -322,15 +322,21 @@ oc edit AnalyticsEngine analyticsengine-sample
 oc get AnalyticsEngine analyticsengine-sample -o yaml
 ```
 
-- 3.Uninstall the CCS hot fixes.
+- 3.Patch the CCS and uninstall the CCS hot fixes.
 <br>
-1)Edit the analyticsengine-sample with below command.
+1)Increase the capacity of elasticsearch cluster for helping with indexing and searching
+
+```
+oc patch CCS ccs-cr --type merge --patch '{ "spec": { "elasticsearch_java_opts": "-Xmx8g -Xms8g", "elasticsearch_resources": { "requests": { "cpu": "200m", "ephemeral-storage": "10Mi", "memory": "1Gi" }, "limits": { "cpu": "4", "ephemeral-storage": "1Gi", "memory": "16Gi" } } } }'
+```
+<br>
+2)Edit the CCS cr with below command.
   
 ```
 oc edit CCS ccs-cr
 ```
 
-2)Remove the hot fix images from the CCS custom resource
+3)Remove the hot fix images from the CCS custom resource
 
 ```
   asset_files_api_image:
@@ -383,9 +389,6 @@ oc edit CCS ccs-cr
     tag: 08105e65f1b0091499366d8f15b6a6d045bc1319bbae463619737172afed1dc1
     tag_metadata: 4.6.194
 ```
-
-3)Remove the `ignoreForMaintenance: true` from the CCS custom resource
-
 4)Apply preventative measures for Elastic Search pvc customization problem
 <br>
 This step is for applying the preventative measures for Elastic Search problem. Applying the preventative measures in this timing can also help to minimize the number of CCS operator reconcilations.
@@ -416,7 +419,7 @@ elasticsearch_storage_class_name: "ocs-storagecluster-ceph-rbd"
 
 This will make sure that the Opensearch operator will properly reconcile, - as provided values will match the state of the cluster. 
 
-4)Apply preventative measures for Elastic Search backup time out problem
+5)Apply preventative measures for Elastic Search backup time out problem
 <br>
 
 The time out issue that may occur during the backup operation. This problem can be avoided by setting the following property in CCS CR:
@@ -425,13 +428,15 @@ The time out issue that may occur during the backup operation. This problem can 
 elasticsearch_cpdbr_timeout_seconds: 100000
 ```
 
-5)Save and Exit. Wait untile the CCS Operator reconcilation completed and also the ccs-cr in 'Completed' status. 
+6)Remove the `ignoreForMaintenance: true` from the CCS custom resource
+
+7)Save and Exit. Wait untile the CCS Operator reconcilation completed and also the ccs-cr in 'Completed' status. 
 
 ```
 oc get CCS ccs-cr -o yaml
 ```
 
-6)Wait untile the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status. 
+8)Wait untile the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status. 
 
 ```
 oc get WKC wkc-cr -o yaml
