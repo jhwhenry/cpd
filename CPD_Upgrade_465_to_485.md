@@ -1843,33 +1843,33 @@ Make sure the `wdp_connect_connection_jdbc_drivers_repository_mode` parameter se
 ```
 oc patch ccs ccs-cr --type=merge --patch='{"spec":{"ignoreForMaintenance":true}}'
 ```
-2)Add below section to the asset-files-api deployment and put it under the `containers` of the spec.
+2)Add below section to the asset-files-api deployment and put it under the `name` of the spec.
 ```
 oc edit deployment asset-files-api
 ```
 ```
-    - args:
+    args:
       - -c
       - |
         cd /home/node/${MICROSERVICENAME}
         source /scripts/exportSecrets.sh
         export npm_config_cache=~node
         node --max-old-space-size=12288 --max-http-header-size=32768 index.js
-      command:
-      - /bin/bash
+     command:
+     - /bin/bash
 ```
 When added, it looks like this.
 ```
-    containers:
-    - args:
-      - -c
-      - |
-        cd /home/node/${MICROSERVICENAME}
-        source /scripts/exportSecrets.sh
-        export npm_config_cache=~node
-        node --max-old-space-size=12288 --max-http-header-size=32768 index.js
-      command:
-      - /bin/bash
+     name: asset-files-api
+     args:
+       - -c
+       - |
+         cd /home/node/${MICROSERVICENAME}
+         source /scripts/exportSecrets.sh
+         export npm_config_cache=~node
+         node --max-old-space-size=12288 --max-http-header-size=32768 index.js
+     command:
+     - /bin/bash
 ```
 3)Save and exit.
 <br>
@@ -1877,6 +1877,14 @@ When added, it looks like this.
 ```
 oc get deployment/catalog-api --list | grep -i "--max-old-space-size=12288" -A 5 -B 5
 ```
+**Remove the elasticsearch_java_opts setting in CCS cr**
+<br>
+1)Edit the ccs-cr.
+```
+oc edit ccs ccs-cr
+```
+2)Remove the `"elasticsearch_java_opts": "-Xmx8g -Xms8g"` from the ccs-cr.
+3)Save and exit.
 
 ### 3.5 WKC post-upgrade tasks
 **1.Migration cleanup - legacy features**
