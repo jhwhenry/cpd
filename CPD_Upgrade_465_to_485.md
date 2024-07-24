@@ -454,17 +454,30 @@ Save and Exit. Wait untile the ZenService Operator reconcilation completed and a
 - 5.Apply preventative measures for potential time-consuming CCS reconcilation caused by large number of cronjobs.
 <br>
 
-Backup of all cronjob
+Create a directory for the backup of cronjobs.
+
+```
+mkdir cronjob_bak
+cd cronjob_bak
+```
+
+**Backup of all cronjob**
 
 ```
 for cj in $(oc get cronjob -l runtimeAssembly --no-headers | grep "<none>" | awk '{print $1}'); do oc get cronjob $cj -oyaml >  $cj.yaml;done
 ```
 
-Deleting label from all cronjobs
+**Deleting label from all cronjobs**
 
 ```
 for cj in $(oc get cronjob -l runtimeAssembly --no-headers | grep "<none>" | awk '{print $1}'); do oc label cronjob $cj created-by- 2>/dev/null; done
 
+```
+
+Return to the parent directory.
+
+```
+cd ..
 ```
 
 #### 1.1.4 Uninstall the RSI patches and the cluster-scoped webhook
