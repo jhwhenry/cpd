@@ -1592,7 +1592,7 @@ oc patch ZenService lite-cr -n ${PROJECT_CPD_INSTANCE} --type merge -p '{"spec":
 April & May combined CCS patch command (including the jdbc driver uploading for reducing the number of operator reconcilations): <br>
 
 ```
-oc patch ccs ccs-cr -n ${PROJECT_CPD_INSTANCE} --type=merge -p '{"spec":{"image_digests":{"portal_projects_image":"sha256:93c38bf9870a5e8f9399b1e90e09f32e5f556d5f6e03b4a447a400eddb08dc4e","asset_files_api_image":"sha256:bfa820ffebcf55b87f7827037daee7ec074d0435139e57acbb494df19aee0e98","catalog_api_image":"sha256:4ee6645dd5d9160150f3ad21298e85b28bfe45f6bfff3298861552ccf0897903","wkc_search_image":"sha256:3e95e932b2d2a186cab56b5073e2f9d1b70f1ac24a6ff48c1ae322e8727bdcb3","portal_catalog_image":"sha256:33e51a0c7eb16ac4b5dbbcd57b2ebe62313435bab2c0c789a1801a1c2c00c77d"},"wdp_connect_connection_jdbc_drivers_repository_mode": "enabled","elasticsearch_java_opts": ""}}'
+oc patch ccs ccs-cr -n ${PROJECT_CPD_INSTANCE} --type=merge -p '{"spec":{"image_digests":{"portal_projects_image":"sha256:93c38bf9870a5e8f9399b1e90e09f32e5f556d5f6e03b4a447a400eddb08dc4e","asset_files_api_image":"sha256:bfa820ffebcf55b87f7827037daee7ec074d0435139e57acbb494df19aee0e98","catalog_api_image":"sha256:4ee6645dd5d9160150f3ad21298e85b28bfe45f6bfff3298861552ccf0897903","wkc_search_image":"sha256:3e95e932b2d2a186cab56b5073e2f9d1b70f1ac24a6ff48c1ae322e8727bdcb3","portal_catalog_image":"sha256:33e51a0c7eb16ac4b5dbbcd57b2ebe62313435bab2c0c789a1801a1c2c00c77d"},"wdp_connect_connection_jdbc_drivers_repository_mode": "enabled","asset_files_call_socket_timeout_ms": "60000","elasticsearch_java_opts": ""}}'
 ```
 
 April & May combined WKC patch command (including legacyCleanup for reducing the number of operator reconcilations):<br>
