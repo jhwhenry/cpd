@@ -1060,7 +1060,14 @@ oc get mcp
 2. Check Cloud Pak for Data status
 
 Log onto bastion node, and make sure IBM Cloud Pak for Data command-line interface installed properly.
+
 Run this command in terminal and make sure the Lite and all the services' status are in Ready status.
+```
+cpd-cli manage login-to-ocp \
+--username=${OCP_USERNAME} \
+--password=${OCP_PASSWORD} \
+--server=${OCP_URL}
+```
 
 ```
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
