@@ -103,7 +103,7 @@ Part 2: Upgrade
 2.2.1 Upgrade IBM Knowledge Catalog service and apply hot fixes
 2.2.2 Upgrade MANTA service
 2.2.3 Upgrade Analytics Engine service
-2.2.4 Upgrade Watson Studio, Watson Studio Runtimes and Watson Machine Learning
+2.2.4 Upgrade Watson Studio, Watson Studio Runtimes, Watson Machine Learning and OpenScale
 2.2.5 Upgrade Db2 Warehouse
 
 Part 3: Post-upgrade
