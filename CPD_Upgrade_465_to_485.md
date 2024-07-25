@@ -474,13 +474,13 @@ cd cronjob_bak
 Backup of all cronjob
 
 ```
-for cj in $(oc get cronjob -l runtimeAssembly --no-headers | grep "<none>" | awk '{print $1}'); do oc get cronjob $cj -oyaml >  $cj.yaml;done
+for cj in $(oc get cronjob -l runtimeAssembly --no-headers | awk '{print $1}'); do oc get cronjob $cj -oyaml >  $cj.yaml;done
 ```
 
 Deleting label from all cronjobs
 
 ```
-for cj in $(oc get cronjob -l runtimeAssembly --no-headers | grep "<none>" | awk '{print $1}'); do oc label cronjob $cj created-by- 2>/dev/null; done
+for cj in $(oc get cronjob -l runtimeAssembly --no-headers | awk '{print $1}'); do oc label cronjob $cj created-by- 2>/dev/null; done
 
 ```
 
