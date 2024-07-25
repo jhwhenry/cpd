@@ -264,14 +264,14 @@ oc edit WKC wkc-cr
     tag_metadata: 2.5.20-amd64
 ```
 
-3)Add below entry for setting the number of wkc_bi_data_service replicas to be 3
+3)Add or update below entry for setting the number of wkc_bi_data_service replicas to be 3
 
 ```
 wkc_bi_data_service_max_replicas: 3
 wkc_bi_data_service_min_replicas: 3
 ```
 
-4)Add the `kg_resources` section under spec in the wkc-cr
+4)Add or update the `kg_resources` section under spec in the wkc-cr
 
 ```
 kg_resources:
