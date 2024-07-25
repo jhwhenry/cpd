@@ -332,6 +332,7 @@ oc get AnalyticsEngine analyticsengine-sample -o yaml
 - 3.Patch the CCS and uninstall the CCS hot fixes.
 <br>
 1)Unlabel the runtimeAssembly cronjob
+<br>
 **Important:**
 <br>
 
