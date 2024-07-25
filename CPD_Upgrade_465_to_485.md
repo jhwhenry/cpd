@@ -1868,7 +1868,8 @@ oc edit deployment asset-files-api
 ```
 
 3)Add below section to the asset-files-api deployment and put it under the `name` of the spec.
-```  args:
+```
+     args:
        - -c
        - |
          cd /home/node/${MICROSERVICENAME}
