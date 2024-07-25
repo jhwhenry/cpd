@@ -172,6 +172,13 @@ cpd-cli manage get-rsi-patch-info \
 --all
 ```
 
+Backup deployments and svc that need to be modified after upgrade.
+```
+oc get deploy asset-files-api -o yaml -n ${PROJECT_CPD_INSTANCE} > asset-files-api-deploy-465.yaml
+oc get deploy catalog-api -o yaml -n ${PROJECT_CPD_INSTANCE} > catalog-api-deploy-465.yaml
+oc svc finley-public -o yaml -n ${PROJECT_CPD_INSTANCE} > finley-public-svc-465.yaml
+```
+
 Collect wkc db2u information.
 ```
 oc exec -it c-db2oltp-wkc-db2u-0 bash
