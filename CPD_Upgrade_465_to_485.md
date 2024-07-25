@@ -331,7 +331,16 @@ oc get AnalyticsEngine analyticsengine-sample -o yaml
 
 - 3.Patch the CCS and uninstall the CCS hot fixes.
 <br>
-1)Unlabel the runtimeAssembly cronjob
+1)Apply preventative measures for potential time-consuming CCS reconcilation caused by large number of cronjobs.
+<br>
+
+Create a directory for the backup of cronjobs.
+
+```
+mkdir cronjob_bak
+cd cronjob_bak
+```
+
 <br>
 **Important:**
 <br>
@@ -354,7 +363,7 @@ Return to the parent directory.
 ```
 cd ..
 ```
-<br>
+
 2)Increase the capacity of elasticsearch cluster for helping with indexing and searching
 
 ```
@@ -481,17 +490,6 @@ oc edit ZenService lite-cr
 
 Save and Exit. Wait untile the ZenService Operator reconcilation completed and also the lite-cr in 'Completed' status. 
 <br>
-
-- 5.Apply preventative measures for potential time-consuming CCS reconcilation caused by large number of cronjobs.
-<br>
-
-Create a directory for the backup of cronjobs.
-
-```
-mkdir cronjob_bak
-cd cronjob_bak
-```
-
 
 
 #### 1.1.4 Uninstall the RSI patches and the cluster-scoped webhook
