@@ -1844,7 +1844,7 @@ cpd-cli manage delete-olm-artifacts \
 ### 3.4 CCS post-upgrade tasks
 **1.Add the label back to cronjobs**
 <br>
-After the reconciliation is completed, add the label back back to cronjobs
+After the reconciliation is completed, add the label back to cronjobs
 ```
 for cj in $(oc get cronjob -l runtimeAssembly --no-headers | grep "<none>" | awk '{print $1}'); do oc label cronjob $cj created-by=spawner 2>/dev/null; done
 ```
