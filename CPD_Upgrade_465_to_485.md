@@ -1911,6 +1911,7 @@ oc get deployment/catalog-api --list | grep -i "--max-old-space-size=12288" -A 5
 oc edit ccs ccs-cr
 ```
 2)Remove the `"elasticsearch_java_opts": "-Xmx8g -Xms8g"` from the ccs-cr.
+<br>
 3)Save and exit.
 
 ### 3.5 WKC post-upgrade tasks
