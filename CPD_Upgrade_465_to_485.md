@@ -1937,11 +1937,7 @@ Delete the leftovers if there are any.
 
 [Reference - migration cleanup](https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=tasks-migration-cleanup#migration_cleanup__services__title__1)
 
-**2.Enable Relationship Explorer feature**
-<br>
-[Enable Relationship Explorer feature](https://github.com/sanjitc/Cloud-Pak-for-Data/blob/main/Upgrade/CPD%204.6%20to%204.8/Enabling_Relationship_Explorer_480%20-%20disclaimer%200208.pdf)
-
-**3.Enable 'Allow Reporting' settings for Catalogs and Projects**
+**2.Enable 'Allow Reporting' settings for Catalogs and Projects**
 <br>
 1)Put wkc-cr in maintenance mode.
 ```
@@ -1955,6 +1951,10 @@ oc set env deployment/wkc-bi-data-service ENFORCE_AUTHORIZE_REPORTING=true
 ```
 oc set env deployment/wkc-bi-data-service --list | grep -i ENFORCE_AUTHORIZE_REPORTING
 ```
+
+**3.Enable Relationship Explorer feature**
+<br>
+[Enable Relationship Explorer feature](https://github.com/sanjitc/Cloud-Pak-for-Data/blob/main/Upgrade/CPD%204.6%20to%204.8/Enabling_Relationship_Explorer_480%20-%20disclaimer%200208.pdf)
 
 **4.Customized change for Finley affinity**
 <br>
