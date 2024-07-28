@@ -2000,6 +2000,9 @@ oc get cm spark-hb-deployment-properties -o yaml | grep -i deploymentStatusRetry
 <br>
 2)adding the `zenMinioReqSize: 100Gi` property to the lite-cr. This step can be done in another maintenance time window as it may trigger reconcilation.
 
+**8.Enabling lineage import after upgrade** 
+https://www.ibm.com/docs/en/cloud-paks/cp-data/4.8.x?topic=administering-enabling-lineage-import.
+
 ### 3.6 Handling embedded Postgres license expiry for CPD 4.8.5
 https://www.ibm.com/support/pages/node/7158524
 
