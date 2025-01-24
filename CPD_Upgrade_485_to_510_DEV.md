@@ -123,7 +123,8 @@ Part 4: Maintenance
 4.3 Configure the idle session timeout
 4.4 Increasing the number of nginx worker connections
 4.5 Increase ephemeral storage for zen-watchdog-serviceability-job
-4.6 Upgrade the Backup & Restore service and application
+4.6 Update wdp-lineage deployment for addressing the potential Db2 high CPU and Memory usage issue
+4.7 Upgrade the Backup & Restore service and application
 
 Summarize and close out the upgrade
 
