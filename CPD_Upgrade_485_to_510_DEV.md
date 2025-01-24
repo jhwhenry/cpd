@@ -811,7 +811,7 @@ cpd-cli manage apply-rsi-patches \
 ```
 3).Creat new patches required for migrating profiling results
 <br>
-a).Identify the location of the `work` directory using below command.
+a).Identify the location of the `work` directory and create the `rsi` folder under it.
 
 ```
 podman inspect olm-utils-play-v3 | grep -i -A5  mounts
@@ -832,13 +832,19 @@ For example, `/ibm/cpd/510/work` is the location of the `work` directory.
 
 <br>
 
-b).Create a json patch file named `annotation-spec.json` under `cpd-cli-workspace/olm-utils-workspace/work/rsi` with the following content:
+Create the `rsi` folder. **Note: Change the value for the environment variable `CPD_CLI_WORK_DIR` based on the location of the `work` directory.** 
+```
+export CPD_CLI_WORK_DIR=/ibm/cpd/510/work
+mkdir -p $CPD_CLI_WORK_DIR/rsi
+```
+
+b).Create a json patch file named `annotation-spec.json` under the `rsi` directory with the following content:
 
 ```
 [{"op":"add","path":"/metadata/annotations/io.kubernetes.cri-o.TrySkipVolumeSELinuxLabel","value":"true"}]
 ```
 
-c).Create a json patch file named `specpatch.json` under `cpd-cli-workspace/olm-utils-workspace/work/rsi` with the following content:
+c).Create a json patch file named `specpatch.json` under the `rsi` directory with the following content:
 
 ```
 [{"op":"add","path":"/spec/runtimeClassName","value":"selinux"}]
@@ -860,7 +866,7 @@ cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} -
 ```
 cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --all
 
-cat cpd-cli-workspace/olm-utils-workspace/work/get_rsi_patch_info.log
+cat $CPD_CLI_WORK_DIR/get_rsi_patch_info.log
 ```
 
 ### 2.2 Upgrade CPD services to 5.1.0
