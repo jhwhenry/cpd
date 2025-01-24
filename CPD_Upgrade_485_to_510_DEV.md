@@ -799,9 +799,13 @@ oc get csv,sub -n ${PROJECT_CPD_INST_OPERATORS}
 [Operator and operand versions](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=planning-operator-operand-versions)
 
 <br>
+
 Increase the resource limits of the CCS operator for avoiding potention problems when dealing with large data volume.
+
 <br>
+
 Have a backup of the CCS CSV yaml file.
+
 ```
 oc get csv ibm-cpd-ccs.v10.0.0 -n ${PROJECT_CPD_INST_OPERATORS} -o yaml > ibm-cpd-ccs-csv-510.yaml
 ```
