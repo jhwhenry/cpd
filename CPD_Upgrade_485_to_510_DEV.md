@@ -961,10 +961,13 @@ oc patch ZenService lite-cr -n ${PROJECT_CPD_INST_OPERANDS} --type merge -p '{"s
 ```
 
 **Combined CCS patch command** (Reducing the number of operator reconcilations): <br>
-This command includes the patch for 1)enable global search relationships and 2)asset-files-api deployment tuning
+This command includes the patch for 
+- 1)enable global search relationships
+- 2)asset-files-api deployment tuning
+- 3)Couchdb search container resource tuning 
 
 ```
-oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"asset_files_call_socket_timeout_ms": 60000, "portal_catalog_is_global_search_relationships_enabled": "true","asset_files_api_resources": {"limits": {"cpu": "4", "memory": "32Gi", "ephemeral-storage": "1Gi"}, "requests": {"cpu": "200m", "memory": "256Mi", "ephemeral-storage": "10Mi"}}, "asset_files_api_replicas": 6,"asset_files_api_command":["/bin/bash"], "asset_files_api_args":["-c","cd /home/node/${MICROSERVICENAME}; source /scripts/exportSecrets.sh; export npm_config_cache=~node; node --max-old-space-size=12288 --max-http-header-size=32768 index.js"]}}'
+oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"asset_files_call_socket_timeout_ms": 60000, "portal_catalog_is_global_search_relationships_enabled": "true","asset_files_api_resources": {"limits": {"cpu": "4", "memory": "32Gi", "ephemeral-storage": "1Gi"}, "requests": {"cpu": "200m", "memory": "256Mi", "ephemeral-storage": "10Mi"}}, "asset_files_api_replicas": 6,"asset_files_api_command":["/bin/bash"], "asset_files_api_args":["-c","cd /home/node/${MICROSERVICENAME}; source /scripts/exportSecrets.sh; export npm_config_cache=~node; node --max-old-space-size=12288 --max-http-header-size=32768 index.js"],"couchdb_search_resources":{"requests":{"cpu": "250m", "memory": "256Mi"},"limits":{"cpu": "8", "memory": "16Gi"}}}}'
 ```
 
 **Get the file-api-claim pvc size for preparing the postgresql with the proper storage size to accomendate the profiling migration**
