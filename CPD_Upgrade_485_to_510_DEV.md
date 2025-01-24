@@ -55,18 +55,16 @@ However, if you want to enable users with fewer permissions to complete some of 
 <br>
 The Cloud Pak for Data administrator role or permissions is required for upgrading the service instances.
 
-#### 4. Migrate the Cloud Pak for Data image content source policy to an image digest mirror set.
-Starting in Red Hat OpenShift Container Platform Version 4.14, the image content source policy is replaced by the image digest mirror set. If you upgrade to Red Hat OpenShift Container Platform Version 4.14 or later, you must migrate the Cloud Pak for Data image content source policy to an image digest mirror set.
-<br>
+- Permission to access the private image registry for pushing or pull images
+  
+- Access to the Bastion node for executing the upgrade commands
 
-[Migrating your image content source policy to an image digest mirror set](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=cluster-migrating-image-digest-mirror-set)
-
-#### 5. Migrate environments based on Watson Studio Runtime 22.2 and Runtime 23.1 from IBM Cloud Pak® for Data 4.8 (optional)
+#### 4. Migrate environments based on Watson Studio Runtime 22.2 and Runtime 23.1 from IBM Cloud Pak® for Data 4.8 (optional)
 The Watson Studio Runtime 22.2 and Runtime 23.1 are not included in IBM® Software Hub. If you want to continue using environments that are based on Runtime 22.2 or Runtime 23.1, you must migrate them.
 <br>
 [Migrating environments based on Runtime 22.2 and Runtime 23.1 from IBM Cloud Pak® for Data 4.8](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=u-migrating-environments-based-runtime-222-runtime-231-from-cloud-pak-data-48-50)
 
-#### 6. Collect the number of profiling records to be migrated
+#### 5. Collect the number of profiling records to be migrated
 Collect profiling records information
 ```
 oc project ${PROJECT_CPD_INST_OPERANDS}
@@ -78,7 +76,7 @@ oc exec -it $(oc get pods --no-headers | grep -i asset-files | head -n 1 | awk '
 oc exec -it $(oc get pods --no-headers | grep -i asset-files | head -n 1 | awk '{print $1}') -- ls -alRt /mnt/asset_file_api | egrep -i 'REF_|ARES_' | wc -l > /tmp/profiling_records_ref_number.txt
 
 ```
-#### 7. A pre-upgrade health check is made to ensure the cluster's readiness for upgrade.
+#### 6. A pre-upgrade health check is made to ensure the cluster's readiness for upgrade.
 - The OpenShift cluster, persistent storage and Cloud Pak for Data platform and services are in healthy status.
 
 ## Table of Content
@@ -233,25 +231,15 @@ oc edit WKC wkc-cr
 2)Remove the hot fix images from the WKC custom resource
 
 ```
- wkc_metadata_imports_ui_image:
-    name: xxxxxx
-    tag: a1997d9a9cde9ecc9f16eb02099a272d7ba2e8d88cb05a9f52f32533e4d633ef
-    tag_metadata: xxxxxx
-
-  wdp_profiling_image:
-    name: xxxxxx
-    tag: d5491cc8c8c8bd45f2605f299ecc96b9461cd5017c7861f22735e3a4d0073abd
-    tag_metadata: xxxxxx
-
-  wkc_mde_service_manager_image:
-    name: xxxxxx
-    tag: 35e6f6ede3383df5c0b2a3d27c146cc121bed32d26ab7fa8870c4aa4fbc6e993
-    tag_metadata: xxxxxx
-
-  finley_public_image:
-    name: xxxxxx
-    tag: e89b59e16c4c10fce5ae07774686d349d17b2d21bf9263c50b49a7a290499c6d
-    tag_metadata: xxxxxx
+  image_digests:
+    finley_public_image: sha256:e89b59e16c4c10fce5ae07774686d349d17b2d21bf9263c50b49a7a290499c6d
+    metadata_discovery_image: sha256:9b1811703c2639a822e0d3a2c466ee2a6378bbd4f706da66ed1b61cb96971610
+    wdp_kg_ingestion_service_image: sha256:bb6c382edf1da01335152da98b803f44b424e8651c862eaf96b6394d8e735e6f
+    wdp_lineage_image: sha256:9eda6aaf3dd2581fc7a85746e4b559192b4b00aa5cd7bc227cb29e7873a3cea1
+    wdp_profiling_image: sha256:d5491cc8c8c8bd45f2605f299ecc96b9461cd5017c7861f22735e3a4d0073abd
+    wkc_data_lineage_service_image: sha256:618a29c3d5cbe9df061571b40e20ca589bfa4195e7e5a75c3b58b983c4e18f63
+    wkc_mde_service_manager_image: sha256:35e6f6ede3383df5c0b2a3d27c146cc121bed32d26ab7fa8870c4aa4fbc6e993
+    wkc_metadata_imports_ui_image: sha256:a1997d9a9cde9ecc9f16eb02099a272d7ba2e8d88cb05a9f52f32533e4d633ef
 ```
 
 3)Remove the `ignoreForMaintenance: true` from the WKC custom resource
@@ -266,7 +254,7 @@ ignoreForMaintenance: true
 oc get WKC wkc-cr -o yaml
 ```
 
-- 3.Uninstall the AnalyticsEngine hot fixes.
+- 3.Uninstall the AnalyticsEngine hot fixes if any.
 <br>
 1)Edit the analyticsengine-sample with below command.
   
@@ -300,30 +288,12 @@ oc edit CCS ccs-cr
 2)Remove the hot fix images from the CCS custom resource
 
 ```
-  portal_projects_image:
-    name: xxxxxx
-    tag: 93c38bf9870a5e8f9399b1e90e09f32e5f556d5f6e03b4a447a400eddb08dc4e
-    tag_metadata: xxxxxx
-
-  asset_files_api_image:
-    name: xxxxxx
-    tag: bfa820ffebcf55b87f7827037daee7ec074d0435139e57acbb494df19aee0e98
-    tag_metadata: xxxxxx
-
-  catalog_api_image:
-    name: xxxxxx
-    tag: 4ee6645dd5d9160150f3ad21298e85b28bfe45f6bfff3298861552ccf0897903
-    tag_metadata: xxxxxx
-
-  wkc_search_image:
-    name: xxxxxx
-    tag: 3e95e932b2d2a186cab56b5073e2f9d1b70f1ac24a6ff48c1ae322e8727bdcb3
-    tag_metadata: xxxxxx
-
-  portal_catalog_image:
-    name: xxxxxx
-    tag: 33e51a0c7eb16ac4b5dbbcd57b2ebe62313435bab2c0c789a1801a1c2c00c77d
-    tag_metadata: xxxxxx
+  image_digests:
+    asset_files_api_image: sha256:bfa820ffebcf55b87f7827037daee7ec074d0435139e57acbb494df19aee0e98
+    catalog_api_image: sha256:d64c61cbc010d7535b33457439b5cb65c276346d4533963a9a5165471840beb4
+    portal_catalog_image: sha256:33e51a0c7eb16ac4b5dbbcd57b2ebe62313435bab2c0c789a1801a1c2c00c77d
+    portal_projects_image: sha256:93c38bf9870a5e8f9399b1e90e09f32e5f556d5f6e03b4a447a400eddb08dc4e
+    wkc_search_image: sha256:64e59002617d48428cd59a55bbad5ebf0ccf68644fd627fd1e33f6558dbc8b68
 ```
 3)Apply preventative measures for OpenSearch pvc customization problem
 <br>
@@ -377,58 +347,18 @@ oc edit ZenService lite-cr
 
 1)Remove the hot fix images from the ZenService custom resource
 ```
-  icp4data_nginx_repo:
-    name: xxxxxx
-    tag: 2ab2c0cfecdf46b072c9b3ec20de80a0c74767321c96409f3825a1f4e7efb788
-    tag_metadata: xxxxxx
-
-  icpd_requisite:
-    name: xxxxxx
-    tag: 5a7082482c1bcf0b23390d36b0800cc04cfaa32acf7e16413f92304c36a51f02
-    tag_metadata: xxxxxx
-
-  privatecloud_usermgmt:
-    name: xxxxxx
-    tag: e7b0dda15fa3905e4f242b66b18bc9cf2d27ea46e267e5a8d6a3d7da011bddb1
-    tag_metadata: xxxxxx
-
-  zen_audit:
-    name: xxxxxx
-    tag: ccf61039298186555fd18f568e715ca9e12f07805f42eb39008f851500c0f024
-    tag_metadata: xxxxxx
-
-  zen_core:
-    name: xxxxxx
-    tag: 67f4d92a6e1f39675856fe3b46b36b34e9f0ae25679f75a1628c9d7d44790bad
-    tag_metadata: xxxxxx
-
-  zen_core_api:
-    name: xxxxxx
-    tag: b3ba3250a228d5f1ba3ea93ccf8b0f018e557f0f4828ed773b57075b842c30e9
-    tag_metadata: xxxxxx
-
-  zen_iam_config:
-    name: xxxxxx
-    tag: 5abf2bf3f29ca28c72c64ab23ee981e8ad122c0de94ca7702980e1d40841d91a
-    tag_metadata: xxxxxx
-
-  zen_minio:
-    name: xxxxxx
-    tag: f66e6c17d1ed9d90a90e9a1280a18aacb9012bbdb604c5230d97db4cffcb4b48
-    tag_metadata: xxxxxx
-
-  zen_utils:
-    name: xxxxxx
-    tag: 6d906104a8bd8b15f3ebcb2c3ae6a5f93c8d88ce6cfcae4b3eed6657562dc9f3
-    tag_metadata: xxxxxx
-
-  zen_watchdog:
-    name: xxxxxx
-    tag: 4f73b382687bd4de6754292670f6281a7944b6b0903396ed78f1de2da54bc8c0
-    tag_metadata: xxxxxx
+  image_digests:
+    icp4data_nginx_repo: sha256:2ab2c0cfecdf46b072c9b3ec20de80a0c74767321c96409f3825a1f4e7efb788
+    icpd_requisite: sha256:5a7082482c1bcf0b23390d36b0800cc04cfaa32acf7e16413f92304c36a51f02
+    privatecloud_usermgmt: sha256:e7b0dda15fa3905e4f242b66b18bc9cf2d27ea46e267e5a8d6a3d7da011bddb1
+    zen_audit: sha256:ccf61039298186555fd18f568e715ca9e12f07805f42eb39008f851500c0f024
+    zen_core: sha256:67f4d92a6e1f39675856fe3b46b36b34e9f0ae25679f75a1628c9d7d44790bad
+    zen_core_api: sha256:b3ba3250a228d5f1ba3ea93ccf8b0f018e557f0f4828ed773b57075b842c30e9
+    zen_iam_config: sha256:5abf2bf3f29ca28c72c64ab23ee981e8ad122c0de94ca7702980e1d40841d91a
+    zen_minio: sha256:f66e6c17d1ed9d90a90e9a1280a18aacb9012bbdb604c5230d97db4cffcb4b48
+    zen_utils: sha256:6d906104a8bd8b15f3ebcb2c3ae6a5f93c8d88ce6cfcae4b3eed6657562dc9f3
+    zen_watchdog: sha256:4f73b382687bd4de6754292670f6281a7944b6b0903396ed78f1de2da54bc8c0
 ```
-
-2)Remove the `ignoreForMaintenance: true` from the ZenService custom resource.
 <br>
 Save and Exit. Wait untile the ZenService Operator reconcilation completed and also the lite-cr in 'Completed' status. 
 <br>
@@ -436,14 +366,14 @@ Save and Exit. Wait untile the ZenService Operator reconcilation completed and a
 - 6.Remove stale secret of global search
 Check if the elasticsearch-master-ibm-elasticsearch-cred-secret exists.
 ```
-oc get secret -A | grep elasticsearch-master-ibm-elasticsearch-cred-secret
+oc get secret -n ${PROJECT_CPD_INST_OPERANDS} | grep elasticsearch-master-ibm-elasticsearch-cred-secret
 ```
 If yes, then delete this stale secret.
 ```
 oc delete elasticsearch-master-ibm-elasticsearch-cred-secret -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
-#### 1.1.4 Uninstall the old RSI pathch
+#### 1.1.4 Uninstall the old RSI patch
 1.Run the cpd-cli manage login-to-ocp command to log in to the cluster as a user with sufficient permissions.
 ```
 cpd-cli manage login-to-ocp \
@@ -746,6 +676,15 @@ cpd-cli manage apply-cluster-components \
 ```
 **Note**:
 <br><br>Monitor the install plan and approved them as needed.
+<br>
+In another terminal, keep running below command and monitoring "InstallPlan" to find which one need manual approval.
+```
+watch "oc get ip -n ${PROJECT_CPD_INST_OPERATORS} -o=jsonpath='{.items[?(@.spec.approved==false)].metadata.name}'"
+```
+Approve the upgrade request and run below command as soon as we find it.
+```
+oc patch installplan $(oc get ip -n ${PROJECT_CPD_INST_OPERATORS} -o=jsonpath='{.items[?(@.spec.approved==false)].metadata.name}') -n ${PROJECT_CPD_INST_OPERATORS} --type merge --patch '{"spec":{"approved":true}}'
+```
 
 <br>Confirm that the Certificate manager pods in the ${PROJECT_CERT_MANAGER} project are Running:
 ```
@@ -859,7 +798,14 @@ oc get csv,sub -n ${PROJECT_CPD_INST_OPERATORS}
 [Operator and operand versions](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=planning-operator-operand-versions)
 
 <br>
-Increase the resource limits of the CCS operator.
+Increase the resource limits of the CCS operator for avoiding potention problems when dealing with large data volume.
+<br>
+Have a backup of the CCS CSV yaml file.
+```
+oc get csv ibm-cpd-ccs.v10.0.0 -n ${PROJECT_CPD_INST_OPERATORS} -o yaml > ibm-cpd-ccs-csv-510.yaml
+```
+
+Edit the CCS CSV:
 
 ```
 oc edit csv ibm-cpd-ccs.v10.0.0 -n ${PROJECT_CPD_INST_OPERATORS} 
@@ -870,10 +816,12 @@ Make changes to the limits like below.
 ```
     resources:
       limits:
-        cpu: 2
-        ephemeral-storage: 2Gi
-        memory: 4Gi
+        cpu: 4
+        ephemeral-storage: 5Gi
+        memory: 8Gi
 ```
+
+This change can be reverted after the upgrade completed successfully.
 
 #### 2.1.5 Applying the RSI patches
 
@@ -904,9 +852,11 @@ The `Source` property value in the output is the location of the `work` director
             "Destination": "/tmp/work",
             "Driver": "",
 ```
+
 For example, `/ibm/cpd/510/work` is the location of the `work` directory.
 
 <br>
+
 b).Create a json patch file named `annotation-spec.json` under `cpd-cli-workspace/olm-utils-workspace/work/rsi` with the following content:
 
 ```
@@ -920,6 +870,7 @@ c).Create a json patch file named `specpatch.json` under `cpd-cli-workspace/olm-
 ```
 
 d).Create the annotation patch for wdp profiling postgres migration pods.
+
 ```
 cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --patch_type=rsi_pod_annotation --patch_name=prof-pg-migration-annotation-selinux --description="This is annotation patch is for selinux relabeling disabling on CSI based storages for wdp profiling postgres migration pods" --include_labels=job-name:wdp-profiling-postgres-migration --state=active --spec_format=json --patch_spec=/tmp/work/rsi/annotation-spec.json
 ```
@@ -938,7 +889,7 @@ cat cpd-cli-workspace/olm-utils-workspace/work/get_rsi_patch_info.log
 ```
 
 ### 2.2 Upgrade CPD services to 5.1.0
-#### 2.2.1 Upgrading IBM Knowledge Catalog service and apply hot fixes
+#### 2.2.1 Upgrading IBM Knowledge Catalog service and apply customizations
 Check if the IBM Knowledge Catalog service was installed with the custom install options. 
 ##### 1. For custom installation, check the previous install-options.yaml or wkc-cr yaml, make sure to keep original custom settings
 Specify the following options in the `install-options.yml` file in the `work` directory. Create the `install-options.yml` file if it doesn't exist in the `work` directory.
@@ -997,31 +948,18 @@ cpd-cli manage apply-cr \
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-##### 5.Apply the hotfixes (to be updated)
-**Combined Zenservice patch command** (including external vault connection for reducing the number of operator reconcilations): <br>
+##### 4.Apply the customizations 
+**Apply the change for supporting CyberArk Vault with a private CA signed certificate**: <br>
 
 ```
-oc patch ZenService lite-cr -n ${PROJECT_CPD_INST_OPERANDS} --type merge -p '{"spec":{"image_digests":{"xxxxxx":"sha256:yyyyyy"},"vault_bridge_tls_tolerate_private_ca": true}}'
+oc patch ZenService lite-cr -n ${PROJECT_CPD_INST_OPERANDS} --type merge -p '{"spec":{"vault_bridge_tls_tolerate_private_ca": true}}'
 ```
 
 **Combined CCS patch command** (Reducing the number of operator reconcilations): <br>
+This command includes the patch for 1)enable global search relationships and 2)asset-files-api deployment tuning
 
 ```
-oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"image_digests":{"xxxxxx":"sha256:yyyyyy","aaaaaa":"sha256:bbbbbb"},"asset_files_call_socket_timeout_ms": 60000, "portal_catalog_is_global_search_relationships_enabled": "true","asset_files_api_resources": {"limits": {"cpu": "4", "memory": "32Gi", "ephemeral-storage": "1Gi"}, "requests": {"cpu": "200m", "memory": "256Mi", "ephemeral-storage": "10Mi"}}, "asset_files_api_replicas": 6,"asset_files_api_command":["/bin/bash"], "asset_files_api_args":["-c","cd /home/node/${MICROSERVICENAME}; source /scripts/exportSecrets.sh; export npm_config_cache=~node; node --max-old-space-size=12288 --max-http-header-size=32768 index.js"]}}'
-```
-
-If below customization required, then the patch command needs to be updated. Or the patch command can be changed to the command `oc edit ccs ccs-cr` instead.
-```
-  asset_files_api_replicas: 6
-  asset_files_api_resources:
-    limits:
-      cpu: "4"
-      ephemeral-storage: 1Gi
-      memory: 32Gi
-    requests:
-      cpu: 200m
-      ephemeral-storage: 10Mi
-      memory: 256Mi
+oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"asset_files_call_socket_timeout_ms": 60000, "portal_catalog_is_global_search_relationships_enabled": "true","asset_files_api_resources": {"limits": {"cpu": "4", "memory": "32Gi", "ephemeral-storage": "1Gi"}, "requests": {"cpu": "200m", "memory": "256Mi", "ephemeral-storage": "10Mi"}}, "asset_files_api_replicas": 6,"asset_files_api_command":["/bin/bash"], "asset_files_api_args":["-c","cd /home/node/${MICROSERVICENAME}; source /scripts/exportSecrets.sh; export npm_config_cache=~node; node --max-old-space-size=12288 --max-http-header-size=32768 index.js"]}}'
 ```
 
 **Get the file-api-claim pvc size for preparing the postgresql with the proper storage size to accomendate the profiling migration**
@@ -1030,15 +968,6 @@ Check the asset-files-api pvc size. Specify the same or a bigger storage size fo
 
 ```
 oc get pvc -n ${PROJECT_CPD_INST_OPERANDS} | grep file-api-claim | awk '{print $4}'
-```
-
-**Combined WKC patch command** for reducing the number of operator reconcilations:<br>
-**Note:** <br>
-Change the file-api-claim pvc size accordingly in below command before running it.
-
-```
-oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"image_digests":{"xxxxxx":"sha256:yyyyyy","aaaaaa":"sha256:bbbbbb"},"wkc_term_assignment_rest_retry_config":"cams\\\\.write:400|3|2;cams\\\\.attachment\\\\.markcomplete:400|3|2,404|3|2;finley\\\\.predict:500|18|10,502|18|10,503|18|10,504|1|10,507|18|10;.*:408|3|2,409|3|2,425|3|2,429|3|2,500|6|10,502|6|10,503|6|10,504|6|10,507|6|10,-1|3|2","wkc_term_assignment_finley_page_size_reduction_divisor":"5","finley_public_gunicorn_worker_timeout":"65","wdp_profiling_flight_enabled":"false","wdp_profiling_edb_postgres_storage_size":"500Gi"}}}'
-
 ```
 
 #### 2.2.2 Upgrading MANTA service
@@ -1052,7 +981,7 @@ export COMPONENTS=mantaflow
 ${CPDM_OC_LOGIN}
 ```
 
-- Remove the `migrations` section from the mantaflow custom resource:
+- Remove the `migrations` section from the mantaflow custom resource if any:
 <br>
 
 Run the following command:
@@ -1266,17 +1195,9 @@ oc get ccs ccs-cr -o yaml | grep -i wdp_connect_connection_jdbc_drivers_reposito
 ```
 Make sure the `wdp_connect_connection_jdbc_drivers_repository_mode` parameter set to be enabled.
 
-**2.Change heap size in asset-files-api deployment**
+**2.Check the heap size in asset-files-api deployment**
 <br>
-**Need to consider including this as part of the application of hotfixes **
-<br>
-1)Patch the CCS cr using below command.
-```
-oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"asset_files_api_command":["/bin/bash"], "asset_files_api_args":["-c","cd /home/node/asset-files-api\nsource /scripts/exportSecrets.sh\nexport npm_config_cache=~node\nnode --max-old-space-size=12288 --max-http-header-size=32768 index.js\n"]}}'
-```
-2)Wait until the CCS operator reconcilation completed.
-<br>
-2)Double check if the heap size change is set as expected.
+Check if the heap size 12288 is set as expected.
 ```
 oc get deployment/catalog-api --list | grep -i "--max-old-space-size=12288" -A 5 -B 5
 ```
@@ -1363,7 +1284,7 @@ wdp_profiling_postgres_action: MIGRATE
 <br>
 1.Check the asset-files-api pvc size. Specify the same or a bigger storage size for Postgres.
 ```
-oc patch wkc wkc-cr -n ${PROJECT_CPD_INSTANCE} --type=merge -p '{"spec":{"wdp_profiling_edb_postgres_storage_size":"500Gi"}}'
+oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"wdp_profiling_edb_postgres_storage_size":"500Gi"}}'
 ```
 
 2.The nohup command is recommended for the migration of a large number of records.
@@ -1378,9 +1299,17 @@ Run a metadata import job and then check whether there are multiple wkc-search-r
 oc get pod | grep wkc-search-reindexing-resource-key-combined-job | grep Running | wc -l
 ```
 
-If there are multiple wkc-search-reindexing-resource-key-combined-job jobs, keep the oldest job and delete all of the newer jobs. To delete a job, run:
+If there are multiple wkc-search-reindexing-resource-key-combined-job jobs, keep the oldest job and delete all of the newer jobs. 
+
+Get the list of job about wkc-search-reindexing.
+
 ```
-oc delete job <job-name>
+oc get job -n ${PROJECT_CPD_INST_OPERANDS} | grep -i wkc-search-reindexing
+```
+
+**Keep the oldest job** and delete all of the newer jobs:
+```
+oc delete job <job-name> -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
 [Reference](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=issues-common-core-services#global-asset-type-update)
@@ -1454,7 +1383,19 @@ data:
 ```
 3)Restart zen-watchdog pod
 
-### 4.6 Upgrade the Backup & Restore service and application
+### 4.6 Update wdp-lineage deployment for addressing the potential Db2 high CPU and Memory usage issue.
+Edit the wdp-lineage deployment.
+
+```
+oc edit deploy wdp-lineage
+```
+
+Modify the property for `LS_IGNORED_ASSET_TYPES`. Append the value with:
+```
+,data_asset,connection,term_assignment_profile,directory_asset,data_definition,parameter_set,data_rule,data_rule_definition,data_intg_subflow,orchestration_flow,data_intg_build_stage,data_intg_cff_schema,data_intg_wrapped_stage,ds_match_specification,standardization_rule,ds_xml_schema_library,environment,data_intg_project_settings,data_intg_custom_stage,data_intg_data_set,physical_constraint,data_intg_java_library,data_intg_parallel_function,data_intg_ilogjrule,data_intg_file_set,data_intg_message_handler,notebook,data_transformation 
+```
+
+### 4.7 Upgrade the Backup & Restore service and application
 **Note:** This will be done as a separate task in another maintenance time window.
 
 **1.Updating the cpdbr service**
