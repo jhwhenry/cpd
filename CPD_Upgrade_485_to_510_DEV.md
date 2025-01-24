@@ -1286,6 +1286,7 @@ oc delete job <job-name> -n ${PROJECT_CPD_INST_OPERANDS}
 
 
 ## Part 4: Maintenance
+This part is beyond the upgrade scope. And we are not commited to complete them in the two days time window.
 ### 4.1 Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage
 1.Install the IBM Manta Data Lineage
 <br>
