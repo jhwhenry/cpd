@@ -714,18 +714,6 @@ cpd-cli manage apply-entitlement \
 --production=false
 ```
 
-<br>
-
-**Production enironment**
-<br>
-Apply the IBM Cloud Pak for Data Enterprise Edition for the production environment.
-
-```
-cpd-cli manage apply-entitlement \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---entitlement=cpd-enterprise
-```
-
 Reference: <br>
 
 [Applying your entitlements](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=puish-applying-your-entitlements)
@@ -968,14 +956,6 @@ This command includes the patch for
 
 ```
 oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"asset_files_call_socket_timeout_ms": 60000, "portal_catalog_is_global_search_relationships_enabled": "true","asset_files_api_resources": {"limits": {"cpu": "4", "memory": "32Gi", "ephemeral-storage": "1Gi"}, "requests": {"cpu": "200m", "memory": "256Mi", "ephemeral-storage": "10Mi"}}, "asset_files_api_replicas": 6,"asset_files_api_command":["/bin/bash"], "asset_files_api_args":["-c","cd /home/node/${MICROSERVICENAME}; source /scripts/exportSecrets.sh; export npm_config_cache=~node; node --max-old-space-size=12288 --max-http-header-size=32768 index.js"],"couchdb_search_resources":{"requests":{"cpu": "250m", "memory": "256Mi"},"limits":{"cpu": "8", "memory": "16Gi"}}}}'
-```
-
-**Get the file-api-claim pvc size for preparing the postgresql with the proper storage size to accomendate the profiling migration**
-<br>
-Check the asset-files-api pvc size. Specify the same or a bigger storage size for Postgres.
-
-```
-oc get pvc -n ${PROJECT_CPD_INST_OPERANDS} | grep file-api-claim | awk '{print $4}'
 ```
 
 #### 2.2.2 Upgrading MANTA service
@@ -1290,7 +1270,16 @@ wdp_profiling_postgres_action: MIGRATE
 
 **Note**
 <br>
-1.Check the asset-files-api pvc size. Specify the same or a bigger storage size for Postgres.
+1.Check the asset-files-api pvc size. Specify the same or a bigger storage size for preparing the postgresql with the proper storage size to accomendate the profiling migration.
+<br>
+Get the file-api-claim pvc size.
+
+```
+oc get pvc -n ${PROJECT_CPD_INST_OPERANDS} | grep file-api-claim | awk '{print $4}'
+```
+
+Specify the same or a bigger storage size for postgres storage.
+
 ```
 oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"wdp_profiling_edb_postgres_storage_size":"500Gi"}}'
 ```
