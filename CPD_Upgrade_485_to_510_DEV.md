@@ -1166,7 +1166,7 @@ Make sure the `wdp_connect_connection_jdbc_drivers_repository_mode` parameter se
 <br>
 Check if the heap size 12288 is set as expected.
 ```
-oc get deployment/catalog-api --list | grep -i "--max-old-space-size=12288" -A 5 -B 5
+oc get deployment asset-files-api -o yaml | grep -i -A5 'max-old-space-size=12288'
 ```
 
 ### 3.3 WKC post-upgrade tasks
