@@ -202,26 +202,8 @@ oc get svc finley-public -o yaml -n ${PROJECT_CPD_INST_OPERANDS} > finley-public
 #### 1.1.3 Uninstall all hotfixes and apply preventative measures 
 Remove the hotfixes by removing the images or configurations from the CRs.
 <br>
-- 1.Remove useless configuration from the Mantaflow CR.
 
-<br>
-
-1)Edit the Mantaflow CR with below command.
-```
-oc patch mantaflow mantaflow-wkc --type='json' -p='[{ "op": "remove", "path": "/spec/migrations"}]'
-```
-2)Remove the Mantaflow deployments 
-```
- oc delete deploy manta-admin-gui manta-configuration-service manta-dataflow
-```
-
-3)Wait untile the Mantaflow Operator reconcilation completed. 
-
-```
-oc get mantaflow mantaflow-wkc -o yaml
-```
-
-- 2.Uninstall WKC hot fixes.
+- 1.Uninstall WKC hot fixes.
 
 <br>
 
@@ -255,7 +237,7 @@ ignoreForMaintenance: true
 oc get WKC wkc-cr -o yaml
 ```
 
-- 3.Uninstall the AnalyticsEngine hot fixes if any.
+- 2.Uninstall the AnalyticsEngine hot fixes if any.
 <br>
 1)Edit the analyticsengine-sample with below command.
   
@@ -277,7 +259,7 @@ oc edit AnalyticsEngine analyticsengine-sample
 oc get AnalyticsEngine analyticsengine-sample -o yaml
 ```
 
-- 4.Patch the CCS and uninstall the CCS hot fixes.
+- 3.Patch the CCS and uninstall the CCS hot fixes.
 <br>
 
 1)Edit the CCS cr with below command.
@@ -340,7 +322,7 @@ oc get CCS ccs-cr -o yaml
 oc get WKC wkc-cr -o yaml
 ```
 
-- 5.Edit the ZenService custom resource.
+- 4.Edit the ZenService custom resource.
 
 ```
 oc edit ZenService lite-cr
@@ -364,7 +346,7 @@ oc edit ZenService lite-cr
 Save and Exit. Wait untile the ZenService Operator reconcilation completed and also the lite-cr in 'Completed' status. 
 <br>
 
-- 6.Remove stale secret of global search
+- 5.Remove stale secret of global search
 Check if the elasticsearch-master-ibm-elasticsearch-cred-secret exists.
 ```
 oc get secret -n ${PROJECT_CPD_INST_OPERANDS} | grep elasticsearch-master-ibm-elasticsearch-cred-secret
@@ -967,15 +949,6 @@ export COMPONENTS=mantaflow
 
 ```
 ${CPDM_OC_LOGIN}
-```
-
-- Remove the `migrations` section from the mantaflow custom resource if any:
-<br>
-
-Run the following command:
-
-```
-oc patch mantaflow mantaflow-wkc --type='json' -p='[{ "op": "remove", "path": "/spec/migrations"}]'
 ```
 
 - Run the command for upgrading MANTA service.
