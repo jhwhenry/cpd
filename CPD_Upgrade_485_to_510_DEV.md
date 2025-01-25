@@ -1319,9 +1319,84 @@ oc delete job <job-name> -n ${PROJECT_CPD_INST_OPERANDS}
 ## Part 4: Maintenance
 This part is beyond the upgrade scope. And we are not commited to complete them in the two days time window.
 ### 4.1 Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage
-1.Install the IBM Manta Data Lineage
-<br>
-2.Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage
+#### 4.1.1 Uninstall MANTA Automated Data Lineage
+- Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster.
+
+```
+${CPDM_OC_LOGIN}
+```
+
+- Delete the custom resource for MANTA Automated Data Lineage.
+
+```
+cpd-cli manage delete-cr \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--components=mantaflow \
+--include_dependency=true
+```
+
+Wait for the cpd-cli to return the following message before you proceed to the next step:
+```
+[SUCCESS]... The delete-cr command ran successfully
+```
+
+- Delete the OLM objects for MANTA Automated Data Lineage:
+```
+cpd-cli manage delete-olm-artifacts \
+--cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--components=mantaflow
+```
+
+Wait for the cpd-cli to return the following message:
+
+```
+[SUCCESS]... The delete-olm-artifacts command ran successfully
+```
+
+#### 4.1.2 Install the IBM Manta Data Lineage
+
+- Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster.
+
+```
+${CPDM_OC_LOGIN}
+```
+
+- Run the following command to create the required OLM objects for IBM Manta Data Lineage .
+
+```
+cpd-cli manage apply-olm \
+--release=${VERSION} \
+--cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--components=datalineage
+```
+
+Wait for the cpd-cli to return the following message before you proceed to the next step:
+
+```
+[SUCCESS]... The apply-olm command ran successfully
+```
+
+- Create the custom resource for IBM Manta Data Lineage.
+
+```
+cpd-cli manage apply-cr \
+--components=datalineage \
+--release=${VERSION} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--block_storage_class=${STG_CLASS_BLOCK} \
+--file_storage_class=${STG_CLASS_FILE} \
+--license_acceptance=true
+```
+
+Validating the upgrade.
+```
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=datalineage
+```
+
+#### 4.1.3 Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage
+
+**Note** Migration needs to be run as root or by a user with sudo access.
+
 [Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=migrating-from-manta-automated-data-lineage-manta-data-lineage)
 
 ### 4.2 Changing Db2 configuration settings
