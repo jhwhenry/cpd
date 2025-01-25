@@ -1175,24 +1175,49 @@ oc get deployment asset-files-api -o yaml | grep -i -A5 'max-old-space-size=1228
 
 ### 3.3 WKC post-upgrade tasks
 
-**1.Enable 'Allow Reporting' settings for Catalogs and Projects**
+**1.Validate the 'Allow Reporting' settings for Catalogs and Projects**
+<br>
+1)Check the Reporting settings in the ccs-features-configmap.
+
+```
+oc get configmaps ccs-features-configmap -o yaml -n ${PROJECT_CPD_INST_OPERANDS} | grep -i reporting
+```
+
+The following output is expected:
+```
+defaultAuthorizeReporting: "true"
+enforceAuthorizeReporting: "false"
+```
+
+2)Verify that the environemnt variable is set for ngp-projects-api.
+
+```
+oc set env -n ${PROJECT_CPD_INST_OPERANDS} deployment/ngp-projects-api --list | grep -i reporting
+```
+
+The following output is expected:
+
+```
+DEFAULT_AUTHORIZE_REPORTING=True
+ENFORCE_AUTHORIZE_REPORTING=False
+```
+
+3)Verify that the environment variable is set for catalog-api
+
+```
+oc set env -n ${PROJECT_CPD_INST_OPERANDS} deployment/catalog-api --list | grep -i reporting
+```
+
+The following output is expected:
+
+```
+defaultAuthorizeReporting=true
+enforceAuthorizeReporting=false
+```
+
+If any of the above output inconsistent with the expected ones, then follow below documentation for applying 'Allow Reporting' settings. 
 
 <br>
-
-1)Put wkc-cr in maintenance mode.
-```
-oc patch wkc wkc-cr --type=merge --patch='{"spec":{"ignoreForMaintenance":true}}'
-```
-2)Set environment variable ENFORCE_AUTHORIZE_REPORTING for the wkc-bi-data-service deployment
-```
-oc set env deployment/wkc-bi-data-service ENFORCE_AUTHORIZE_REPORTING=true
-```
-3)Double check if ENFORCE_AUTHORIZE_REPORTING is set to be true.
-```
-oc set env deployment/wkc-bi-data-service --list | grep -i ENFORCE_AUTHORIZE_REPORTING
-```
-
-**Note: the above steps may need to be changed by following below documentation. Need to consider including this as part of the application of hotfixes**
 
 [Configuring reporting settings for IBM Knowledge Catalog](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=administering-configuring-reporting-settings)
 
