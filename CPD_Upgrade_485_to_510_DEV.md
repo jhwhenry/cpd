@@ -1221,12 +1221,8 @@ If any of the above output inconsistent with the expected ones, then follow belo
 
 [Configuring reporting settings for IBM Knowledge Catalog](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=administering-configuring-reporting-settings)
 
-**2.Enable Relationship Explorer feature**
-<br>
 
-[Exploring relationships](https://www.ibm.com/docs/en/cloud-paks/cp-data/5.1.x?topic=catalog-exploring-relationships)
-
-**3.Apply the workaround for the problem - MDE Job failed with error "Deployment not found with given id"**
+**2.Apply the workaround for the problem - MDE Job failed with error "Deployment not found with given id"**
 <br>
 1)Put analyticsengine-sample in maintenance mode.
 ```
@@ -1241,22 +1237,22 @@ oc edit cm spark-hb-deployment-properties
 oc get cm spark-hb-deployment-properties -o yaml | grep -i deploymentStatusRetryCount
 ```
 
-**4.Bulk sync relationships for global search**
+**3.Bulk sync relationships for global search**
 <br>
 To be able to use the global search indexed data for relationships, see [Bulk sync relationships for global search](https://www.ibm.com/docs/en/SSNFH6_5.1.x/wsj/admin/admin-bulk-sync-rel.html).
 
-**5.Bulk sync assets for global search**
+**4.Bulk sync assets for global search**
 <br>
 To be able to use the global search indexed data for assets, see [Bulk sync assets for global search](https://www.ibm.com/docs/en/SSNFH6_5.1.x/wsj/admin/admin-bulk-sync.html).
 
-**6.Add potential missing permissions for the pre-defined Data Quality Analyst and Data Steward roles**
+**5.Add potential missing permissions for the pre-defined Data Quality Analyst and Data Steward roles**
 <br>
 
 ```
 oc delete pod $(oc get pod -n ${PROJECT_CPD_INST_OPERANDS} -o custom-columns="Name:metadata.name" -l app.kubernetes.io/component=zen-watcher --no-headers) -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
-**7. Migrating profiling results after upgrading**
+**6. Migrating profiling results after upgrading**
 <br>
 In Cloud Pak for Data 5.1.0, profiling results are stored in a PostgreSQL database instead of the asset-files storage. To make existing profiling results available after upgrading from an earlier release, migrate the results following this IBM documentation.
 [Migrating profiling results after upgrading](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=administering-migrating-profiling-results)
@@ -1278,7 +1274,7 @@ wdp_profiling_postgres_action: MIGRATE
 
 **Note**
 <br>
-1.Check the asset-files-api pvc size. Specify the same or a bigger storage size for preparing the postgresql with the proper storage size to accomendate the profiling migration.
+1).Check the asset-files-api pvc size. Specify the same or a bigger storage size for preparing the postgresql with the proper storage size to accomendate the profiling migration.
 <br>
 Get the file-api-claim pvc size.
 
@@ -1292,12 +1288,12 @@ Specify the same or a bigger storage size for postgres storage.
 oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"wdp_profiling_edb_postgres_storage_size":"500Gi"}}'
 ```
 
-2.The nohup command is recommended for the migration of a large number of records.
+2).The nohup command is recommended for the migration of a large number of records.
 ```
 nohup ansible-playbook /opt/ansible/5.1.0/roles/wkc-core/wdp_profiling_postgres_migration.yaml --extra=@/tmp/override.yaml -vvvv &
 ```
 
-**8. Monitor the global asset type definition update process**
+**7. Monitor the global asset type definition update process**
 <br>
 Run a metadata import job and then check whether there are multiple wkc-search-reindexing-resource-key-combined-job jobs:
 ```
