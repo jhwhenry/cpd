@@ -1413,10 +1413,10 @@ spec:
   environment:
     database:
       dbConfig:
-        LOGFILSIZ: '30000'
-        LOGPRIMARY: '40'
-        LOGSECOND: '60'
-        CATALOGCACHE_SZ: '567'
+        LOGFILSIZ: "30000"
+        LOGPRIMARY: "40"
+        LOGSECOND: "60"
+        CATALOGCACHE_SZ: "567"
 ```
 
 **Note**
