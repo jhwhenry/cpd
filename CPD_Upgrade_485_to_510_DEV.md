@@ -1461,7 +1461,12 @@ data:
 3)Restart zen-watchdog pod
 
 ### 4.6 Update wdp-lineage deployment for addressing the potential Db2 high CPU and Memory usage issue.
-Edit the wdp-lineage deployment.
+
+1)Put wkc-cr in maintenance mode.
+
+oc patch wkc wkc-cr --type=merge --patch='{"spec":{"ignoreForMaintenance":true}}'
+
+2)Edit the wdp-lineage deployment.
 
 ```
 oc edit deploy wdp-lineage
