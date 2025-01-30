@@ -312,15 +312,15 @@ This will make sure that the Opensearch operator will properly reconcile, - as p
 ```
 run_reindexer_with_resource_key: false
 ```
-4)Remove the `ignoreForMaintenance: true` from the CCS custom resource
+5)Remove the `ignoreForMaintenance: true` from the CCS custom resource
 
-5)Save and Exit. Wait untile the CCS Operator reconcilation completed and also the ccs-cr in 'Completed' status. 
+6)Save and Exit. Wait untile the CCS Operator reconcilation completed and also the ccs-cr in 'Completed' status. 
 
 ```
 oc get CCS ccs-cr -o yaml
 ```
 
-6)Wait untile the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status. 
+7)Wait untile the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status. 
 
 ```
 oc get WKC wkc-cr -o yaml
