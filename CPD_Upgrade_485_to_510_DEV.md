@@ -308,6 +308,10 @@ elasticsearch_backups_persistence_size: "608Gi"
 
 This will make sure that the Opensearch operator will properly reconcile, - as provided values will match the state of the cluster. 
 
+4)Disable bulk resync during the upgrade. This job can be run separately (if its needed) after upgrade has completed. Set the following propertie in the spec section of CCS CR.
+```
+run_reindexer_with_resource_key: false
+```
 4)Remove the `ignoreForMaintenance: true` from the CCS custom resource
 
 5)Save and Exit. Wait untile the CCS Operator reconcilation completed and also the ccs-cr in 'Completed' status. 
