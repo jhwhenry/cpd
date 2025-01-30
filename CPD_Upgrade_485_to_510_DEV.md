@@ -1241,22 +1241,57 @@ oc edit cm spark-hb-deployment-properties
 oc get cm spark-hb-deployment-properties -o yaml | grep -i deploymentStatusRetryCount
 ```
 
-**3.Bulk sync relationships for global search**
+**3.Bulk sync assets for global search**
 <br>
-To be able to use the global search indexed data for relationships, see [Bulk sync relationships for global search](https://www.ibm.com/docs/en/SSNFH6_5.1.x/wsj/admin/admin-bulk-sync-rel.html).
+As we aim to have bulk re-sync run in the background of the day to day operations, let's tweak concurrency to a level that allows for adequate throughput for the rest of the wkc-search clients.
 
-**4.Bulk sync assets for global search**
+```
+# Modify these parameters to tweak the degree of concurrency #
+export writer_max_concurrency_threshold=1
+export writer_average_concurrency_threshold=0
+export elasticsearch_bulk_size=1000
+export max_processing_rate=1000
+##############################################################
+
+# Extracts CM as json, extracts json config as pure json
+oc project ${PROJECT_CPD_INST_OPERANDS}
+oc get cm wkc-search-search-sync-columns-cm -ojson > wkc-search-search-sync-columns-cm.json
+cat wkc-search-search-sync-columns-cm.json | jq '.data["config.json"]' > config.json
+cat config.json | sed "s/\\\n//g" | sed 's/\\"/TTT/g' | sed 's/"//g' | sed 's/TTT/"/g' | sed 's/\\t//g' | jq > config.json_tmp
+mv config.json_tmp config.json
+
+# Modify json config with desired parameters
+jq ".asset_flow.processors.asset_processor.configuration.writer_max_concurrency_threshold = \"$writer_max_concurrency_threshold\" | .asset_flow.processors.asset_processor.configuration.writer_average_concurrency_threshold = \"$writer_average_concurrency_threshold\" | .asset_flow.processors.asset_processor.configuration.max_processing_rate = \"$max_processing_rate\" | .asset_flow.processors.asset_processor.writer.configuration.elasticsearch_bulk_size = \"$elasticsearch_bulk_size\"" config.json > config2.json
+mv config2.json config.json
+
+# Prepare original CM with updated data
+export config_json=$(cat config.json | jq --compact-output | sed 's/"/\\"/g')
+jq ".data[\"config.json\"]=\"$config_json\"" wkc-search-search-sync-columns-cm.json > wkc-search-search-sync-columns-cm.json_tmp
+mv wkc-search-search-sync-columns-cm.json_tmp wkc-search-search-sync-columns-cm.json
+
+# Update CM
+oc apply -f wkc-search-search-sync-columns-cm.json
+
+```
+
 <br>
-To be able to use the global search indexed data for assets, see [Bulk sync assets for global search](https://www.ibm.com/docs/en/SSNFH6_5.1.x/wsj/admin/admin-bulk-sync.html).
 
-**5.Add potential missing permissions for the pre-defined Data Quality Analyst and Data Steward roles**
+After running the above script - run bulk script cpd_gs_sync.sh following this documentation [Bulk sync assets for global search](https://www.ibm.com/docs/en/SSNFH6_5.1.x/wsj/admin/admin-bulk-sync.html).
+<br>
+
+**Note**
+<br>
+Be aware that the changes will be overwritten after a CCS reconcile cycle, so if you are planning to run bulk with tweaked concurrency parameters - its adviced to always apply the above script beforehand.
+<br>
+
+**4.Add potential missing permissions for the pre-defined Data Quality Analyst and Data Steward roles**
 <br>
 
 ```
 oc delete pod $(oc get pod -n ${PROJECT_CPD_INST_OPERANDS} -o custom-columns="Name:metadata.name" -l app.kubernetes.io/component=zen-watcher --no-headers) -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
-**6. Migrating profiling results after upgrading**
+**5. Migrating profiling results after upgrading**
 <br>
 In Cloud Pak for Data 5.1.0, profiling results are stored in a PostgreSQL database instead of the asset-files storage. To make existing profiling results available after upgrading from an earlier release, migrate the results following this IBM documentation.
 [Migrating profiling results after upgrading](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=administering-migrating-profiling-results)
@@ -1297,7 +1332,7 @@ oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"w
 nohup ansible-playbook /opt/ansible/5.1.0/roles/wkc-core/wdp_profiling_postgres_migration.yaml --extra=@/tmp/override.yaml -vvvv &
 ```
 
-**7. Monitor the global asset type definition update process**
+**6. Monitor the global asset type definition update process**
 <br>
 Run a metadata import job and then check whether there are multiple wkc-search-reindexing-resource-key-combined-job jobs:
 ```
