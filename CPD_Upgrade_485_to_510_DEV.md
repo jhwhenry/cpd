@@ -1332,29 +1332,6 @@ oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"w
 nohup ansible-playbook /opt/ansible/5.1.0/roles/wkc-core/wdp_profiling_postgres_migration.yaml --extra=@/tmp/override.yaml -vvvv &
 ```
 
-**6. Monitor the global asset type definition update process**
-<br>
-Run a metadata import job and then check whether there are multiple wkc-search-reindexing-resource-key-combined-job jobs:
-```
-oc get pod | grep wkc-search-reindexing-resource-key-combined-job | grep Running | wc -l
-```
-
-If there are multiple wkc-search-reindexing-resource-key-combined-job jobs, keep the oldest job and delete all of the newer jobs. 
-
-Get the list of job about wkc-search-reindexing.
-
-```
-oc get job -n ${PROJECT_CPD_INST_OPERANDS} | grep -i wkc-search-reindexing
-```
-
-**Keep the oldest job** and delete all of the newer jobs:
-```
-oc delete job <job-name> -n ${PROJECT_CPD_INST_OPERANDS}
-```
-
-[Reference](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=issues-common-core-services#global-asset-type-update)
-
-
 ## Part 4: Maintenance
 This part is beyond the upgrade scope. And we are not commited to complete them in the two days time window.
 ### 4.1 Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage
