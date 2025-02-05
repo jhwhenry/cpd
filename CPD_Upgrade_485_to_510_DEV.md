@@ -1231,7 +1231,8 @@ ENFORCE_AUTHORIZE_REPORTING=False
 3)Verify that the environment variable is set for catalog-api
 
 ```
-oc set env -n ${PROJECT_CPD_INST_OPERANDS} deployment/catalog-api --list | grep -i reporting
+oc exec -it $(oc get pods --no-headers | grep -i catalog-api- | head -n 1 | awk '{print $1}') -- env | grep -i reporting
+
 ```
 
 The following output is expected:
