@@ -1303,8 +1303,18 @@ chmod +x wkc-search-reindexing-concurrency-tweak.sh
 <br>
 
 **Note**
+
 <br>
-Be aware that the changes will be overwritten after a CCS reconcile cycle, so if you are planning to run bulk with tweaked concurrency parameters - its adviced to always apply the above script beforehand.
+- If there are a large number of assets, the wkc-search-reindexing-job may take a few hours to complete. You can monitor the status with below command.
+
+```
+oc logs $(oc get pods --no-headers | grep -i wkc-search-reindexing-job- | head -n 1 | awk '{print $1}') --tail 1000 | grep "CAMSStatisticsCollector reports" -A10
+```
+
+<br>
+
+- Be aware that the changes will be overwritten after a CCS reconcile cycle, so if you are planning to run bulk with tweaked concurrency parameters - its adviced to always apply the above script beforehand.
+  
 <br>
 
 **3.Add potential missing permissions for the pre-defined Data Quality Analyst and Data Steward roles**
