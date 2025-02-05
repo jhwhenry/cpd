@@ -1308,7 +1308,7 @@ chmod +x wkc-search-reindexing-concurrency-tweak.sh
 - If there are a large number of assets, the wkc-search-reindexing-job may take a few hours to complete. You can monitor the status with below command.
 
 ```
-oc logs $(oc get pods --no-headers | grep -i wkc-search-reindexing-job- | head -n 1 | awk '{print $1}') --tail 1000 | grep "CAMSStatisticsCollector reports" -A10
+oc logs $(oc get pods --no-headers | grep -i wkc-search-reindexing-job- | head -n 1 | awk '{print $1}') | grep "CAMSStatisticsCollector reports" -A10
 ```
 
 <br>
