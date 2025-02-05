@@ -1421,7 +1421,12 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --co
 
 #### 4.1.3 Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage
 
-**Note** Migration needs to be run as root or by a user with sudo access.
+**Note** 
+<br>
+
+- Migration needs to be run as root or by a user with sudo access.
+- The IBM Manta Data Lineage hot fix needs to be applied.
+- Run the `migration.sh` with nohup and set log delve to `info` 
 
 [Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=migrating-from-manta-automated-data-lineage-manta-data-lineage)
 
