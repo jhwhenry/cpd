@@ -1255,6 +1255,16 @@ oc get cm spark-hb-deployment-properties -o yaml | grep -i deploymentStatusRetry
 <br>
 As we aim to have bulk re-sync run in the background of the day to day operations, let's tweak concurrency to a level that allows for adequate throughput for the rest of the wkc-search clients.
 
+<br>
+
+1)Switch to the CPD instance project.
+
+```
+oc project ${PROJECT_CPD_INST_OPERANDS}
+```
+
+2)Create a script named `wkc-search-reindexing-concurrency-tweak.sh` with the following content.
+
 ```
 # Modify these parameters to tweak the degree of concurrency #
 export writer_max_concurrency_threshold=1
@@ -1264,7 +1274,6 @@ export max_processing_rate=1000
 ##############################################################
 
 # Extracts CM as json, extracts json config as pure json
-oc project ${PROJECT_CPD_INST_OPERANDS}
 oc get cm wkc-search-search-sync-columns-cm -ojson > wkc-search-search-sync-columns-cm.json
 cat wkc-search-search-sync-columns-cm.json | jq '.data["config.json"]' > config.json
 cat config.json | sed "s/\\\n//g" | sed 's/\\"/TTT/g' | sed 's/"//g' | sed 's/TTT/"/g' | sed 's/\\t//g' | jq > config.json_tmp
@@ -1284,9 +1293,15 @@ oc apply -f wkc-search-search-sync-columns-cm.json
 
 ```
 
-<br>
+3)Run the `wkc-search-reindexing-concurrency-tweak.sh` script
 
-After running the above script - run bulk script cpd_gs_sync.sh following this documentation [Bulk sync assets for global search](https://www.ibm.com/docs/en/SSNFH6_5.1.x/wsj/admin/admin-bulk-sync.html).
+```
+chmod +x wkc-search-reindexing-concurrency-tweak.sh
+
+./wkc-search-reindexing-concurrency-tweak.sh
+```
+
+4)Run bulk script cpd_gs_sync.sh following this documentation [Bulk sync assets for global search](https://www.ibm.com/docs/en/SSNFH6_5.1.x/wsj/admin/admin-bulk-sync.html).
 <br>
 
 **Note**
