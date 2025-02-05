@@ -1442,13 +1442,23 @@ It's recommended getting this done by following the configuration settings in th
 [Changing Db2 configuration settings](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=configuration-changing-db2-settings)
 
 ### 4.3 Configure the idle session timeout
-Update TOKEN_EXPIRY_TIME and TOKEN_REFRESH_PERIOD variables from 4to 12 hours.
+Update TOKEN_EXPIRY_TIME and TOKEN_REFRESH_PERIOD variables from 4 to 12 hours.
  - oc edit configmap product-configmap ......
  - Restart the usermgmt pods
 
 [Setting the idle session timeout](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=environment-setting-idle-session-timeout)
 
 ### 4.4 Increasing the number of nginx worker connections
+
+```
+export WORKER_CONNECTIONS=4096
+
+oc patch configmap product-configmap \
+--namespace ${PROJECT_CPD_INST_OPERANDS} \
+--type=merge \
+--patch "{\"data\": {\"GATEWAY_WORKER_CONNECTIONS\":\"${WORKER_CONNECTIONS}\"}}"
+```
+
 [Reference](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=platform-increasing-number-nginx-worker-connections)
 
 ### 4.5 Increase ephemeral storage for zen-watchdog-serviceability-job
@@ -1479,8 +1489,9 @@ data:
 ### 4.6 Update wdp-lineage deployment for addressing the potential Db2 high CPU and Memory usage issue.
 
 1)Put wkc-cr in maintenance mode.
-
+```
 oc patch wkc wkc-cr --type=merge --patch='{"spec":{"ignoreForMaintenance":true}}'
+```
 
 2)Edit the wdp-lineage deployment.
 
