@@ -318,19 +318,31 @@ elasticsearch_backups_persistence_size: "608Gi"
 
 This will make sure that the Opensearch operator will properly reconcile, - as provided values will match the state of the cluster. 
 
-4)Disable bulk resync during the upgrade. This job can be run separately (if its needed) after upgrade has completed. Set the following propertie in the spec section of CCS CR.
+4)Disable bulk resync during the upgrade. This job can be run separately (if its needed) after upgrade has completed. Set the following properties in the spec section of CCS CR.
 ```
 run_reindexer_with_resource_key: false
 ```
-5)Remove the `ignoreForMaintenance: true` from the CCS custom resource
 
-6)Save and Exit. Wait untile the CCS Operator reconcilation completed and also the ccs-cr in 'Completed' status. 
+5)Increasing the resource limits for the `search` container of the CouchDb. Set the following property in the spec section of CCS CR.
+```
+couchdb_search_resources:
+  limits:
+    cpu: "8"
+    memory: 16Gi
+  requests:
+    cpu: 250m
+    memory: 256Mi
+```
+
+6)Remove the `ignoreForMaintenance: true` from the CCS custom resource
+
+7)Save and Exit. Wait untile the CCS Operator reconcilation completed and also the ccs-cr in 'Completed' status. 
 
 ```
 oc get CCS ccs-cr -o yaml
 ```
 
-7)Wait untile the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status. 
+8)Wait untile the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status. 
 
 ```
 oc get WKC wkc-cr -o yaml
@@ -961,7 +973,7 @@ oc patch configmap ccs-features-configmap -n ${PROJECT_CPD_INST_OPERANDS} --type
 - Apply the patch for 1)asset-files-api deployment tuning and 2)Couchdb search container resource tuning
 
 ```
-oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"asset_files_call_socket_timeout_ms": 60000,"asset_files_api_resources": {"limits": {"cpu": "4", "memory": "32Gi", "ephemeral-storage": "1Gi"}, "requests": {"cpu": "200m", "memory": "256Mi", "ephemeral-storage": "10Mi"}}, "asset_files_api_replicas": 6,"asset_files_api_command":["/bin/bash"], "asset_files_api_args":["-c","cd /home/node/${MICROSERVICENAME}; source /scripts/exportSecrets.sh; export npm_config_cache=~node; node --max-old-space-size=12288 --max-http-header-size=32768 index.js"],"couchdb_search_resources":{"requests":{"cpu": "250m", "memory": "256Mi"},"limits":{"cpu": "8", "memory": "16Gi"}}}}'
+oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"asset_files_call_socket_timeout_ms": 60000,"asset_files_api_resources": {"limits": {"cpu": "4", "memory": "32Gi", "ephemeral-storage": "1Gi"}, "requests": {"cpu": "200m", "memory": "256Mi", "ephemeral-storage": "10Mi"}}, "asset_files_api_replicas": 6,"asset_files_api_command":["/bin/bash"], "asset_files_api_args":["-c","cd /home/node/${MICROSERVICENAME}; source /scripts/exportSecrets.sh; export npm_config_cache=~node; node --max-old-space-size=12288 --max-http-header-size=32768 index.js"]}}'
 ```
 
 #### 2.2.2 Upgrading MANTA service
