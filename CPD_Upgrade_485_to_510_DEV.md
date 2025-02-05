@@ -66,16 +66,26 @@ The Watson Studio Runtime 22.2 and Runtime 23.1 are not included in IBM® Softwa
 
 #### 5. Collect the number of profiling records to be migrated
 Collect profiling records information
+
 ```
 oc project ${PROJECT_CPD_INST_OPERANDS}
 
-oc exec -it $(oc get pods --no-headers | grep -i asset-files | head -n 1 | awk '{print $1}') -- ls -alRt /mnt/asset_file_api | grep -i profiling > /tmp/profiling_records.txt
-oc exec -it $(oc get pods --no-headers | grep -i asset-files | head -n 1 | awk '{print $1}') -- ls -alRt /mnt/asset_file_api | grep -i profiling | wc -l > /tmp/profiling_records_number.txt
+oc rsh $(oc get pods --no-headers | grep -i asset-files | head -n 1 | awk '{print $1}')
 
-oc exec -it $(oc get pods --no-headers | grep -i asset-files | head -n 1 | awk '{print $1}') -- ls -alRt /mnt/asset_file_api | egrep -i 'REF_|ARES_' > /tmp/profiling_records_ref.txt
-oc exec -it $(oc get pods --no-headers | grep -i asset-files | head -n 1 | awk '{print $1}') -- ls -alRt /mnt/asset_file_api | egrep -i 'REF_|ARES_' | wc -l > /tmp/profiling_records_ref_number.txt
+nohup ls -alRt /mnt/asset_file_api | egrep -i 'REF_|ARES_' > /tmp/profiling_records_ref.txt &
+
+nohup ls -alRt /mnt/asset_file_api | egrep -i 'REF_|ARES_' | wc -l > /tmp/profiling_records_ref_number.txt &
 
 ```
+
+#### 6. Collect the number about Neo4J database size of Manta Automated Data Lineage
+
+```
+oc rsh $(oc get pods --no-headers | grep -i manta-dataflow | head -n 1 | awk '{print $1}')
+nohup du -hs /opt/mantaflow/server/manta-dataflow-server-dir/data/neo4j/data > /tmp/neo4j_db_size.txt &
+
+```
+
 #### 6. A pre-upgrade health check is made to ensure the cluster's readiness for upgrade.
 - The OpenShift cluster, persistent storage and Cloud Pak for Data platform and services are in healthy status.
 
