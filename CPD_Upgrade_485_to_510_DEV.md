@@ -1248,23 +1248,7 @@ If any of the above output inconsistent with the expected ones, then follow belo
 
 [Configuring reporting settings for IBM Knowledge Catalog](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=administering-configuring-reporting-settings)
 
-
-**2.Apply the workaround for the problem - MDE Job failed with error "Deployment not found with given id"**
-<br>
-1)Put analyticsengine-sample in maintenance mode.
-```
-oc patch analyticsengine analyticsengine-sample --type=merge --patch='{"spec":{"ignoreForMaintenance":true}}'
-```
-2)Edit the `spark-hb-deployment-properties` config map and add the property `deploymentStatusRetryCount=6`
-```
-oc edit cm spark-hb-deployment-properties
-```
-3)Make sure the property `deploymentStatusRetryCount=6` added successfully
-```
-oc get cm spark-hb-deployment-properties -o yaml | grep -i deploymentStatusRetryCount
-```
-
-**3.Bulk sync assets for global search**
+**2.Bulk sync assets for global search**
 <br>
 As we aim to have bulk re-sync run in the background of the day to day operations, let's tweak concurrency to a level that allows for adequate throughput for the rest of the wkc-search clients.
 
@@ -1322,14 +1306,14 @@ chmod +x wkc-search-reindexing-concurrency-tweak.sh
 Be aware that the changes will be overwritten after a CCS reconcile cycle, so if you are planning to run bulk with tweaked concurrency parameters - its adviced to always apply the above script beforehand.
 <br>
 
-**4.Add potential missing permissions for the pre-defined Data Quality Analyst and Data Steward roles**
+**3.Add potential missing permissions for the pre-defined Data Quality Analyst and Data Steward roles**
 <br>
 
 ```
 oc delete pod $(oc get pod -n ${PROJECT_CPD_INST_OPERANDS} -o custom-columns="Name:metadata.name" -l app.kubernetes.io/component=zen-watcher --no-headers) -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
-**5. Migrating profiling results after upgrading**
+**4. Migrating profiling results after upgrading**
 <br>
 In Cloud Pak for Data 5.1.0, profiling results are stored in a PostgreSQL database instead of the asset-files storage. To make existing profiling results available after upgrading from an earlier release, migrate the results following this IBM documentation.
 [Migrating profiling results after upgrading](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=administering-migrating-profiling-results)
@@ -1547,7 +1531,22 @@ Modify the property for `LS_IGNORED_ASSET_TYPES`. Append the value with:
 ,data_asset,connection,term_assignment_profile,directory_asset,data_definition,parameter_set,data_rule,data_rule_definition,data_intg_subflow,orchestration_flow,data_intg_build_stage,data_intg_cff_schema,data_intg_wrapped_stage,ds_match_specification,standardization_rule,ds_xml_schema_library,environment,data_intg_project_settings,data_intg_custom_stage,data_intg_data_set,physical_constraint,data_intg_java_library,data_intg_parallel_function,data_intg_ilogjrule,data_intg_file_set,data_intg_message_handler,notebook,data_transformation 
 ```
 
-### 4.7 Upgrade the Backup & Restore service and application
+### 4.7 Apply the workaround for the problem - MDE Job failed with error "Deployment not found with given id"**
+<br>
+1)Put analyticsengine-sample in maintenance mode.
+```
+oc patch analyticsengine analyticsengine-sample --type=merge --patch='{"spec":{"ignoreForMaintenance":true}}'
+```
+2)Edit the `spark-hb-deployment-properties` config map and add the property `deploymentStatusRetryCount=6`
+```
+oc edit cm spark-hb-deployment-properties
+```
+3)Make sure the property `deploymentStatusRetryCount=6` added successfully
+```
+oc get cm spark-hb-deployment-properties -o yaml | grep -i deploymentStatusRetryCount
+```
+
+### 4.8 Upgrade the Backup & Restore service and application
 **Note:** This will be done as a separate task in another maintenance time window.
 
 **1.Updating the cpdbr service**
