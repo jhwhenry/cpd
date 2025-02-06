@@ -1442,6 +1442,18 @@ Validating the upgrade.
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=datalineage
 ```
 
+- Make IBM Knowledge Catalog using Neo4j as the knowledge graph database
+
+```
+oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"useFDB":fasle}}'
+```
+
+Wait until the WKC operator reconcilation fineshed and wkc-cr becomes 'Completed'.
+
+```
+watch -n 60 "cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=wkc,datalineage"
+```
+
 #### 4.1.3 Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage
 
 **Note** 
