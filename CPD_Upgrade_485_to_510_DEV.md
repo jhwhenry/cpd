@@ -1544,15 +1544,21 @@ Modify the property for `LS_IGNORED_ASSET_TYPES`. Append the value with:
 
 ### 4.7 Apply the workaround for the problem - MDE Job failed with error "Deployment not found with given id"**
 <br>
+
 1)Put analyticsengine-sample in maintenance mode.
+
 ```
 oc patch analyticsengine analyticsengine-sample --type=merge --patch='{"spec":{"ignoreForMaintenance":true}}'
 ```
+
 2)Edit the `spark-hb-deployment-properties` config map and add the property `deploymentStatusRetryCount=6`
+
 ```
 oc edit cm spark-hb-deployment-properties
 ```
+
 3)Make sure the property `deploymentStatusRetryCount=6` added successfully
+
 ```
 oc get cm spark-hb-deployment-properties -o yaml | grep -i deploymentStatusRetryCount
 ```
