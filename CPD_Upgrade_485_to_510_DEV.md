@@ -1542,7 +1542,7 @@ Modify the property for `LS_IGNORED_ASSET_TYPES`. Append the value with:
 ,data_asset,connection,term_assignment_profile,directory_asset,data_definition,parameter_set,data_rule,data_rule_definition,data_intg_subflow,orchestration_flow,data_intg_build_stage,data_intg_cff_schema,data_intg_wrapped_stage,ds_match_specification,standardization_rule,ds_xml_schema_library,environment,data_intg_project_settings,data_intg_custom_stage,data_intg_data_set,physical_constraint,data_intg_java_library,data_intg_parallel_function,data_intg_ilogjrule,data_intg_file_set,data_intg_message_handler,notebook,data_transformation 
 ```
 
-### 4.7 Apply the workaround for the problem - MDE Job failed with error "Deployment not found with given id"**
+### 4.7 Apply the workaround for the problem - MDE Job failed with error "Deployment not found with given id"
 <br>
 
 1)Put analyticsengine-sample in maintenance mode.
