@@ -1454,6 +1454,13 @@ Wait until the WKC operator reconcilation fineshed and wkc-cr becomes 'Completed
 watch -n 60 "cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=wkc,datalineage"
 ```
 
+Ensure the Neo4jCluster is in 'Completed' status.
+
+```
+oc get Neo4jCluster data-lineage-neo4j -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
+
 #### 4.1.3 Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage
 
 **Note** 
