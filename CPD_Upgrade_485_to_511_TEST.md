@@ -421,6 +421,91 @@ cpd-cli manage delete-rsi-patch \
 --patch_name=finley-public-service-patch
 ```
 
+4.Delete the mde-service-manager-env-patch-publish-batch-size patch
+<br>
+Inactivate:
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--patch_name=mde-service-manager-env-patch-publish-batch-size \
+--state=inactive
+```
+
+Delete:
+```
+cpd-cli manage delete-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--patch_name=mde-service-manager-env-patch-publish-batch-size
+```
+
+5.Delete the mde-service-manager-patch patch
+<br>
+Inactivate:
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--patch_name=mde-service-manager-patch \
+--state=inactive
+```
+
+Delete:
+```
+cpd-cli manage delete-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--patch_name=mde-service-manager-patch
+```
+
+6.Delete the mde-service-manager-patch-2 patch
+<br>
+Inactivate:
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--patch_name=mde-service-manager-patch-2 \
+--state=inactive
+```
+
+Delete:
+```
+cpd-cli manage delete-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--patch_name=mde-service-manager-patch-2
+```
+
+7.Delete the rsi-env-term-assignment-4.6.5-patch-2-april2024 patch
+<br>
+Inactivate:
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--patch_name=rsi-env-term-assignment-4.6.5-patch-2-april2024 \
+--state=inactive
+```
+
+Delete:
+```
+cpd-cli manage delete-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--patch_name=rsi-env-term-assignment-4.6.5-patch-2-april2024
+```
+
+8.Delete the term-assignment-env-patch-1-march2024 patch
+<br>
+Inactivate:
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--patch_name=term-assignment-env-patch-1-march2024 \
+--state=inactive
+```
+
+Delete:
+```
+cpd-cli manage delete-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--patch_name=term-assignment-env-patch-1-march2024
+```
+
 ### 1.2 Set up client workstation
 
 #### 1.2.1 Prepare a client workstation
