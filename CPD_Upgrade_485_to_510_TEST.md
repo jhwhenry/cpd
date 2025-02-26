@@ -1,4 +1,4 @@
-# CPD Upgrade Runbook - v.4.8.5 to 5.1.0
+# CPD Upgrade Runbook - v.4.8.5 to 5.1.1
 
 ---
 ## Upgrade documentation
@@ -11,16 +11,16 @@ From
 OCP: 4.14
 CPD: 4.8.5
 Storage: Storage Fusion 2.7.2
-Componenets: cpd_platform,wkc,analyticsengine,mantaflow,datalineage,ws,ws_runtimes,wml,openscale,db2wh,match360
+Componenets: cpd_platform,wkc,analyticsengine,mantaflow,datalineage,ws,ws_runtimes,wml,openscale,db2wh
 ```
 
 To
 
 ```
 OCP: 4.14
-CPD: 5.1.0
+CPD: 5.1.1
 Storage: Storage Fusion 2.7.2
-Componenets: cpd_platform,wkc,analyticsengine,mantaflow,datalineage,ws,ws_runtimes,wml,openscale,db2wh,match360
+Componenets: cpd_platform,wkc,analyticsengine,mantaflow,datalineage,ws,ws_runtimes,wml,openscale,db2wh
 ```
 
 ## Pre-requisites
@@ -86,7 +86,7 @@ nohup du -hs /opt/mantaflow/server/manta-dataflow-server-dir/data/neo4j/data > /
 
 ```
 
-#### 6. A pre-upgrade health check is made to ensure the cluster's readiness for upgrade.
+#### 7. A pre-upgrade health check is made to ensure the cluster's readiness for upgrade.
 - The OpenShift cluster, persistent storage and Cloud Pak for Data platform and services are in healthy status.
 
 ## Table of Content
@@ -100,7 +100,7 @@ Part 1: Pre-upgrade
 1.1.4 Uninstall the old RSI pathch
 1.2 Set up client workstation 
 1.2.1 Prepare a client workstation
-1.2.2 Update cpd_vars.sh for the upgrade to Version 5.1.0
+1.2.2 Update cpd_vars.sh for the upgrade to Version 5.1.1
 1.2.3 Obtain the olm-utils-v3 available
 1.2.4 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
 1.2.5 Ensure the images were mirrored to the private container registry
@@ -108,7 +108,7 @@ Part 1: Pre-upgrade
 1.3 Health check OCP & CPD
 
 Part 2: Upgrade
-2.1 Upgrade CPD to 5.1.0
+2.1 Upgrade CPD to 5.1.1
 2.1.1 Upgrading shared cluster components
 2.1.2 Preparing to upgrade the CPD instance to IBM Software Hub
 2.1.3 Upgrading to IBM Software Hub
@@ -183,6 +183,9 @@ oc get DataStage datastage -o yaml > datastage-cr.yaml
 oc get mantaflow -o yaml > mantaflow-cr.yaml
 
 oc get db2ucluster db2oltp-wkc -o yaml > db2ucluster-db2oltp-wkc.yaml
+
+for i in $(oc get crd | grep cpd.ibm.com | awk '{ print $1 }'); do echo "---------$i------------"; oc get $i $(oc get $i | grep -v "NAME" | awk '{ print $1 }') -o yaml > cr-$i.txt; if grep -q "image_digests" cr-$i.txt; then echo "Hot fix detected in cr-$i"; fi; done
+
 ```
 
 Backup the routes.
@@ -416,15 +419,16 @@ cpd-cli manage delete-rsi-patch \
 
 Create a directory for the cpd-cli utility.
 ```
-export CPD510_WORKSPACE=/ibm/cpd/510
-mkdir -p ${CPD510_WORKSPACE}
-cd ${CPD510_WORKSPACE}
-```
-
-Download the cpd-cli for 5.1.0
+export CPD511_WORKSPACE=/ibm/cpd/511
+mkdir -p ${CPD511_WORKSPACE}
+cd ${CPD511_WORKSPACE}
 
 ```
-wget https://github.com/IBM/cpd-cli/releases/download/v14.1.0/cpd-cli-linux-EE-14.1.0.tgz
+
+Download the cpd-cli for 5.1.1
+
+```
+wget https://github.com/IBM/cpd-cli/releases/download/v14.1.1/cpd-cli-linux-EE-14.1.1.tgz
 ```
 
 2. Install tools.
@@ -433,40 +437,42 @@ wget https://github.com/IBM/cpd-cli/releases/download/v14.1.0/cpd-cli-linux-EE-1
 yum install openssl httpd-tools podman skopeo wget -y
 ```
 
-```
-tar xvf cpd-cli-linux-EE-14.1.0.tgz
-mv cpd-cli-linux-EE-14.1.0-1189/* .
-rm -rf cpd-cli-linux-EE-14.1.0-1189
-```
-
-3. Copy the cpd_vars.sh file used by the CPD 4.8.5 to the folder ${CPD510_WORKSPACE}.
+The version in below commands may need to be updated accordingly.
 
 ```
-cd ${CPD510_WORKSPACE}
-cp <the file path of the cpd_vars.sh file used by the CPD 4.8.5 > cpd_vars_510.sh
+tar xvf cpd-cli-linux-EE-14.1.1.tgz
+mv cpd-cli-linux-EE-14.1.1-1542/* .
+rm -rf cpd-cli-linux-EE-14.1.1-1542
+```
+
+3. Copy the cpd_vars.sh file used by the CPD 4.8.5 to the folder ${CPD511_WORKSPACE}.
+
+```
+cd ${CPD511_WORKSPACE}
+cp <the file path of the cpd_vars.sh file used by the CPD 4.8.5 > cpd_vars_511.sh
 ```
 4. Make cpd-cli executable anywhere
 ```
-vi cpd_vars_510.sh
+vi cpd_vars_511.sh
 ```
 
-Add below two lines into the head of cpd_vars_510.sh
+Add below two lines into the head of cpd_vars_511.sh
 
 ```
-export CPD510_WORKSPACE=/ibm/cpd/510
-export PATH=${CPD510_WORKSPACE}:$PATH
+export CPD511_WORKSPACE=/ibm/cpd/511
+export PATH=${CPD511_WORKSPACE}:$PATH
 ```
 
 Update the CPD_CLI_MANAGE_WORKSPACE variable
 
 ```
-export CPD_CLI_MANAGE_WORKSPACE=${CPD510_WORKSPACE}
+export CPD_CLI_MANAGE_WORKSPACE=${CPD511_WORKSPACE}
 ```
 
-Run this command to apply cpd_vars_510.sh
+Run this command to apply cpd_vars_511.sh
 
 ```
-source cpd_vars_510.sh
+source cpd_vars_511.sh
 ```
 
 Check out with this commands
@@ -479,10 +485,10 @@ Output like this
 
 ```
 cpd-cli
-        Version: 14.1.0
+        Version: 14.1.1
         Build Date: 2024-12-05T14:18:50
         Build Number: 1189
-        CPD Release Version: 5.1.0
+        CPD Release Version: 5.1.1
 ```
 5.Update the OpenShift CLI
 <br>
@@ -494,16 +500,16 @@ oc version
 
 If the version doesn't match the OpenShift cluster version, update it accordingly.
 
-#### 1.2.2 Update environment variables for the upgrade to Version 5.1.0
+#### 1.2.2 Update environment variables for the upgrade to Version 5.1.1
 
 ```
-vi cpd_vars_510.sh
+vi cpd_vars_511.sh
 ```
 
 1.Locate the VERSION entry and update the environment variable for VERSION. 
 
 ```
-export VERSION=5.1.0
+export VERSION=5.1.1
 ```
 
 2.Locate the COMPONENTS entry and confirm the COMPONENTS entry is accurate.
@@ -515,12 +521,12 @@ Save the changes. <br>
 
 Confirm that the script does not contain any errors. 
 ```
-bash ./cpd_vars_510.sh
+bash ./cpd_vars_511.sh
 ```
 
-Run this command to apply cpd_vars_510.sh
+Run this command to apply cpd_vars_511.sh
 ```
-source cpd_vars_510.sh
+source cpd_vars_511.sh
 ```
 3.Locate the Cluster section of the script and add the following environment variables.
 ```
@@ -661,7 +667,7 @@ curl -k -u ${PRIVATE_REGISTRY_PULL_USER}:${PRIVATE_REGISTRY_PULL_PASSWORD} https
 ```
 
 ## Part 2: Upgrade
-### 2.1 Upgrade CPD to 5.1.0
+### 2.1 Upgrade CPD to 5.1.1
 
 #### 2.1.1 Upgrading shared cluster components
 1.Run the cpd-cli manage login-to-ocp command to log in to the cluster
@@ -673,7 +679,7 @@ Run the following command:
 ```
 oc get deployment -A |  grep ibm-licensing-operator
 ```
-Make sure the project returned by the command matches the environment variable PROJECT_LICENSE_SERVICE in your environment variables script `cpd_vars_510.sh`.
+Make sure the project returned by the command matches the environment variable PROJECT_LICENSE_SERVICE in your environment variables script `cpd_vars_511.sh`.
 <br>
 
 3.Upgrade the Certificate manager and License Service.
@@ -804,13 +810,13 @@ Increase the resource limits of the CCS operator for avoiding potention problems
 Have a backup of the CCS CSV yaml file.
 
 ```
-oc get csv ibm-cpd-ccs.v10.0.0 -n ${PROJECT_CPD_INST_OPERATORS} -o yaml > ibm-cpd-ccs-csv-510.yaml
+oc get csv ibm-cpd-ccs.v10.1.0 -n ${PROJECT_CPD_INST_OPERATORS} -o yaml > ibm-cpd-ccs-csv-511.yaml
 ```
 
 Edit the CCS CSV:
 
 ```
-oc edit csv ibm-cpd-ccs.v10.0.0 -n ${PROJECT_CPD_INST_OPERATORS} 
+oc edit csv ibm-cpd-ccs.v10.1.0 -n ${PROJECT_CPD_INST_OPERATORS} 
 ```
 
 Make changes to the limits like below.
@@ -850,18 +856,18 @@ The `Source` property value in the output is the location of the `work` director
   "Mounts": [
        {
             "Type": "bind",
-            "Source": "/ibm/cpd/510/work",
+            "Source": "/ibm/cpd/511/work",
             "Destination": "/tmp/work",
             "Driver": "",
 ```
 
-For example, `/ibm/cpd/510/work` is the location of the `work` directory.
+For example, `/ibm/cpd/511/work` is the location of the `work` directory.
 
 <br>
 
 Create the `rsi` folder. **Note: Change the value for the environment variable `CPD_CLI_WORK_DIR` based on the location of the `work` directory.** 
 ```
-export CPD_CLI_WORK_DIR=/ibm/cpd/510/work
+export CPD_CLI_WORK_DIR=/ibm/cpd/511/work
 mkdir -p $CPD_CLI_WORK_DIR/rsi
 ```
 
@@ -896,7 +902,7 @@ cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 cat $CPD_CLI_WORK_DIR/get_rsi_patch_info.log
 ```
 
-### 2.2 Upgrade CPD services to 5.1.0
+### 2.2 Upgrade CPD services to 5.1.1
 #### 2.2.1 Upgrading IBM Knowledge Catalog service and apply customizations
 Check if the IBM Knowledge Catalog service was installed with the custom install options. 
 ##### 1. For custom installation, check the previous install-options.yaml or wkc-cr yaml, make sure to keep original custom settings
@@ -980,6 +986,7 @@ oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"a
 #### 2.2.2 Upgrading MANTA service
 ```
 export COMPONENTS=mantaflow
+
 ```
 
 - Run the cpd-cli manage login-to-ocp command to log in to the cluster.
@@ -1014,7 +1021,7 @@ export COMPONENTS=analyticsengine
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 ```
 
-The Analytics Engine serive should have been upgraded as part of the WKC service upgrade. If the Analytics Engine service version is **not 5.1.0**, then run below commands for the upgrade. <br>
+The Analytics Engine serive should have been upgraded as part of the WKC service upgrade. If the Analytics Engine service version is **not 5.1.1**, then run below commands for the upgrade. <br>
 
 Check if the Analytics Engine service was installed with the custom install options. <br>
 
@@ -1176,6 +1183,8 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --co
 ### 3.1 Validate the external vault connection setting 
 1)Validate and ensure the patch for external vault connection applied.
 
+<br>
+
 Found out the following variables set to false
 ```
 oc set env deployment/zen-core-api --list | grep -i vault
@@ -1185,6 +1194,26 @@ The values are true like this:
 VAULT_BRIDGE_TOLERATE_SELF_SIGNED=true
 VAULT_BRIDGE_TLS_RENEGOTIATE=true
 ```
+
+2)Add Verizon logo on CPD homepage
+
+<br>
+
+[Customizing the branding of the web client](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=users-customizing-branding-web-client)
+
+<br>
+
+3)Create a custom route
+
+<br>
+
+[Create a custom route using cpd-cli](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=platform-modifying-route)
+
+**Note**
+<br>
+
+Refer to the backup file `routes.yaml` created in the Step **1.1.2**.
+
 
 ### 3.2 CCS post-upgrade tasks
 **1.Check if uploading JDBC drivers enabled**
@@ -1326,7 +1355,7 @@ oc delete pod $(oc get pod -n ${PROJECT_CPD_INST_OPERANDS} -o custom-columns="Na
 
 **4. Migrating profiling results after upgrading**
 <br>
-In Cloud Pak for Data 5.1.0, profiling results are stored in a PostgreSQL database instead of the asset-files storage. To make existing profiling results available after upgrading from an earlier release, migrate the results following this IBM documentation.
+In Cloud Pak for Data 5.1.1, profiling results are stored in a PostgreSQL database instead of the asset-files storage. To make existing profiling results available after upgrading from an earlier release, migrate the results following this IBM documentation.
 [Migrating profiling results after upgrading](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=administering-migrating-profiling-results)
 
 <br>
@@ -1362,7 +1391,7 @@ oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"w
 
 2).The nohup command is recommended for the migration of a large number of records.
 ```
-nohup ansible-playbook /opt/ansible/5.1.0/roles/wkc-core/wdp_profiling_postgres_migration.yaml --extra=@/tmp/override.yaml -vvvv &
+nohup ansible-playbook /opt/ansible/5.1.1/roles/wkc-core/wdp_profiling_postgres_migration.yaml --extra=@/tmp/override.yaml -vvvv &
 ```
 
 ## Part 4: Maintenance
@@ -1442,6 +1471,19 @@ Validating the upgrade.
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=datalineage
 ```
 
+Set the scale to be `Large`.
+```
+export SCALE=level_4
+```
+
+Run the following command to scale the component by updating the custom resource.
+```
+cpd-cli manage apply-scale-config \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--components=datalineage \
+--scale=${SCALE}
+```
+
 - Make IBM Knowledge Catalog using Neo4j as the knowledge graph database
 
 ```
@@ -1460,6 +1502,9 @@ Ensure the Neo4jCluster is in 'Completed' status.
 oc get Neo4jCluster data-lineage-neo4j -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
+- Apply the workaround for addressing the issue "TS018466973 - Lineage Tab page is keep on spinning."
+The detailed steps needs confirmation by Sanjit.
+
 
 #### 4.1.3 Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage
 
@@ -1467,8 +1512,6 @@ oc get Neo4jCluster data-lineage-neo4j -n ${PROJECT_CPD_INST_OPERANDS}
 <br>
 
 - Migration needs to be run as root or by a user with sudo access.
-- The IBM Manta Data Lineage hot fix needs to be applied.
-- Run the `migration.sh` with nohup and set log delve to `info` 
 
 [Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=migrating-from-manta-automated-data-lineage-manta-data-lineage)
 
