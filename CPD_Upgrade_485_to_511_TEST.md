@@ -372,8 +372,16 @@ oc edit ZenService lite-cr
     zen_utils: sha256:6d906104a8bd8b15f3ebcb2c3ae6a5f93c8d88ce6cfcae4b3eed6657562dc9f3
     zen_watchdog: sha256:4f73b382687bd4de6754292670f6281a7944b6b0903396ed78f1de2da54bc8c0
 ```
-<br>
-Save and Exit. Wait untile the ZenService Operator reconcilation completed and also the lite-cr in 'Completed' status. 
+
+2)Add the `gcMemoryLimit` property under the ZenMinio in the spec which looks like below.
+
+```
+  ZenMinio:
+    name: zen-minio
+    gcMemoryLimit: 1000MiB
+```
+
+3)Save and Exit. Wait untile the ZenService Operator reconcilation completed and also the lite-cr in 'Completed' status. 
 <br>
 
 - 5.Remove stale secret of global search
