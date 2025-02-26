@@ -404,6 +404,23 @@ cpd-cli manage delete-rsi-patch \
 --patch_name=finley-public-env-patch-1-may2024
 ```
 
+3.Delete the finley-public-service-patch patch
+<br>
+Inactivate:
+```
+cpd-cli manage create-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--patch_name=finley-public-service-patch \
+--state=inactive
+```
+
+Delete:
+```
+cpd-cli manage delete-rsi-patch \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--patch_name=finley-public-service-patch
+```
+
 ### 1.2 Set up client workstation
 
 #### 1.2.1 Prepare a client workstation
