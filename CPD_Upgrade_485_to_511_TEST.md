@@ -231,13 +231,20 @@ oc edit WKC wkc-cr
     wkc_metadata_imports_ui_image: sha256:a1997d9a9cde9ecc9f16eb02099a272d7ba2e8d88cb05a9f52f32533e4d633ef
 ```
 
-3)Remove the `ignoreForMaintenance: true` from the WKC custom resource
+3)Add or update below entry for setting the number of wkc_bi_data_service replicas to be 3
+
+```
+wkc_bi_data_service_max_replicas: 3
+wkc_bi_data_service_min_replicas: 3
+```
+
+4)Remove the `ignoreForMaintenance: true` from the WKC custom resource
 
 ```
 ignoreForMaintenance: true
 ```
 
-4)Save and Exit. Wait untile the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status. 
+5)Save and Exit. Wait untile the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status. 
 
 ```
 oc get WKC wkc-cr -o yaml
