@@ -887,8 +887,35 @@ e).Create the spec patch for wdp profiling postgres migration pods.
 ```
 cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --patch_type=rsi_pod_spec --patch_name=prof-pg-migration-runtimes-pod-spec-selinux --description="This is spec patch is for selinux relabeling disabling on CSI based storages for wdp profiling postgres migration pods" --include_labels=job-name:wdp-profiling-postgres-migration --state=active --spec_format=json --patch_spec=/tmp/work/rsi/specpatch.json
 ```
+4).Creat new CouchDB patches for addressing time-consuming PVC mounting issue.
+<br>
+a).Create the annotation patch for CouchDb.
 
-4).Check the RSI patches status again:
+```
+cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+  --patch_type=rsi_pod_annotation \
+  --patch_name=couchdb-pod-annotation-selinux \
+  --description="This annotation patch is for selinux relabeling disabling on CSI based storages for couchdb" \
+  --include_labels=app:couchdb \
+  --state=active \
+  --spec_format=json \
+  --patch_spec=/tmp/work/rsi/annotation-spec.json
+```
+
+b).Create the spec patch for CouchDb.
+
+```
+cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+  --patch_type=rsi_pod_spec \
+  --patch_name=couchdb-pod-spec-selinux \
+  --description="This spec patch is for selinux relabeling disabling on CSI based storages for couchdb" \
+  --include_labels=app:couchdb \
+  --state=active \
+  --spec_format=json \
+  --patch_spec=/tmp/work/rsi/specpatch.json
+```
+
+5).Check the RSI patches status again:
 ```
 cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --all
 
