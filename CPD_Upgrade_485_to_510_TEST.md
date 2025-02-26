@@ -293,14 +293,15 @@ List OpenSearch PVC sizes, and make sure to preserve the type, and the size of t
 
 ```
 oc get pvc | grep elasticsea
-dev                        data-elasticsea-0ac3-ib-6fb9-es-server-esnodes-0           Bound    pvc-ac773a46-0110-48f6-be27-51b6db332945   150Gi      RWO          
-dev                        data-elasticsea-0ac3-ib-6fb9-es-server-esnodes-1           Bound    pvc-1e73b25c-c0ca-4bdd-b5ba-b4484e18ade9   150Gi      RWO
-dev                        data-elasticsea-0ac3-ib-6fb9-es-server-esnodes-2           Bound    pvc-1a5a6c47-4221-4ecf-96e4-ddef689fd527   150Gi      RWO
-dev                        elasticsea-0ac3-ib-6fb9-es-server-snap                     Bound    pvc-eba99ac7-0f9f-481e-883c-56dc8e9ca65c   608Gi      RWX
-dev                        elasticsearch-master-backups                               Bound    pvc-8ab9d47d-de90-449c-99b8-89fed818c727   608Gi      RWX
+dev                        data-elasticsea-0ac3-ib-6fb9-es-server-esnodes-0           Bound     pvc-b25946d2-aa35-4ca9-af1d-9dd65e002cce   187Gi      RWO            ocs-storagecluster-ceph-rbd   265d
+dev                        data-elasticsea-0ac3-ib-6fb9-es-server-esnodes-1           Bound     pvc-6bbc7d80-e21f-447b-bc29-22273ee4d91b   187Gi      RWO            ocs-storagecluster-ceph-rbd   265d
+dev                        data-elasticsea-0ac3-ib-6fb9-es-server-esnodes-2           Bound     pvc-c3aa19cf-4aa4-456d-a56d-4a2ac3a482ef   187Gi      RWO            ocs-storagecluster-ceph-rbd   265d
+dev                        elasticsea-0ac3-ib-6fb9-es-server-snap                     Bound     pvc-6d0ce71f-fd7c-4f27-bbbb-be6d64e52ab2   187Gi      RWX            ocs-storagecluster-cephfs     265d
+dev                        elasticsearch-master-backups                               Bound     pvc-5e989b0d-6d82-42d5-8c7f-949143725172   187Gi      RWX            ocs-storagecluster-cephfs     505d
+
 ```
 
-In the above example, `150Gi` is the OpenSearch pvc size, `608Gi` is backup/snapshot storage size. 
+In the above example, `187Gi` is the OpenSearch pvc size. `187Gi` is also the backup/snapshot storage size. 
 <br>
 **Note** if PVCs are of different sizes, we want to make sure to take the biggest one. 
 <br>
@@ -308,8 +309,8 @@ In the above example, `150Gi` is the OpenSearch pvc size, `608Gi` is backup/snap
 In CCS CR make sure to set the following properties, with above values used as example:
 
 ```
-elasticsearch_persistence_size: "608Gi"
-elasticsearch_backups_persistence_size: "608Gi"
+elasticsearch_persistence_size: "187Gi"
+elasticsearch_backups_persistence_size: "187Gi"
 ```
 
 This will make sure that the Opensearch operator will properly reconcile, - as provided values will match the state of the cluster. 
@@ -352,7 +353,6 @@ oc edit ZenService lite-cr
 
 1)Remove the hot fix images from the ZenService custom resource
 ```
-  image_digests:
   image_digests:
     icp4data_nginx_repo: sha256:2ab2c0cfecdf46b072c9b3ec20de80a0c74767321c96409f3825a1f4e7efb788
     icpd_requisite: sha256:5a7082482c1bcf0b23390d36b0800cc04cfaa32acf7e16413f92304c36a51f02
