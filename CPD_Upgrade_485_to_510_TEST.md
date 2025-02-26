@@ -206,13 +206,6 @@ Backup the SSO configuration:
 oc get configmap saml-configmap -o yaml > saml-configmap-cm.yaml
 ```
 
-Backup deployments and svc that need to be modified after upgrade.
-```
-oc get deploy asset-files-api -o yaml -n ${PROJECT_CPD_INST_OPERANDS} > asset-files-api-deploy-485.yaml
-oc get deploy catalog-api -o yaml -n ${PROJECT_CPD_INST_OPERANDS} > catalog-api-deploy-485.yaml
-oc get svc finley-public -o yaml -n ${PROJECT_CPD_INST_OPERANDS} > finley-public-svc-485.yaml
-```
-
 #### 1.1.3 Uninstall all hotfixes and apply preventative measures 
 Remove the hotfixes by removing the images or configurations from the CRs.
 <br>
@@ -234,7 +227,6 @@ oc edit WKC wkc-cr
     wdp_kg_ingestion_service_image: sha256:bb6c382edf1da01335152da98b803f44b424e8651c862eaf96b6394d8e735e6f
     wdp_lineage_image: sha256:9eda6aaf3dd2581fc7a85746e4b559192b4b00aa5cd7bc227cb29e7873a3cea1
     wdp_profiling_image: sha256:d5491cc8c8c8bd45f2605f299ecc96b9461cd5017c7861f22735e3a4d0073abd
-    wkc_data_lineage_service_image: sha256:618a29c3d5cbe9df061571b40e20ca589bfa4195e7e5a75c3b58b983c4e18f63
     wkc_mde_service_manager_image: sha256:35e6f6ede3383df5c0b2a3d27c146cc121bed32d26ab7fa8870c4aa4fbc6e993
     wkc_metadata_imports_ui_image: sha256:a1997d9a9cde9ecc9f16eb02099a272d7ba2e8d88cb05a9f52f32533e4d633ef
 ```
@@ -360,6 +352,7 @@ oc edit ZenService lite-cr
 
 1)Remove the hot fix images from the ZenService custom resource
 ```
+  image_digests:
   image_digests:
     icp4data_nginx_repo: sha256:2ab2c0cfecdf46b072c9b3ec20de80a0c74767321c96409f3825a1f4e7efb788
     icpd_requisite: sha256:5a7082482c1bcf0b23390d36b0800cc04cfaa32acf7e16413f92304c36a51f02
