@@ -1512,6 +1512,10 @@ oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"w
 nohup ansible-playbook /opt/ansible/5.1.1/roles/wkc-core/wdp_profiling_postgres_migration.yaml --extra=@/tmp/override.yaml -vvvv &
 ```
 
+3).Validate the job log for successful migration of profiling data; then run the `CLEAN` option.
+<br>
+**Important:** The data is permanently deleted and can't be restored. Therefore, use this option only after all results are copied successfully and you do no longer need the results in the asset-files storage. So recommend taking a note of this procedure and run it after the tests passed from the end-users.
+
 ## Part 4: Maintenance
 This part is beyond the upgrade scope. And we are not commited to complete them in the two days time window.
 ### 4.1 Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage
