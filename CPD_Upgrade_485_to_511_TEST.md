@@ -120,7 +120,6 @@ Part 2: Upgrade
 2.2.3 Upgrading Analytics Engine service
 2.2.4 Upgrading Watson Studio, Watson Studio Runtimes, Watson Machine Learning and OpenScale
 2.2.5 Upgrading Db2 Warehouse
-2.2.6 Upgrading Match360
 
 Part 3: Post-upgrade
 3.1 Validate the external vault connection setting 
@@ -624,7 +623,7 @@ export VERSION=5.1.1
 
 2.Locate the COMPONENTS entry and confirm the COMPONENTS entry is accurate.
 ```
-export COMPONENTS=ibm-cert-manager,ibm-licensing,cpfs,cpd_platform,ws,ws_runtimes,wml,wkc,datastage_ent,datastage_ent_plus,analyticsengine,mantaflow,datalineage,openscale,db2wh,match360
+export COMPONENTS=ibm-cert-manager,ibm-licensing,cpfs,cpd_platform,ws,ws_runtimes,wml,wkc,datastage_ent,datastage_ent_plus,analyticsengine,mantaflow,datalineage,openscale,db2wh
 ```
 
 Save the changes. <br>
@@ -1309,31 +1308,6 @@ Repeat the preceding steps to upgrade each service instance associated with this
 cpd-cli service-instance list \ 
 --profile=${CPD_PROFILE_NAME} \
 --service-type=db2wh
-```
-
-#### 2.2.6 Upgrading Match360
-```
-export COMPONENTS=match360
-```
-Run the cpd-cli manage login-to-ocp command to log in to the cluster.
-
-```
-${CPDM_OC_LOGIN}
-```
-
-Run the upgrade command.
-```
-cpd-cli manage apply-cr \
---components=${COMPONENTS}  \
---release=${VERSION} \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---license_acceptance=true \
---upgrade=true
-```
-
-Validate the service upgrade status.
-```
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 ```
 
 ## Part 3: Post-upgrade
