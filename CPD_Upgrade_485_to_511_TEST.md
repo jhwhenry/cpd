@@ -882,6 +882,22 @@ cpd-cli manage get-cr-status \
 --components=cpd_platform
 ```
 
+4.Create a custom route
+<br>
+- Changing the hostname of the route
+```
+cpd-cli manage setup-route \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--custom_hostname=<hostname>
+```
+- Changing the type of the route to passthrough
+```
+cpd-cli manage setup-route \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--route_type=passthrough
+```
+[Modifying the route to the platform](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=platform-modifying-route)
+
 #### 2.1.4 Upgrade the operators for the services
 
 ```
