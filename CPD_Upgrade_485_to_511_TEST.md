@@ -1657,7 +1657,7 @@ Refer to the detailed steps updated by Sanjit 2/17/2025 in the ticket.
 
 - Migration needs to be run as root or by a user with sudo access.
 
-[Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=migrating-from-manta-automated-data-lineage-manta-data-lineage)
+[Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=lineage-migrating)
 
 ### 4.2 Changing Db2 configuration settings
 1.Run the following command to edit the Db2uCluster custom resource:
