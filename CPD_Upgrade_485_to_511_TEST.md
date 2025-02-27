@@ -1647,7 +1647,7 @@ oc get Neo4jCluster data-lineage-neo4j -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
 - Apply the workaround for addressing the issue "TS018466973 - Lineage Tab page is keep on spinning."
-The detailed steps needs confirmation by Sanjit.
+Refer to the detailed steps updated by Sanjit 2/17/2025 in the ticket.
 
 
 #### 4.1.3 Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage
