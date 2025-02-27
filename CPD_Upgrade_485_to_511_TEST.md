@@ -884,23 +884,18 @@ cpd-cli manage get-cr-status \
 4.Create a custom route
 <br>
 - Changing the hostname of the route
-```
-cpd-cli manage setup-route \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---custom_hostname=<hostname>
-```
-
-**Note**
 <br>
-Regarding the custom route, refer to the backup file `routes.yaml` created in the Step **1.1.2**.
+Ensure the `custom_hostname` and `route_secret' are set properly before running belwo command.
 
-- Changing the type of the route to passthrough
 ```
 cpd-cli manage setup-route \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---route_type=passthrough
+--custom_hostname=datacatalog-test.ebiz.verizon.com \
+--route_type=passthrough \
+--route_secret=cpd-tls-secret
 ```
-[Modifying the route to the platform](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=platform-modifying-route)
+
+[Create a custom route using cpd-cli](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=manage-setup-route)
 
 #### 2.1.4 Upgrade the operators for the services
 
