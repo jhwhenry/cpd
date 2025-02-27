@@ -890,6 +890,11 @@ cpd-cli manage setup-route \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --custom_hostname=<hostname>
 ```
+
+**Note**
+<br>
+Regarding the custom route, refer to the backup file `routes.yaml` created in the Step **1.1.2**.
+
 - Changing the type of the route to passthrough
 ```
 cpd-cli manage setup-route \
@@ -1353,20 +1358,6 @@ VAULT_BRIDGE_TLS_RENEGOTIATE=true
 <br>
 
 [Customizing the branding of the web client](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=users-customizing-branding-web-client)
-
-<br>
-
-3)Create a custom route
-
-<br>
-
-[Create a custom route using cpd-cli](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=platform-modifying-route)
-
-**Note**
-<br>
-
-Refer to the backup file `routes.yaml` created in the Step **1.1.2**.
-
 
 ### 3.2 CCS post-upgrade tasks
 **1.Check if uploading JDBC drivers enabled**
