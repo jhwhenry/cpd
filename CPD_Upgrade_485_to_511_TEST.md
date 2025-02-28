@@ -550,8 +550,8 @@ The version in below commands may need to be updated accordingly.
 
 ```
 tar xvf cpd-cli-linux-EE-14.1.1.tgz
-mv cpd-cli-linux-EE-14.1.1-1542/* .
-rm -rf cpd-cli-linux-EE-14.1.1-1542
+mv cpd-cli-linux-EE-14.1.1-1650/* .
+rm -rf cpd-cli-linux-EE-14.1.1-1650
 ```
 
 3. Copy the cpd_vars.sh file used by the CPD 4.8.5 to the folder ${CPD511_WORKSPACE}.
@@ -594,10 +594,10 @@ Output like this
 
 ```
 cpd-cli
-        Version: 14.1.1
-        Build Date: 2024-12-05T14:18:50
-        Build Number: 1189
-        CPD Release Version: 5.1.1
+	Version: 14.1.1
+	Build Date: 2025-02-20T18:45:49
+	Build Number: 1650
+	CPD Release Version: 5.1.1
 ```
 5.Update the OpenShift CLI
 <br>
