@@ -372,12 +372,23 @@ oc edit ZenService lite-cr
     zen_watchdog: sha256:4f73b382687bd4de6754292670f6281a7944b6b0903396ed78f1de2da54bc8c0
 ```
 
-2)Add the `gcMemoryLimit` property under the ZenMinio in the spec which looks like below.
+2)Add the `gcMemoryLimit` and `resources` configurtions under the ZenMinio in the spec which looks like below.
+<br>
+**Note:** For the Test upgrade, we can specify the values of the resources by referring to that in the Dev environment.
 
 ```
   ZenMinio:
     name: zen-minio
     gcMemoryLimit: 1000MiB
+    resources:
+      limits:
+        cpu: 1
+        ephemeral-storage: 600Mi
+        memory: 2Gi
+      requests:
+        cpu: 500m
+        ephemeral-storage: 200Mi
+        memory: 1Gi
 ```
 
 3)Save and Exit. Wait untile the ZenService Operator reconcilation completed and also the lite-cr in 'Completed' status. 
@@ -882,10 +893,14 @@ cpd-cli manage get-cr-status \
 ```
 
 4.Create a custom route
+
 <br>
+
 - Changing the hostname of the route
+
 <br>
-Ensure the `custom_hostname` and `route_secret' are set properly before running belwo command.
+
+Ensure the `custom_hostname` and `route_secret` are set properly before running belwo command.
 
 ```
 cpd-cli manage setup-route \
