@@ -1130,13 +1130,13 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
 ##### 4.Apply the customizations 
-**Apply the change for supporting CyberArk Vault with a private CA signed certificate**: <br>
+**1).Apply the change for supporting CyberArk Vault with a private CA signed certificate**: <br>
 
 ```
 oc patch ZenService lite-cr -n ${PROJECT_CPD_INST_OPERANDS} --type merge -p '{"spec":{"vault_bridge_tls_tolerate_private_ca": true}}'
 ```
 
-**Combined CCS patch command** (Reducing the number of operator reconcilations): <br>
+**2)Combined CCS patch command** (Reducing the number of operator reconcilations): <br>
 
 - Configuring reporting settings for IBM Knowledge Catalog.
 
@@ -1148,6 +1148,27 @@ oc patch configmap ccs-features-configmap -n ${PROJECT_CPD_INST_OPERANDS} --type
 
 ```
 oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"asset_files_call_socket_timeout_ms": 60000,"asset_files_api_resources": {"limits": {"cpu": "4", "memory": "32Gi", "ephemeral-storage": "1Gi"}, "requests": {"cpu": "200m", "memory": "256Mi", "ephemeral-storage": "10Mi"}}, "asset_files_api_replicas": 6,"asset_files_api_command":["/bin/bash"], "asset_files_api_args":["-c","cd /home/node/${MICROSERVICENAME}; source /scripts/exportSecrets.sh; export npm_config_cache=~node; node --max-old-space-size=12288 --max-http-header-size=32768 index.js"]}}'
+```
+
+**3)Combined WKC patch command** (Reducing the number of operator reconcilations): <br>
+
+- Figure out a proper PVC size for the PostgreSQL used by profiling migration.
+<br>
+Check the asset-files-api pvc size. Specify the same or a bigger storage size for preparing the postgresql with the proper storage size to accomendate the profiling migration.
+<br>
+Get the file-api-claim pvc size.
+
+```
+oc get pvc -n ${PROJECT_CPD_INST_OPERANDS} | grep file-api-claim | awk '{print $4}'
+```
+
+Specify the same or a bigger storage size for postgres storage accordingly in next step.
+
+- Patch the WKC : a)Setting a proper PVC size for PostgreSQL (profiling db) and b) WKC BI Data hotfix
+  
+```
+oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"wdp_profiling_edb_postgres_storage_size":"100Gi","image_digests":{"wkc_bi_data_service_image":"sha256:34d2c0977dfa7de1f8efed425eb2bca2ec2b4bd0188454c799b081013af4c34f"}}}'
+
 ```
 
 #### 2.2.2 Upgrading MANTA service
@@ -1503,26 +1524,12 @@ wdp_profiling_postgres_action: MIGRATE
 
 **Note**
 <br>
-1).Check the asset-files-api pvc size. Specify the same or a bigger storage size for preparing the postgresql with the proper storage size to accomendate the profiling migration.
-<br>
-Get the file-api-claim pvc size.
-
-```
-oc get pvc -n ${PROJECT_CPD_INST_OPERANDS} | grep file-api-claim | awk '{print $4}'
-```
-
-Specify the same or a bigger storage size for postgres storage.
-
-```
-oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"wdp_profiling_edb_postgres_storage_size":"500Gi"}}'
-```
-
-2).The nohup command is recommended for the migration of a large number of records.
+1).The nohup command is recommended for the migration of a large number of records.
 ```
 nohup ansible-playbook /opt/ansible/5.1.1/roles/wkc-core/wdp_profiling_postgres_migration.yaml --extra=@/tmp/override.yaml -vvvv &
 ```
 
-3).Validate the job log for successful migration of profiling data; then run the `CLEAN` option.
+2).Validate the job log for successful migration of profiling data; then run the `CLEAN` option.
 <br>
 **Important:** The data is permanently deleted and can't be restored. Therefore, use this option only after all results are copied successfully and you do no longer need the results in the asset-files storage. So recommend taking a note of this procedure and run it after the tests passed from the end-users.
 
