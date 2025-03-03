@@ -1616,7 +1616,7 @@ cpd-cli manage apply-scale-config \
 - Make IBM Knowledge Catalog using Neo4j as the knowledge graph database
 
 ```
-oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"useFDB":False}}'
+oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"useFDB":false}}'
 ```
 
 Wait until the WKC operator reconcilation fineshed and wkc-cr becomes 'Completed'.
