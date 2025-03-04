@@ -1615,6 +1615,14 @@ cpd-cli manage apply-scale-config \
 
 - Make IBM Knowledge Catalog using Neo4j as the knowledge graph database
 
+<br>
+Delete the fdbcluster.
+
+```
+oc delete fdbcluster wkc-foundationdb-cluster -n ${PROJECT_CPD_INST_OPERANDS}
+```
+Patch the wkc-cr to deploy the Neo4j cluster.
+
 ```
 oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"useFDB":false}}'
 ```
