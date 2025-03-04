@@ -384,7 +384,29 @@ oc edit ZenService lite-cr
 3)Save and Exit. Wait untile the ZenService Operator reconcilation completed and also the lite-cr in 'Completed' status. 
 <br>
 
-- 5.Remove stale secret of global search
+- 5.Edit the mantaflow custom resource.
+
+```
+oc edit mantaflow mantaflow-wkc
+```
+
+Remove the migration section from the cr.
+```
+ migrations: 
+     h2-format-3: true
+```
+
+Save and Exit. Wait untile the Mantaflow Operator reconcilation completed and also the mantaflow-wkc in 'Completed' status. 
+
+<br>
+
+Restart the deployment.
+
+```
+oc delete deploy manta-admin-gui manta-configuration-service manta-dataflow -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
+- 6.Remove stale secret of global search
 Check if the elasticsearch-master-ibm-elasticsearch-cred-secret exists.
 ```
 oc get secret -n ${PROJECT_CPD_INST_OPERANDS} | grep elasticsearch-master-ibm-elasticsearch-cred-secret
