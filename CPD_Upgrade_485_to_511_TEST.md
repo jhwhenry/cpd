@@ -330,12 +330,12 @@ run_reindexer_with_resource_key: false
 ```
 couchdb_search_resources:
   limits:
-    cpu: "8"
-    memory: 16Gi
+    cpu: "4"
+    memory: 8Gi
   requests:
     cpu: 250m
     memory: 256Mi
-```
+ ```
 
 6)Remove the `ignoreForMaintenance: true` from the CCS custom resource
 
