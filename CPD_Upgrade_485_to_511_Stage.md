@@ -857,6 +857,15 @@ cpd-cli manage apply-entitlement \
 --production=false
 ```
 
+Apply the IBM Manta Data Lineage license for the non-production environment.
+
+```
+cpd-cli manage apply-entitlement \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--entitlement=data-lineage \
+--production=false
+```
+
 Reference: <br>
 
 [Applying your entitlements](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=puish-applying-your-entitlements)
@@ -1042,35 +1051,8 @@ e).Create the spec patch for wdp profiling postgres migration pods.
 ```
 cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --patch_type=rsi_pod_spec --patch_name=prof-pg-migration-runtimes-pod-spec-selinux --description="This is spec patch is for selinux relabeling disabling on CSI based storages for wdp profiling postgres migration pods" --include_labels=job-name:wdp-profiling-postgres-migration --state=active --spec_format=json --patch_spec=/tmp/work/rsi/specpatch.json
 ```
-4).Creat new CouchDB patches for addressing time-consuming PVC mounting issue.
-<br>
-a).Create the annotation patch for CouchDb.
 
-```
-cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
-  --patch_type=rsi_pod_annotation \
-  --patch_name=couchdb-pod-annotation-selinux \
-  --description="This annotation patch is for selinux relabeling disabling on CSI based storages for couchdb" \
-  --include_labels=app:couchdb \
-  --state=active \
-  --spec_format=json \
-  --patch_spec=/tmp/work/rsi/annotation-spec.json
-```
-
-b).Create the spec patch for CouchDb.
-
-```
-cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
-  --patch_type=rsi_pod_spec \
-  --patch_name=couchdb-pod-spec-selinux \
-  --description="This spec patch is for selinux relabeling disabling on CSI based storages for couchdb" \
-  --include_labels=app:couchdb \
-  --state=active \
-  --spec_format=json \
-  --patch_spec=/tmp/work/rsi/specpatch.json
-```
-
-5).Check the RSI patches status again:
+4).Check the RSI patches status again:
 ```
 cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --all
 
@@ -1175,7 +1157,7 @@ Specify the same or a bigger storage size for postgres storage accordingly in ne
 - Patch the WKC : a)Setting a proper PVC size for PostgreSQL (profiling db) and b) WKC BI Data hotfix
   
 ```
-oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"wdp_profiling_edb_postgres_storage_size":"100Gi","image_digests":{"wkc_bi_data_service_image":"sha256:34d2c0977dfa7de1f8efed425eb2bca2ec2b4bd0188454c799b081013af4c34f"}}}'
+oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"wdp_profiling_edb_postgres_storage_size":"200Gi","image_digests":{"wkc_bi_data_service_image":"sha256:34d2c0977dfa7de1f8efed425eb2bca2ec2b4bd0188454c799b081013af4c34f"}}}'
 
 ```
 
@@ -1541,6 +1523,8 @@ nohup ansible-playbook /opt/ansible/5.1.1/roles/wkc-core/wdp_profiling_postgres_
 <br>
 **Important:** The data is permanently deleted and can't be restored. Therefore, use this option only after all results are copied successfully and you do no longer need the results in the asset-files storage. So recommend taking a note of this procedure and run it after the tests passed from the end-users.
 
+<br>
+
 ## Part 4: Maintenance
 This part is beyond the upgrade scope. And we are not commited to complete them in the two days time window.
 ### 4.1 Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage
@@ -1657,10 +1641,6 @@ Ensure the Neo4jCluster is in 'Completed' status.
 oc get Neo4jCluster data-lineage-neo4j -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
-- Apply the workaround for addressing the issue "TS018466973 - Lineage Tab page is keep on spinning."
-Refer to the detailed steps updated by Sanjit 2/17/2025 in the ticket.
-
-
 #### 4.1.3 Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage
 
 **Note** 
@@ -1669,6 +1649,43 @@ Refer to the detailed steps updated by Sanjit 2/17/2025 in the ticket.
 - Migration needs to be run as root or by a user with sudo access.
 
 [Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=lineage-migrating)
+
+#### 4.1.4 Post-migration tasks
+**1. Resync glossary assets**
+<br>
+1)Get the Bearer token for calling CPD REST API
+```
+curl -X POST \
+  'https://$CPD_URL/icp4d-api/v1/authorize'\
+  -H 'Content-Type: application/json' \
+  -d' { \
+    "username":"<change it to your CPD user name>", \
+    "password":"<change it the corresponding CPD password>" \
+  }'
+```
+2).Run the resync command for glossary assets
+```
+curl -k -X POST  -H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: Bearer $TOKEN" "https://$CPD_URL/v3/glossary_terms/admin/resync?artifact_type=all&sync_destinations=KNOWLEDGE_GRAPH" -d '{}'
+```
+
+**2. Resync of lineage metadata**
+
+<br>
+
+Resynchronize your catalog metadata to start seeing the Knowledge Graph. Follow the steps in below IBM Documentation. 
+
+<br>
+
+**Note:** Resync all catalogs when specifying what catalogs to resyc.
+
+<b>
+
+[Resync of lineage metadata](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=administering-resync-lineage-metadata)
+
+**3. Apply the workaround for addressing the issue "TS018466973 - Lineage Tab page is keep on spinning."**
+
+Refer to the detailed steps updated by Sanjit 2/17/2025 in the ticket.
+
 
 ### 4.2 Changing Db2 configuration settings
 1.Run the following command to edit the Db2uCluster custom resource:
