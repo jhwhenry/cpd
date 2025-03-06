@@ -1733,7 +1733,7 @@ Resynchronize your catalog metadata to start seeing the Knowledge Graph. Follow 
 
 **Note:** Resync all catalogs when specifying what catalogs to resyc.
 
-<b>
+<br>
 
 [Resync of lineage metadata](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=administering-resync-lineage-metadata)
 
