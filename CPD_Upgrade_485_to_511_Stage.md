@@ -89,6 +89,39 @@ nohup du -hs /opt/mantaflow/server/manta-dataflow-server-dir/data/neo4j/data > /
 #### 7. A pre-upgrade health check is made to ensure the cluster's readiness for upgrade.
 - The OpenShift cluster, persistent storage and Cloud Pak for Data platform and services are in healthy status.
 
+#### Download the MDI Lineage Migration Toolkit Patch and images 
+- Download the MDI Lineage Migration Toolkit Patch
+<br>
+[Download the patch from the Fix Central](
+https://www.ibm.com/support/fixcentral/quickorder?product=ibm%2FInformation+Management%2FIBM+InfoSphere+Information+Server&fixids=mdi-lineage-migration-patch_5112&source=SAR)
+
+<br>
+Copy the MDI Lineage Migration Toolkit Patch to below `${MDIWORK_DIR}` on the Cloud Pak for Data cluster.
+
+```
+MDIWORK_DIR=/tmp/mdiwork
+mkdir -p ${MDIWORK_DIR}
+```
+
+- Mirror the images
+<br>
+You need to change the path to the `auth.json` (credentials) and the `PRIVATE_REGISTRY_LOCATION` in below commands.
+```
+DOCKER_IMAGE_ID=6e6b800e8ca2d096e8b36767656ec2f335b7df009861e66355bb8f67b27713cf
+PRIVATE_REGISTRY_LOCATION=<your private image registry URL>
+
+skopeo copy --all --authfile "<folder path>/auth.json" \
+    --dest-tls-verify=false --src-tls-verify=false \
+    docker://cp.icr.io/cp/cpd/mdi-lineage-migration@sha256:${DOCKER_IMAGE_ID} \
+    docker://${PRIVATE_REGISTRY_LOCATION}/cp/cpd/mdi-lineage-migration@sha256:${DOCKER_IMAGE_ID}
+
+
+skopeo copy --all --authfile "<folder path>/auth.json" \
+    --dest-tls-verify=false --src-tls-verify=false \
+    docker://icr.io/cpopen/cpd/cpdtool:5.1.1 \
+    docker://${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/cpdtool:5.1.1
+```
+
 ## Table of Content
 
 ```
@@ -1683,7 +1716,7 @@ Resynchronize your catalog metadata to start seeing the Knowledge Graph. Follow 
 
 [Resync of lineage metadata](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=administering-resync-lineage-metadata)
 
-**3.Apply the workaround for addressing the issue - Lineage Tab page is keep on spinning.**
+**3.Apply the workaround for addressing the issue: Lineage Tab page is keep on spinning.**
 
 Refer to the detailed steps updated by Sanjit 2/17/2025 in the ticket TS018466973.
 
