@@ -89,9 +89,12 @@ nohup du -hs /opt/mantaflow/server/manta-dataflow-server-dir/data/neo4j/data > /
 #### 7. A pre-upgrade health check is made to ensure the cluster's readiness for upgrade.
 - The OpenShift cluster, persistent storage and Cloud Pak for Data platform and services are in healthy status.
 
-#### Download the MDI Lineage Migration Toolkit Patch and images 
+#### 8. Download the MDI Lineage Migration Toolkit Patch and images 
+
 - Download the MDI Lineage Migration Toolkit Patch
+  
 <br>
+
 [Download the patch from the Fix Central](
 https://www.ibm.com/support/fixcentral/quickorder?product=ibm%2FInformation+Management%2FIBM+InfoSphere+Information+Server&fixids=mdi-lineage-migration-patch_5112&source=SAR)
 
@@ -104,8 +107,11 @@ mkdir -p ${MDIWORK_DIR}
 ```
 
 - Mirror the images
+  
 <br>
+
 You need to change the path to the `auth.json` (credentials) and the `PRIVATE_REGISTRY_LOCATION` in below commands.
+
 ```
 DOCKER_IMAGE_ID=6e6b800e8ca2d096e8b36767656ec2f335b7df009861e66355bb8f67b27713cf
 PRIVATE_REGISTRY_LOCATION=<your private image registry URL>
