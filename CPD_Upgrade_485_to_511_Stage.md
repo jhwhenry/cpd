@@ -1706,6 +1706,7 @@ oc get Neo4jCluster data-lineage-neo4j -n ${PROJECT_CPD_INST_OPERANDS}
 **1. Resync glossary assets**
 <br>
 1)Get the Bearer token for calling CPD REST API
+
 ```
 curl -X POST \
   'https://$CPD_URL/icp4d-api/v1/authorize'\
@@ -1715,7 +1716,9 @@ curl -X POST \
     "password":"<change it the corresponding CPD password>" \
   }'
 ```
+
 2).Run the resync command for glossary assets
+
 ```
 curl -k -X POST  -H "Content-Type: application/json" -H "Accept: application/json" -H "Authorization: Bearer $TOKEN" "https://$CPD_URL/v3/glossary_terms/admin/resync?artifact_type=all&sync_destinations=KNOWLEDGE_GRAPH" -d '{}'
 ```
@@ -1735,6 +1738,11 @@ Resynchronize your catalog metadata to start seeing the Knowledge Graph. Follow 
 [Resync of lineage metadata](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=administering-resync-lineage-metadata)
 
 
+**3.Apply the workaround for addressing the issue: Lineage Tab page is keep on spinning**
+
+Refer to the detailed steps updated by Sanjit 2/17/2025 in the ticket TS018466973.
+
+
 ### 4.2 Changing Db2 configuration settings
 1.Run the following command to edit the Db2uCluster custom resource:
 
@@ -1746,6 +1754,7 @@ oc edit db2ucluster db2oltp-wkc -n ${PROJECT_CPD_INST_OPERANDS}
 <br>
 To find your database configuration parameters, see the yaml path `spec.environment.database.dbConfig`.
 Under the key dbConfig, you can add or edit below key-value pairs. Values must be enclosed in quotation marks.
+
 ```
 spec:
   environment:
