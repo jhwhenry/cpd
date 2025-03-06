@@ -1027,12 +1027,24 @@ This change can be reverted after the upgrade completed successfully.
 ```
 ${CPDM_OC_LOGIN}
 ```
-2).Run the following command to re-apply your existing custom patches.
+
+2)Enable the zen-rsi-evictor-cron-job CronJob:
+
+```
+oc patch CronJob zen-rsi-evictor-cron-job \
+--namespace=${PROJECT_CPD_INST_OPERANDS} \
+--type=merge \
+--patch='{"spec":{"suspend": false}}'
+```
+
+3).Run the following command to re-apply your existing custom patches.
+
 ```
 cpd-cli manage apply-rsi-patches \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
-3).Creat new patches required for migrating profiling results
+
+4).Creat new patches required for migrating profiling results
 <br>
 a).Identify the location of the `work` directory and create the `rsi` folder under it.
 
