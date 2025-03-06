@@ -1734,9 +1734,6 @@ Resynchronize your catalog metadata to start seeing the Knowledge Graph. Follow 
 
 [Resync of lineage metadata](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=administering-resync-lineage-metadata)
 
-**3.Apply the workaround for addressing the issue: Lineage Tab page is keep on spinning.**
-
-Refer to the detailed steps updated by Sanjit 2/17/2025 in the ticket TS018466973.
 
 ### 4.2 Changing Db2 configuration settings
 1.Run the following command to edit the Db2uCluster custom resource:
