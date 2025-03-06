@@ -230,20 +230,13 @@ oc edit WKC wkc-cr
     wkc_metadata_imports_ui_image: sha256:a1997d9a9cde9ecc9f16eb02099a272d7ba2e8d88cb05a9f52f32533e4d633ef
 ```
 
-3)Add or update below entry for setting the number of wkc_bi_data_service replicas to be 3
-
-```
-wkc_bi_data_service_max_replicas: 3
-wkc_bi_data_service_min_replicas: 3
-```
-
-4)Remove the `ignoreForMaintenance: true` from the WKC custom resource
+3)Remove the `ignoreForMaintenance: true` from the WKC custom resource
 
 ```
 ignoreForMaintenance: true
 ```
 
-5)Save and Exit. Wait untile the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status. 
+4)Save and Exit. Wait untile the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status. 
 
 ```
 oc get WKC wkc-cr -o yaml
@@ -299,15 +292,18 @@ List OpenSearch PVC sizes, and make sure to preserve the type, and the size of t
 
 ```
 oc get pvc | grep elasticsea
-dev                        data-elasticsea-0ac3-ib-6fb9-es-server-esnodes-0           Bound     pvc-b25946d2-aa35-4ca9-af1d-9dd65e002cce   187Gi      RWO            ocs-storagecluster-ceph-rbd   265d
-dev                        data-elasticsea-0ac3-ib-6fb9-es-server-esnodes-1           Bound     pvc-6bbc7d80-e21f-447b-bc29-22273ee4d91b   187Gi      RWO            ocs-storagecluster-ceph-rbd   265d
-dev                        data-elasticsea-0ac3-ib-6fb9-es-server-esnodes-2           Bound     pvc-c3aa19cf-4aa4-456d-a56d-4a2ac3a482ef   187Gi      RWO            ocs-storagecluster-ceph-rbd   265d
-dev                        elasticsea-0ac3-ib-6fb9-es-server-snap                     Bound     pvc-6d0ce71f-fd7c-4f27-bbbb-be6d64e52ab2   187Gi      RWX            ocs-storagecluster-cephfs     265d
-dev                        elasticsearch-master-backups                               Bound     pvc-5e989b0d-6d82-42d5-8c7f-949143725172   187Gi      RWX            ocs-storagecluster-cephfs     505d
+
+data-elasticsea-0ac3-ib-6fb9-es-server-esnodes-0   Bound    pvc-98787b8a-8788-4b77-868e-43354c841c61   156Gi      RWO            ocs-storagecluster-ceph-rbd   251d
+hptv-stgcloudpak     data-elasticsea-0ac3-ib-6fb9-es-server-esnodes-1   Bound    pvc-68b77c0a-7e00-4da7-a66a-2a73b6b68b03   156Gi      RWO            ocs-storagecluster-ceph-rbd   251d
+hptv-stgcloudpak     data-elasticsea-0ac3-ib-6fb9-es-server-esnodes-2   Bound    pvc-2ac279b5-bdee-435f-abf9-450c9f54627b   156Gi      RWO            ocs-storagecluster-ceph-rbd   251d
+hptv-stgcloudpak
+elasticsea-0ac3-ib-6fb9-es-server-snap             Bound    pvc-6e3c0e29-68d6-435e-8604-f837288cce99   213Gi      RWX            ocs-storagecluster-cephfs     251d
+hptv-stgcloudpak     elasticsearch-master-backups                       Bound    pvc-cdb6884a-19a8-4fee-ab11-7209004f4a15   213Gi      RWX            ocs-storagecluster-cephfs     288d
+hptv-stgcloudpak     
 
 ```
 
-In the above example, `187Gi` is the OpenSearch pvc size. `187Gi` is also the backup/snapshot storage size. 
+In the above example, `156Gi` is the OpenSearch pvc size. `213Gi` is the backup/snapshot storage size. 
 <br>
 **Note** if PVCs are of different sizes, we want to make sure to take the biggest one. 
 <br>
@@ -315,8 +311,8 @@ In the above example, `187Gi` is the OpenSearch pvc size. `187Gi` is also the ba
 In CCS CR make sure to set the following properties, with above values used as example:
 
 ```
-elasticsearch_persistence_size: "187Gi"
-elasticsearch_backups_persistence_size: "187Gi"
+elasticsearch_persistence_size: "213Gi"
+elasticsearch_backups_persistence_size: "213Gi"
 ```
 
 This will make sure that the Opensearch operator will properly reconcile, - as provided values will match the state of the cluster. 
