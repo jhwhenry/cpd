@@ -1643,7 +1643,7 @@ oc get Neo4jCluster data-lineage-neo4j -n ${PROJECT_CPD_INST_OPERANDS}
 
 #### 4.1.3 Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage
 
-**Note** 
+**Note:** 
 <br>
 
 - Migration needs to be run as root or by a user with sudo access.
@@ -1651,6 +1651,7 @@ oc get Neo4jCluster data-lineage-neo4j -n ${PROJECT_CPD_INST_OPERANDS}
 [Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=lineage-migrating)
 
 #### 4.1.4 Post-migration tasks
+
 **1. Resync glossary assets**
 <br>
 1)Get the Bearer token for calling CPD REST API
@@ -1689,9 +1690,11 @@ Refer to the detailed steps updated by Sanjit 2/17/2025 in the ticket.
 
 ### 4.2 Changing Db2 configuration settings
 1.Run the following command to edit the Db2uCluster custom resource:
+
 ```
 oc edit db2ucluster db2oltp-wkc -n ${PROJECT_CPD_INST_OPERANDS}
 ```
+
 2.Change the following database configuration parameters.
 <br>
 To find your database configuration parameters, see the yaml path `spec.environment.database.dbConfig`.
