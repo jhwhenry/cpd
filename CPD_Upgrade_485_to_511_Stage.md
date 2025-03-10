@@ -957,7 +957,7 @@ cpd-cli manage setup-route \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --custom_hostname=datacatalog-stg.verizon.com \
 --route_type=passthrough \
---route_secret=cpd-tls-secret
+--route_secret=<your-external-tls-secret-name>
 ```
 
 [Create a custom route using cpd-cli](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=manage-setup-route)
