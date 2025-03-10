@@ -955,7 +955,7 @@ Ensure the `custom_hostname` and `route_secret` are set properly before running 
 ```
 cpd-cli manage setup-route \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---custom_hostname=datacatalog-test.ebiz.verizon.com \
+--custom_hostname=datacatalog-stg.verizon.com \
 --route_type=passthrough \
 --route_secret=cpd-tls-secret
 ```
