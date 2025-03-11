@@ -1607,13 +1607,51 @@ Wait for the cpd-cli to return the following message:
 [SUCCESS]... The delete-olm-artifacts command ran successfully
 ```
 
-#### 4.1.2 Install the IBM Manta Data Lineage
+#### 4.1.2 Remove the fdbcluster and deploy the Neo4jCluster
 
 - Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster.
 
 ```
 ${CPDM_OC_LOGIN}
 ```
+
+- Make IBM Knowledge Catalog using Neo4j as the knowledge graph database
+
+<br>
+Delete the fdbcluster.
+
+```
+oc delete fdbcluster wkc-foundationdb-cluster -n ${PROJECT_CPD_INST_OPERANDS}
+```
+Patch the wkc-cr to deploy the Neo4j cluster.
+
+```
+oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"useFDB":false}}'
+```
+
+Monitor the WKC operator reconcilation by checking the WKC operator log.
+
+<br>
+If the IBM Knowledge Catalog custom resource (wkc-cr) reconciliation fails, check if the `wdp-kg-ingestion-service` and `wkc-data-lineage-service` pods are stuck in the `ContainerCreating` status. If yes, then delete these two deployments:
+
+```
+oc delete deploy wdp-kg-ingestion-service -n ${PROJECT_CPD_INST_OPERANDS}
+oc delete deploy wkc-data-lineage-service -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
+Wait for the next reconciliation of the wkc-cr or restart the IBM Knowledge Catalog operator.
+
+```
+watch -n 60 "cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=wkc,datalineage"
+```
+
+Ensure the Neo4jCluster is in 'Completed' status.
+
+```
+oc get Neo4jCluster data-lineage-neo4j -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
+#### 4.1.3 Install the IBM Manta Data Lineage
 
 - Run the following command to create the required OLM objects for IBM Manta Data Lineage .
 
@@ -1660,33 +1698,7 @@ cpd-cli manage apply-scale-config \
 --scale=${SCALE}
 ```
 
-- Make IBM Knowledge Catalog using Neo4j as the knowledge graph database
-
-<br>
-Delete the fdbcluster.
-
-```
-oc delete fdbcluster wkc-foundationdb-cluster -n ${PROJECT_CPD_INST_OPERANDS}
-```
-Patch the wkc-cr to deploy the Neo4j cluster.
-
-```
-oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"useFDB":false}}'
-```
-
-Wait until the WKC operator reconcilation fineshed and wkc-cr becomes 'Completed'.
-
-```
-watch -n 60 "cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=wkc,datalineage"
-```
-
-Ensure the Neo4jCluster is in 'Completed' status.
-
-```
-oc get Neo4jCluster data-lineage-neo4j -n ${PROJECT_CPD_INST_OPERANDS}
-```
-
-#### 4.1.3 Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage
+#### 4.1.4 Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage
 
 **Note:** 
 <br>
@@ -1695,7 +1707,7 @@ oc get Neo4jCluster data-lineage-neo4j -n ${PROJECT_CPD_INST_OPERANDS}
 
 [Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=lineage-migrating)
 
-#### 4.1.4 Post-migration tasks
+#### 4.1.5 Post-migration tasks
 
 **1. Resync glossary assets**
 <br>
