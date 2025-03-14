@@ -128,6 +128,13 @@ skopeo copy --all --authfile "<folder path>/auth.json" \
     docker://${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/cpdtool:5.1.1
 ```
 
+
+#### 9. Check and ensure there's no high storage utilization alerts
+<br>
+This check should be done both from the storge cluster and PVC level.
+<br>
+The storage utilization should be less than 70%.
+
 ## Table of Content
 
 ```
