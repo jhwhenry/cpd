@@ -72,8 +72,6 @@ oc project ${PROJECT_CPD_INST_OPERANDS}
 
 oc rsh $(oc get pods --no-headers | grep -i asset-files | head -n 1 | awk '{print $1}')
 
-nohup ls -alRt /mnt/asset_file_api | egrep -i 'REF_|ARES_' > /tmp/profiling_records_ref.txt &
-
 nohup ls -alRt /mnt/asset_file_api | egrep -i 'REF_|ARES_' | wc -l > /tmp/profiling_records_ref_number.txt &
 
 ```
