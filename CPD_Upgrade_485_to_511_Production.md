@@ -893,8 +893,7 @@ Apply the IBM Cloud Pak for Data Enterprise Edition for the non-production envir
 ```
 cpd-cli manage apply-entitlement \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---entitlement=cpd-enterprise \
---production=false
+--entitlement=cpd-enterprise
 ```
 
 Apply the IBM Manta Data Lineage license for the non-production environment.
@@ -902,8 +901,7 @@ Apply the IBM Manta Data Lineage license for the non-production environment.
 ```
 cpd-cli manage apply-entitlement \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---entitlement=data-lineage \
---production=false
+--entitlement=data-lineage
 ```
 
 Reference: <br>
