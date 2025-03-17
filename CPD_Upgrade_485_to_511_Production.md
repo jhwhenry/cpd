@@ -366,8 +366,8 @@ run_reindexer_with_resource_key: false
 ```
 couchdb_search_resources:
   limits:
-    cpu: "4"
-    memory: 8Gi
+    cpu: "6"
+    memory: 12Gi
   requests:
     cpu: 250m
     memory: 256Mi
