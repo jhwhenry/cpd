@@ -414,8 +414,15 @@ oc edit ZenService lite-cr
     name: zen-minio
     gcMemoryLimit: 1000MiB
 ```
-
-3)Save and Exit. Wait untile the ZenService Operator reconcilation completed and also the lite-cr in 'Completed' status. 
+3)Add the `GATEWAY_WORKER_CONNECTIONS` in the spec
+```
+GATEWAY_WORKER_CONNECTIONS: "4096"
+```
+4)Change the `refresh_install` parameter to be `false`
+```
+refresh_install: false
+```
+5)Save and Exit. Wait untile the ZenService Operator reconcilation completed and also the lite-cr in 'Completed' status. 
 <br>
 
 - 5.Edit the mantaflow custom resource.
