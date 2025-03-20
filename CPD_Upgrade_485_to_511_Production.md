@@ -290,7 +290,7 @@ oc edit AnalyticsEngine analyticsengine-sample
 
 2)Remove the hot fix images from the AnalyticsEngine custom resource if any.
 
-3)Make change for skipping SELinux Relabeling
+3)Check the setting for skipping SELinux Relabeling and make change if needed.
 ```
   serviceConfig:
     skipSELinuxRelabeling: true
@@ -331,17 +331,15 @@ List OpenSearch PVC sizes, and make sure to preserve the type, and the size of t
 ```
 oc get pvc | grep elasticsea
 
-data-elasticsea-0ac3-ib-6fb9-es-server-esnodes-0   Bound    pvc-98787b8a-8788-4b77-868e-43354c841c61   156Gi      RWO            ocs-storagecluster-ceph-rbd   251d
-hptv-stgcloudpak     data-elasticsea-0ac3-ib-6fb9-es-server-esnodes-1   Bound    pvc-68b77c0a-7e00-4da7-a66a-2a73b6b68b03   156Gi      RWO            ocs-storagecluster-ceph-rbd   251d
-hptv-stgcloudpak     data-elasticsea-0ac3-ib-6fb9-es-server-esnodes-2   Bound    pvc-2ac279b5-bdee-435f-abf9-450c9f54627b   156Gi      RWO            ocs-storagecluster-ceph-rbd   251d
-hptv-stgcloudpak
-elasticsea-0ac3-ib-6fb9-es-server-snap             Bound    pvc-6e3c0e29-68d6-435e-8604-f837288cce99   213Gi      RWX            ocs-storagecluster-cephfs     251d
-hptv-stgcloudpak     elasticsearch-master-backups                       Bound    pvc-cdb6884a-19a8-4fee-ab11-7209004f4a15   213Gi      RWX            ocs-storagecluster-cephfs     288d
-hptv-stgcloudpak     
+hptv-prodcloudpak          data-elasticsea-0ac3-ib-6fb9-es-server-esnodes-0           Bound    pvc-f9b87faf-f288-4f08-a290-585ab7d4f9bc   1407Gi     RWO            ocs-storagecluster-ceph-rbd   236d
+hptv-prodcloudpak          data-elasticsea-0ac3-ib-6fb9-es-server-esnodes-1           Bound    pvc-d91991a0-9ffc-46b6-8578-1f0826092caa   1407Gi     RWO            ocs-storagecluster-ceph-rbd   236d
+hptv-prodcloudpak          data-elasticsea-0ac3-ib-6fb9-es-server-esnodes-2           Bound    pvc-28839878-c327-4b2b-9b9b-be17ea8fa7ff   1407Gi     RWO            ocs-storagecluster-ceph-rbd   236d
+hptv-prodcloudpak          elasticsea-0ac3-ib-6fb9-es-server-snap                     Bound    pvc-856121a4-fdbc-4d24-a25a-9b73ba1129ab   3078Gi     RWX            ocs-storagecluster-cephfs     236d
+hptv-prodcloudpak          elasticsearch-master-backups                               Bound    pvc-11bc9f8e-65de-4d3c-a855-ba1358bb3a77   3078Gi     RWX            ocs-storagecluster-cephfs     579d    
 
 ```
 
-In the above example, `156Gi` is the OpenSearch pvc size. `213Gi` is the backup/snapshot storage size. 
+In the above example, `1407Gi` is the OpenSearch pvc size. `3078Gi` is the backup/snapshot storage size. 
 <br>
 **Note** if PVCs are of different sizes, we want to make sure to take the biggest one. 
 <br>
@@ -349,8 +347,8 @@ In the above example, `156Gi` is the OpenSearch pvc size. `213Gi` is the backup/
 In CCS CR make sure to set the following properties, with above values used as example:
 
 ```
-elasticsearch_persistence_size: "213Gi"
-elasticsearch_backups_persistence_size: "213Gi"
+elasticsearch_persistence_size: "3078Gi"
+elasticsearch_backups_persistence_size: "3078Gi"
 ```
 
 This will make sure that the Opensearch operator will properly reconcile, - as provided values will match the state of the cluster. 
@@ -360,7 +358,8 @@ This will make sure that the Opensearch operator will properly reconcile, - as p
 run_reindexer_with_resource_key: false
 ```
 
-5)Increasing the resource limits for the `search` container of the CouchDb. Set the following property in the spec section of CCS CR.
+5)Increasing the resource limits for the `search` container of the CouchDb. This can help accelerate the CCS upgrade. Set the following property in the spec section of CCS CR. The changes can be reverted after the upgrade.
+
 ```
 couchdb_search_resources:
   limits:
@@ -431,13 +430,18 @@ refresh_install: false
 oc edit mantaflow mantaflow-wkc
 ```
 
-Remove the migration section from the cr.
+1)Remove the migration section from the cr.
+
 ```
  migrations: 
      h2-format-3: true
 ```
 
-Save and Exit. Wait untile the Mantaflow Operator reconcilation completed and also the mantaflow-wkc in 'Completed' status. 
+2)Remove the `ignoreForMaintenance: true` from the CCS custom resource.
+
+<br>
+
+3)Save and Exit. Wait untile the Mantaflow Operator reconcilation completed and also the mantaflow-wkc in 'Completed' status. 
 
 <br>
 
