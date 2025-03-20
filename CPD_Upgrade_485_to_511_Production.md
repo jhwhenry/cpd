@@ -411,7 +411,7 @@ oc edit ZenService lite-cr
 ```
   ZenMinio:
     name: zen-minio
-    gcMemoryLimit: 1000MiB
+    gcMemoryLimit: 2000MiB
 ```
 3)Add the `GATEWAY_WORKER_CONNECTIONS` in the spec
 ```
