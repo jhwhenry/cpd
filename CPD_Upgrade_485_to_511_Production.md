@@ -320,6 +320,7 @@ cd cronjob_bak
 Backup of all cronjob
 
 ```
+oc project ${PROJECT_CPD_INST_OPERANDS} 
 for cj in $(oc get cronjob -l runtimeAssembly --no-headers | awk '{print $1}'); do oc get cronjob $cj -oyaml >  $cj.yaml;done
 ```
 
@@ -1340,13 +1341,21 @@ VAULT_BRIDGE_TLS_RENEGOTIATE=true
 [Customizing the branding of the web client](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=users-customizing-branding-web-client)
 
 ### 3.2 CCS post-upgrade tasks
-**1.Check if uploading JDBC drivers enabled**
+**1.Add the label back to cronjobs**
+<br>
+After the reconciliation is completed, add the label back to cronjobs
+```
+oc project ${PROJECT_CPD_INST_OPERANDS} 
+for cj in $(oc get cronjob -l runtimeAssembly --no-headers | awk '{print $1}'); do oc label cronjob $cj created-by=spawner 2>/dev/null; done
+```
+
+**2.Check if uploading JDBC drivers enabled**
 ```
 oc get ccs ccs-cr -o yaml | grep -i wdp_connect_connection_jdbc_drivers_repository_mode
 ```
 Make sure the `wdp_connect_connection_jdbc_drivers_repository_mode` parameter set to be enabled.
 
-**2.Check the heap size in asset-files-api deployment**
+**3.Check the heap size in asset-files-api deployment**
 <br>
 Check if the heap size 12288 is set as expected.
 ```
