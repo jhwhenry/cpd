@@ -305,13 +305,41 @@ oc get AnalyticsEngine analyticsengine-sample -o yaml
 - 3.Patch the CCS and uninstall the CCS hot fixes.
 <br>
 
-1)Edit the CCS cr with below command.
+1)Apply preventative measures for potential time-consuming CCS reconcilation caused by large number of cronjobs.
+
+Create a directory for the backup of cronjobs.
+```
+mkdir cronjob_bak
+cd cronjob_bak
+```
+
+**Important:**
+
+<br>
+
+Backup of all cronjob
+
+```
+for cj in $(oc get cronjob -l runtimeAssembly --no-headers | awk '{print $1}'); do oc get cronjob $cj -oyaml >  $cj.yaml;done
+```
+
+Deleting label from all cronjobs
+```
+for cj in $(oc get cronjob -l runtimeAssembly --no-headers | awk '{print $1}'); do oc label cronjob $cj created-by- 2>/dev/null; done
+```
+
+Return to the parent directory.
+```
+cd ..
+```
+
+2)Edit the CCS cr with below command.
   
 ```
 oc edit CCS ccs-cr
 ```
 
-2)Remove the hot fix images from the CCS custom resource
+3)Remove the hot fix images from the CCS custom resource
 
 ```
   image_digests:
@@ -321,7 +349,7 @@ oc edit CCS ccs-cr
     portal_projects_image: sha256:93c38bf9870a5e8f9399b1e90e09f32e5f556d5f6e03b4a447a400eddb08dc4e
     wkc_search_image: sha256:64e59002617d48428cd59a55bbad5ebf0ccf68644fd627fd1e33f6558dbc8b68
 ```
-3)Apply preventative measures for OpenSearch pvc customization problem
+4)Apply preventative measures for OpenSearch pvc customization problem
 <br>
 This step is for applying the preventative measures for OpenSearch problem. Applying the preventative measures in this timing can also help to minimize the number of CCS operator reconcilations.
 <br>
@@ -353,12 +381,12 @@ elasticsearch_backups_persistence_size: "3078Gi"
 
 This will make sure that the Opensearch operator will properly reconcile, - as provided values will match the state of the cluster. 
 
-4)Disable bulk resync during the upgrade. This job can be run separately (if its needed) after upgrade has completed. Set the following properties in the spec section of CCS CR.
+5)Disable bulk resync during the upgrade. This job can be run separately (if its needed) after upgrade has completed. Set the following properties in the spec section of CCS CR.
 ```
 run_reindexer_with_resource_key: false
 ```
 
-5)Increasing the resource limits for the `search` container of the CouchDb. This can help accelerate the CCS upgrade. Set the following property in the spec section of CCS CR. The changes can be reverted after the upgrade.
+6)Increasing the resource limits for the `search` container of the CouchDb. This can help accelerate the CCS upgrade. Set the following property in the spec section of CCS CR. The changes can be reverted after the upgrade.
 
 ```
 couchdb_search_resources:
@@ -370,15 +398,15 @@ couchdb_search_resources:
     memory: 256Mi
  ```
 
-6)Remove the `ignoreForMaintenance: true` from the CCS custom resource
+7)Remove the `ignoreForMaintenance: true` from the CCS custom resource
 
-7)Save and Exit. Wait untile the CCS Operator reconcilation completed and also the ccs-cr in 'Completed' status. 
+8)Save and Exit. Wait untile the CCS Operator reconcilation completed and also the ccs-cr in 'Completed' status. 
 
 ```
 oc get CCS ccs-cr -o yaml
 ```
 
-8)Wait untile the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status. 
+9)Wait untile the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status. 
 
 ```
 oc get WKC wkc-cr -o yaml
