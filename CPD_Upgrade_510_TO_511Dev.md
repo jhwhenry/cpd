@@ -13,8 +13,8 @@ From
 ```
 OCP: 4.14
 CPD: 5.1.0
-Storage: Storage Fusion 2.7.2
-Componenets: cpd_platform,wkc,analyticsengine,mantaflow,datalineage,ws,ws_runtimes,wml,openscale,db2wh,match360
+Storage: Storage Fusion 2.7.2 (Check Version)
+Componenets: cpd_platform,wkc,analyticsengine,datalineage,ws,ws_runtimes,wml,openscale,db2wh,match360
 ```
 
 To
@@ -22,8 +22,8 @@ To
 ```
 OCP: 4.14
 CPD: 5.1.1
-Storage: Storage Fusion 2.7.2
-Componenets: cpd_platform,wkc,analyticsengine,mantaflow,datalineage,ws,ws_runtimes,wml,openscale,db2wh,match360
+Storage: Storage Fusion 2.7.2 (Check Version)
+Componenets: cpd_platform,wkc,analyticsengine,datalineage,ws,ws_runtimes,wml,openscale,db2wh,match360
 ```
 
 ## Pre-requisites
@@ -102,7 +102,7 @@ Part 2: Upgrade
 2.1.5 Applying the RSI patches
 2.2 Upgrade CPD services
 2.2.1 Upgrading IBM Knowledge Catalog service and apply hot fixes
-2.2.2 Upgrading MANTA service
+2.2.2 Upgrading Datalineage service
 2.2.3 Upgrading Analytics Engine service
 2.2.4 Upgrading Watson Studio, Watson Studio Runtimes, Watson Machine Learning and OpenScale
 2.2.5 Upgrading Db2 Warehouse
@@ -979,11 +979,51 @@ oc patch ZenService lite-cr -n ${PROJECT_CPD_INST_OPERANDS} --type merge -p '{"s
 oc patch configmap ccs-features-configmap -n ${PROJECT_CPD_INST_OPERANDS} --type=json -p='[{"op": "replace", "path": "/data/enforceAuthorizeReporting", "value": "false"},{"op": "replace", "path": "/data/defaultAuthorizeReporting", "value": "true"}]'
 ```
 
-- Apply the patch for 1)asset-files-api deployment tuning and 2)Couchdb search container resource tuning
+- Apply the patch for 1)asset-files-api deployment tuning and 2)Couchdb search container resource tuning 3)Catalog UI
 
 ```
-oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"asset_files_call_socket_timeout_ms": 60000,"asset_files_api_resources": {"limits": {"cpu": "4", "memory": "32Gi", "ephemeral-storage": "1Gi"}, "requests": {"cpu": "200m", "memory": "256Mi", "ephemeral-storage": "10Mi"}}, "asset_files_api_replicas": 6,"asset_files_api_command":["/bin/bash"], "asset_files_api_args":["-c","cd /home/node/${MICROSERVICENAME}; source /scripts/exportSecrets.sh; export npm_config_cache=~node; node --max-old-space-size=12288 --max-http-header-size=32768 index.js"]}}'
+oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"asset_files_call_socket_timeout_ms":60000,"asset_files_api_resources":{"limits":{"cpu":"4","memory":"32Gi","ephemeral-storage":"1Gi"},"requests":{"cpu":"200m","memory":"256Mi","ephemeral-storage":"10Mi"}},"asset_files_api_replicas":6,"asset_files_api_command":["/bin/bash"],"asset_files_api_args":["-c","cd /home/node/${MICROSERVICENAME};source /scripts/exportSecrets.sh;export npm_config_cache=~node;node --max-old-space-size=12288 --max-http-header-size=32768 index.js"],"image_digests":{"portal_catalog_image":"sha256:cb6cabfc370214ed4d23a778414188b671b6efc3f0f6c74a7d0be4a2a89a0200"}}}'
+
 ```
+
+* Apply BI Data Hotfix, Lineage Performance,
+
+```
+oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"image_digests":{"wkc_bi_data_service_image":"sha256:34d2c0977dfa7de1f8efed425eb2bca2ec2b4bd0188454c799b081013af4c34f","wkc_metadata_imports_ui_image":"sha256:20d5b5caab1934acb2aebdc2432c88b20fc8353ab92de161d2ca33f809538b35","wkc_data_lineage_service_image":"sha256:45cc0b3605dbf01362591acedebfd0fb03bc6e946181079e133a3aeeb36e76f7"}}}'
+
+```
+
+* Once WKC has fully reconciled, follow the post application steps for Lineage Performance fix.
+
+```
+1) Exec into datalineage pod -
+oc ${PROJECT_CPD_INST_OPERANDS} exec -it data-lineage-neo4j-server1-0 -- bash
+
+2) Execute the cyper shell =
+cypher-shell -a "neo4j+ssc://localhost:7687" -u neo4j -p "$(cat /config/neo4j-auth/NEO4J_AUTH | cut -d/ -f2)"
+
+3) Initialize a new databse index- 
+CREATE INDEX lineage_graph_anchor_property_deleted_index IF NOT EXISTS FOR(n:LineageGraphAnchor) ON (n.deleted);
+
+4) Verify if new index is present -
+SHOW INDEX YIELD name, state, labelsOrTypes, properties WHERE"lineage_graph_anchor_property_deleted_index" = name
+
+Output should be similar: "lineage_graph_anchor_property_deleted_index" "ONLINE" ["LineageGraphAnchor"]["deleted"]
+
+5) Initialize new constraints
+CREATE CONSTRAINT lineage_graph_anchor_deleted_is_boolean_constraint IF NOT EXISTSFOR (n:LineageGraphAnchor) REQUIRE n.deleted IS :: BOOLEAN;
+
+6) Verify constraint has been initialized -
+SHOW CONSTRAINT YIELD name, type, entityType, labelsOrTypes, properties WHERE"lineage_graph_anchor_deleted_is_boolean_constraint" = name;
+
+Output should be similar: "lineage_graph_anchor_deleted_is_boolean_constraint" "NODE_PROPERTY_TYPE""lineage_graph_anchor_deleted_is_boolean_constraint" "NODE_PROPERTY_TYPE""NODE" ["LineageGraphAnchor"] ["deleted"]
+
+7) Exit out of lineage pod -
+:exit
+```
+
+
+
 
 #### 2.2.2 Upgrading IBM MANTA Lineage service
 
@@ -1014,6 +1054,19 @@ Validating the upgrade.
 ```
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=datalineage
 ```
+
+**Apply Profiling LIneage Hotfix**
+
+```
+oc patch datalineage datalineage-cr -n ${PROJECT_CPD_INSTANCE} --type=merge -p '{"spec":{"datalineage_scanner_service_image_tag":"4022bf2f7d6600a0cedf6dcc7bb4e3844044a1904289c7b00009e9075207e0bf","datalineage_scanner_service_image_tag_metadata":"2.2.2","datalineage_scanner_worker_image_tag":"63e46406131fd74057afbd3a1f76d928f861434093f0d7810eacf8c7e952865f","datalineage_scanner_worker_image_tag_metadata":"2.2.4"}}'
+```
+
+Confirm/Allow Datalineage to fully reconcile.
+
+```
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=datalineage
+```
+
 
 #### 2.2.3 Upgrading Analytics Engine service
 
@@ -1325,150 +1378,9 @@ oc delete pod $(oc get pod -n ${PROJECT_CPD_INST_OPERANDS} -o custom-columns="Na
 
 **4. Migrating profiling results after upgrading (Not needed to be done if already on 5.1.x)**
 
-## Part 4: Maintenance
+## Part 4: Maintenance (Migrated to leverage Sanjit's Runbook)
 
 This part is beyond the upgrade scope. And we are not commited to complete them in the two days time window.
-
-### 4.1 Changing Db2 configuration settings
-
-1.Run the following command to edit the Db2uCluster custom resource:
-
-```
-oc edit db2ucluster db2oltp-wkc -n ${PROJECT_CPD_INST_OPERANDS}
-```
-
-2.Change the following database configuration parameters.
-`<br>`
-To find your database configuration parameters, see the yaml path `spec.environment.database.dbConfig`.
-Under the key dbConfig, you can add or edit below key-value pairs. Values must be enclosed in quotation marks.
-
-```
-spec:
-  environment:
-    database:
-      dbConfig:
-        LOGFILSIZ: "30000"
-        LOGPRIMARY: "40"
-        LOGSECOND: "60"
-        CATALOGCACHE_SZ: "567"
-```
-
-**Note**
-`<br>`
-It's recommended getting this done by following the configuration settings in the Production environment.
-`<br>`
-[Changing Db2 configuration settings](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=configuration-changing-db2-settings)
-
-### 4.2 Configure the idle session timeout
-
-Update TOKEN_EXPIRY_TIME and TOKEN_REFRESH_PERIOD variables from 4 to 12 hours.
-
-- oc edit configmap product-configmap ......
-- Restart the usermgmt pods
-
-[Setting the idle session timeout](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=environment-setting-idle-session-timeout)
-
-### 4.3 Increasing the number of nginx worker connections
-
-```
-export WORKER_CONNECTIONS=4096
-
-oc patch configmap product-configmap \
---namespace ${PROJECT_CPD_INST_OPERANDS} \
---type=merge \
---patch "{\"data\": {\"GATEWAY_WORKER_CONNECTIONS\":\"${WORKER_CONNECTIONS}\"}}"
-```
-
-[Reference](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=platform-increasing-number-nginx-worker-connections)
-
-### 4.4 Increase ephemeral storage for zen-watchdog-serviceability-job
-
-1)Keep a copy of the product-configmap CM.
-2)Update the product-configmap for zen_diagnostics with below command.
-
-```
-oc edit configmap product-configmap
-```
-
-Add the zen_diagnostics sections as follows.
-
-```
-data:
-  zen_diagnostics: |
-    name: zen-diagnostics
-    kind: Job
-    container: zen-watchdog-serviceability-job-container
-    resources:
-      limits:
-        cpu: 1
-        ephemeral-storage: 35000Mi
-        memory: 4Gi
-      requests:
-        cpu: 500m
-        ephemeral-storage: 500Mi
-        memory: 512Mi
-```
-
-3)Restart zen-watchdog pod
-
-### 4.5 Update wdp-lineage deployment for addressing the potential Db2 high CPU and Memory usage issue.
-
-1)Put wkc-cr in maintenance mode.
-
-```
-oc patch wkc wkc-cr --type=merge --patch='{"spec":{"ignoreForMaintenance":true}}'
-```
-
-2)Edit the wdp-lineage deployment.
-
-```
-oc edit deploy wdp-lineage
-```
-
-Modify the property for `LS_IGNORED_ASSET_TYPES`. Append the value with:
-
-```
-,data_asset,connection,term_assignment_profile,directory_asset,data_definition,parameter_set,data_rule,data_rule_definition,data_intg_subflow,orchestration_flow,data_intg_build_stage,data_intg_cff_schema,data_intg_wrapped_stage,ds_match_specification,standardization_rule,ds_xml_schema_library,environment,data_intg_project_settings,data_intg_custom_stage,data_intg_data_set,physical_constraint,data_intg_java_library,data_intg_parallel_function,data_intg_ilogjrule,data_intg_file_set,data_intg_message_handler,notebook,data_transformation 
-```
-
-### 4.6 Apply the workaround for the problem - MDE Job failed with error "Deployment not found with given id"
-
-<br>
-
-1)Put analyticsengine-sample in maintenance mode.
-
-```
-oc patch analyticsengine analyticsengine-sample --type=merge --patch='{"spec":{"ignoreForMaintenance":true}}'
-```
-
-2)Edit the `spark-hb-deployment-properties` config map and add the property `deploymentStatusRetryCount=6`
-
-```
-oc edit cm spark-hb-deployment-properties
-```
-
-3)Make sure the property `deploymentStatusRetryCount=6` added successfully
-
-```
-oc get cm spark-hb-deployment-properties -o yaml | grep -i deploymentStatusRetryCount
-```
-
-### 4.7 Upgrade the Backup & Restore service and application
-
-**Note:** This will be done as a separate task in another maintenance time window.
-
-**1.Updating the cpdbr service**
-`<br>`
-
-If you use IBM Fusion to back up and restore your IBM® Software Hub deployment, you must upgrade the cpdbr service after you upgrade IBM Cloud Pak® for Data Version 4.8 to IBM Software Hub Version 5.1.
-
-[Updating the cpdbr service](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=data-updating-cpdbr-service)
-
-<br>
-
-**2.Upgrade the IBM Fusion application**
-`<br>`
-IBM Fusion team can help on this task.
 
 ## Summarize and close out the upgrade
 
