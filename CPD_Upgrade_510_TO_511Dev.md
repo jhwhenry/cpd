@@ -969,8 +969,6 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 oc patch ZenService lite-cr -n ${PROJECT_CPD_INST_OPERANDS} --type merge -p '{"spec":{"vault_bridge_tls_tolerate_private_ca": true}}'
 ```
 
-**(Performed once CCS is upgraded) Resolve Mismatch from Catalog API  (Place Holder, More to come Talk to Steven)**
-
 **Combined CCS patch command** (Reducing the number of operator reconcilations): `<br>`
 
 - Configuring reporting settings for IBM Knowledge Catalog.
@@ -979,7 +977,7 @@ oc patch ZenService lite-cr -n ${PROJECT_CPD_INST_OPERANDS} --type merge -p '{"s
 oc patch configmap ccs-features-configmap -n ${PROJECT_CPD_INST_OPERANDS} --type=json -p='[{"op": "replace", "path": "/data/enforceAuthorizeReporting", "value": "false"},{"op": "replace", "path": "/data/defaultAuthorizeReporting", "value": "true"}]'
 ```
 
-- Apply the patch for 1)asset-files-api deployment tuning and 2)Couchdb search container resource tuning 3)Catalog UI
+- Apply the patch for 1)asset-files-api deployment tuning and 2)Couchdb search container resource tuning 3)Catalog UI DSD
 
 ```
 oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"asset_files_call_socket_timeout_ms":60000,"asset_files_api_resources":{"limits":{"cpu":"4","memory":"32Gi","ephemeral-storage":"1Gi"},"requests":{"cpu":"200m","memory":"256Mi","ephemeral-storage":"10Mi"}},"asset_files_api_replicas":6,"asset_files_api_command":["/bin/bash"],"asset_files_api_args":["-c","cd /home/node/${MICROSERVICENAME};source /scripts/exportSecrets.sh;export npm_config_cache=~node;node --max-old-space-size=12288 --max-http-header-size=32768 index.js"],"image_digests":{"portal_catalog_image":"sha256:cb6cabfc370214ed4d23a778414188b671b6efc3f0f6c74a7d0be4a2a89a0200"}}}'
@@ -1022,9 +1020,6 @@ Output should be similar: "lineage_graph_anchor_deleted_is_boolean_constraint" "
 :exit
 ```
 
-
-
-
 #### 2.2.2 Upgrading IBM MANTA Lineage service
 
 ```
@@ -1066,7 +1061,6 @@ Confirm/Allow Datalineage to fully reconcile.
 ```
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=datalineage
 ```
-
 
 #### 2.2.3 Upgrading Analytics Engine service
 
