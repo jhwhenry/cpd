@@ -1,3 +1,4 @@
+
 # CPD Upgrade Runbook - v.5.1.0 to 5.1.1
 
 ---
@@ -233,7 +234,7 @@ oc edit WKC wkc-cr
     wkc_metadata_imports_ui_image: sha256:a1997d9a9cde9ecc9f16eb02099a272d7ba2e8d88cb05a9f52f32533e4d633ef
 ```
 
-3)Disabled useFDB & remove the `ignoreForMaintenance: true` from the WKC custom resource
+3) Disabled useFDB & remove the `ignoreForMaintenance: true` from the WKC custom resource
 
 ```
 useFDB: false
@@ -980,8 +981,6 @@ Run the cpd-cli manage login-to-ocp command to log in to the cluster.
 ${CPDM_OC_LOGIN}
 ```
 
-
-
 Delete the FDB cluster for WKC if present.
 
 ```
@@ -989,7 +988,6 @@ oc get fdbcluster -n ${PROJECT_CPD_INST_OPERANDS} |grep wkc
 
 oc delete fdbcluster wkc-foundationdb-cluster -n  ${PROJECT_CPD_INST_OPERANDS}
 ```
-
 
 Update the custom resource for IBM Knowledge Catalog.
 
@@ -1027,17 +1025,19 @@ oc patch ZenService lite-cr -n ${PROJECT_CPD_INST_OPERANDS} --type merge -p '{"s
 oc patch configmap ccs-features-configmap -n ${PROJECT_CPD_INST_OPERANDS} --type=json -p='[{"op": "replace", "path": "/data/enforceAuthorizeReporting", "value": "false"},{"op": "replace", "path": "/data/defaultAuthorizeReporting", "value": "true"}]'
 ```
 
-- Apply the patch for 1)asset-files-api deployment tuning and 2)Couchdb search container resource tuning 3)Catalog UI
+- Apply the patch for 1)asset-files-api deployment tuning and 2)Couchdb search container resource tuning 3)Catalog UI 4)wdpconnect
 
 ```
-oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"asset_files_call_socket_timeout_ms":60000,"asset_files_api_resources":{"limits":{"cpu":"4","memory":"32Gi","ephemeral-storage":"1Gi"},"requests":{"cpu":"200m","memory":"256Mi","ephemeral-storage":"10Mi"}},"asset_files_api_replicas":6,"asset_files_api_command":["/bin/bash"],"asset_files_api_args":["-c","cd /home/node/${MICROSERVICENAME};source /scripts/exportSecrets.sh;export npm_config_cache=~node;node --max-old-space-size=12288 --max-http-header-size=32768 index.js"],"image_digests":{"portal_catalog_image":"sha256:cb6cabfc370214ed4d23a778414188b671b6efc3f0f6c74a7d0be4a2a89a0200"}}}'
+oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge --patch '{"spec":{"image_digests":{"wdp_connect_connection_image":"sha256:edb47779dfeec1b79b23bc1bc9fa73210536580dcc67a73baea81cfe29511c52","wdp_connect_connector_image":"sha256:36efece288f84e4829a130f038c81c6f0019263b507fd27dbb353c8301ab59a4","wdp_connect_flight_image":"sha256:c1d58f542fcf9e34b68eaddff32d77ed1000a6222331e6c24ba3f68237dd6655","portal_catalog_image":"sha256:cb6cabfc370214ed4d23a778414188b671b6efc3f0f6c74a7d0be4a2a89a0200"},"asset_files_call_socket_timeout_ms":60000,"asset_files_api_resources":{"limits":{"cpu":"4","memory":"32Gi","ephemeral-storage":"1Gi"},"requests":{"cpu":"200m","memory":"256Mi","ephemeral-storage":"10Mi"}},"asset_files_api_replicas":6,"asset_files_api_command":["/bin/bash"],"asset_files_api_args":["-c","cd /home/node/${MICROSERVICENAME};source /scripts/exportSecrets.sh;export npm_config_cache=~node;node --max-old-space-size=12288 --max-http-header-size=32768 index.js"]}}'
+
 
 ```
 
-* Apply BI Data Hotfix, Lineage Performance,
+* Apply BI Data Hotfix, Lineage Performance, wkc-gov-ui
 
 ```
-oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"image_digests":{"wkc_bi_data_service_image":"sha256:34d2c0977dfa7de1f8efed425eb2bca2ec2b4bd0188454c799b081013af4c34f","wkc_metadata_imports_ui_image":"sha256:20d5b5caab1934acb2aebdc2432c88b20fc8353ab92de161d2ca33f809538b35","wkc_data_lineage_service_image":"sha256:45cc0b3605dbf01362591acedebfd0fb03bc6e946181079e133a3aeeb36e76f7"}}}'
+oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge --patch '{"spec":{"image_digests":{"wkc_bi_data_service_image":"sha256:34d2c0977dfa7de1f8efed425eb2bca2ec2b4bd0188454c799b081013af4c34f","wkc_metadata_imports_ui_image":"sha256:20d5b5caab1934acb2aebdc2432c88b20fc8353ab92de161d2ca33f809538b35","wkc_data_lineage_service_image":"sha256:436e09e0816470d1806a0b22722bc294d8bda81bbd653001bcd49e1a470c1fcb"},"wkc_gov_ui_image":{"name":"wkc-gov-ui@sha256","tag":"f88bbdee4c723e96ba72584f186da8a1618bd1234d5e7dc32a007af3b250a5e6","tag_metadata":"5.1.1501-amd64"}}}'
+
 
 ```
 
@@ -1100,7 +1100,7 @@ Validating the upgrade.
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=datalineage
 ```
 
-**Apply Profiling LIneage Hotfix**
+**Apply Profiling Lineage Hotfix**
 
 ```
 oc patch datalineage datalineage-cr -n ${PROJECT_CPD_INSTANCE} --type=merge -p '{"spec":{"datalineage_scanner_service_image_tag":"4022bf2f7d6600a0cedf6dcc7bb4e3844044a1904289c7b00009e9075207e0bf","datalineage_scanner_service_image_tag_metadata":"2.2.2","datalineage_scanner_worker_image_tag":"63e46406131fd74057afbd3a1f76d928f861434093f0d7810eacf8c7e952865f","datalineage_scanner_worker_image_tag_metadata":"2.2.4"}}'
