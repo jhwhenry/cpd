@@ -1,4 +1,3 @@
-
 # CPD Upgrade Runbook - v.5.1.0 to 5.1.1
 
 ---
@@ -234,9 +233,10 @@ oc edit WKC wkc-cr
     wkc_metadata_imports_ui_image: sha256:a1997d9a9cde9ecc9f16eb02099a272d7ba2e8d88cb05a9f52f32533e4d633ef
 ```
 
-3)Remove the `ignoreForMaintenance: true` from the WKC custom resource
+3)Disabled useFDB & remove the `ignoreForMaintenance: true` from the WKC custom resource
 
 ```
+useFDB: false
 ignoreForMaintenance: true
 ```
 
@@ -979,6 +979,17 @@ Run the cpd-cli manage login-to-ocp command to log in to the cluster.
 ```
 ${CPDM_OC_LOGIN}
 ```
+
+
+
+Delete the FDB cluster for WKC if present.
+
+```
+oc get fdbcluster -n ${PROJECT_CPD_INST_OPERANDS} |grep wkc
+
+oc delete fdbcluster wkc-foundationdb-cluster -n  ${PROJECT_CPD_INST_OPERANDS}
+```
+
 
 Update the custom resource for IBM Knowledge Catalog.
 
