@@ -1,3 +1,4 @@
+
 # CPD Upgrade Runbook - v.5.1.0 to 5.1.1
 
 ---
@@ -872,6 +873,34 @@ Make changes to the limits like below.
 
 This change can be reverted after the upgrade completed successfully.
 
+##### Hotfix for wkc Operator useFDB
+
+Back up the Operator image digest value:
+
+```bash
+oc get csv -n ${PROJECT_CPD_INST_OPERATORS} ibm-cpd-wkc.v2.1.1 -o yaml | grep "image: icr.io/cpopen/ibm-cpd-wkc-operator@sha256" > 5.1.1_wkc_operator_image.yaml
+```
+
+Patch and label the CSV:
+
+```bash
+oc patch csv -n ${PROJECT_CPD_INST_OPERATORS}  ibm-cpd-wkc.v2.1.1 --type='json' -p='[{"op":"replace","path":"/spec/install/spec/deployments/0/spec/template/spec/containers/0/image","value":"icr.io/cpopen/ibm-cpd-wkc-operator@sha256:408aa1070613b7be3c4515a657dd48c81d4f09f613e94664b4eaa43ddb8d0632"}]'
+
+oc label csv ibm-cpd-wkc.v2.1.1 support.operator.ibm.com/hotfix=true -n ${PROJECT_CPD_INST_OPERATORS} 
+```
+
+Ensure the Operator has been patched with new image (Replace pod name):
+
+```
+oc describe pod ibm-cpd-wkc-operator-<xxxxxxx-xxxxx> -n  ${PROJECT_CPD_INST_OPERATORS}  
+```
+
+Wait for WKC Operator to fully reconcile:
+
+```bash
+oc get wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
 #### 2.1.5 Applying the RSI patches
 
 1).Log the cpd-cli in to the Red Hat OpenShift Container Platform cluster.
@@ -932,7 +961,15 @@ The `Source` property value in the output is the location of the `work` folder.
 
 <br>
 
-2)Make sure the `useFDB` is set to be `False` in the install-options.yml file.
+2)Make sure the `useFDB` is set to be `False` in the install-options.yml file. And remove FDBcluster for WKC if present.
+
+```bash
+oc get fdbcluster -n ${PROJECT_CPD_INST_OPERANDS}
+
+(If present)
+oc delete fdbcluster wkc-foundationdb-cluster -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
 `<br>`
 
 ##### 2.Upgrade WKC with custom installation
@@ -969,6 +1006,8 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 oc patch ZenService lite-cr -n ${PROJECT_CPD_INST_OPERANDS} --type merge -p '{"spec":{"vault_bridge_tls_tolerate_private_ca": true}}'
 ```
 
+**(Performed once CCS is upgraded) Resolve Mismatch from Catalog API  (Place Holder, More to come Talk to Steven)**
+
 **Combined CCS patch command** (Reducing the number of operator reconcilations): `<br>`
 
 - Configuring reporting settings for IBM Knowledge Catalog.
@@ -977,7 +1016,7 @@ oc patch ZenService lite-cr -n ${PROJECT_CPD_INST_OPERANDS} --type merge -p '{"s
 oc patch configmap ccs-features-configmap -n ${PROJECT_CPD_INST_OPERANDS} --type=json -p='[{"op": "replace", "path": "/data/enforceAuthorizeReporting", "value": "false"},{"op": "replace", "path": "/data/defaultAuthorizeReporting", "value": "true"}]'
 ```
 
-- Apply the patch for 1)asset-files-api deployment tuning and 2)Couchdb search container resource tuning 3)Catalog UI DSD
+- Apply the patch for 1)asset-files-api deployment tuning and 2)Couchdb search container resource tuning 3)Catalog UI
 
 ```
 oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"asset_files_call_socket_timeout_ms":60000,"asset_files_api_resources":{"limits":{"cpu":"4","memory":"32Gi","ephemeral-storage":"1Gi"},"requests":{"cpu":"200m","memory":"256Mi","ephemeral-storage":"10Mi"}},"asset_files_api_replicas":6,"asset_files_api_command":["/bin/bash"],"asset_files_api_args":["-c","cd /home/node/${MICROSERVICENAME};source /scripts/exportSecrets.sh;export npm_config_cache=~node;node --max-old-space-size=12288 --max-http-header-size=32768 index.js"],"image_digests":{"portal_catalog_image":"sha256:cb6cabfc370214ed4d23a778414188b671b6efc3f0f6c74a7d0be4a2a89a0200"}}}'
