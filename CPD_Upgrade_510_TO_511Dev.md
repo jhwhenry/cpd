@@ -1009,13 +1009,21 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 
 ##### 4.Apply the customizations
 
-**Apply the change for supporting CyberArk Vault with a private CA signed certificate**: `<br>`
+**Apply the change for supporting CyberArk Vault with a private CA signed certificate**: 
+<br>
 
 ```
 oc patch ZenService lite-cr -n ${PROJECT_CPD_INST_OPERANDS} --type merge -p '{"spec":{"vault_bridge_tls_tolerate_private_ca": true}}'
 ```
 
-**(Performed once CCS is upgraded) Resolve Mismatch from Catalog API  (Place Holder, More to come Talk to Steven)**
+**Resolve Mismatch from Catalog API**
+
+```
+oc project ${PROJECT_CPD_INST_OPERANDS}
+```
+
+[Run the script for resolving the mismatch from Catalog API](https://github.com/jhwhenry/cpd/blob/main/delete_rabbitmq_queues.sh.zip)
+
 
 **Combined CCS patch command** (Reducing the number of operator reconcilations): `<br>`
 
