@@ -1067,7 +1067,7 @@ SHOW INDEX YIELD name, state, labelsOrTypes, properties WHERE"lineage_graph_anch
 Output should be similar: "lineage_graph_anchor_property_deleted_index" "ONLINE" ["LineageGraphAnchor"]["deleted"]
 
 5) Initialize new constraints
-CREATE CONSTRAINT lineage_graph_anchor_deleted_is_boolean_constraint IF NOT EXISTSFOR (n:LineageGraphAnchor) REQUIRE n.deleted IS :: BOOLEAN;
+CREATE CONSTRAINT lineage_graph_anchor_deleted_is_boolean_constraint IF NOT EXISTS FOR (n:LineageGraphAnchor) REQUIRE n.deleted IS :: BOOLEAN;
 
 6) Verify constraint has been initialized -
 SHOW CONSTRAINT YIELD name, type, entityType, labelsOrTypes, properties WHERE"lineage_graph_anchor_deleted_is_boolean_constraint" = name;
