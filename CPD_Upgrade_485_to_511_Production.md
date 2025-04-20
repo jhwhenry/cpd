@@ -1186,36 +1186,6 @@ oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"w
 
 ```
 
-**Once WKC fully reconciled, apply the Lineage Performance fix.**
-
-```
-#1) Exec into datalineage pod -
-oc ${PROJECT_CPD_INST_OPERANDS} exec -it data-lineage-neo4j-server1-0 -- bash
-
-#2) Execute the cyper shell =
-cypher-shell -a "neo4j+ssc://localhost:7687" -u neo4j -p "$(cat /config/neo4j-auth/NEO4J_AUTH | cut -d/ -f2)"
-
-#3) Initialize a new databse index- 
-CREATE INDEX lineage_graph_anchor_property_deleted_index IF NOT EXISTS FOR(n:LineageGraphAnchor) ON (n.deleted);
-
-#4) Verify if new index is present -
-SHOW INDEX YIELD name, state, labelsOrTypes, properties WHERE"lineage_graph_anchor_property_deleted_index" = name;
-
-#Output should be similar: "lineage_graph_anchor_property_deleted_index" "ONLINE" ["LineageGraphAnchor"]["deleted"]
-
-#5) Initialize new constraints
-CREATE CONSTRAINT lineage_graph_anchor_deleted_is_boolean_constraint IF NOT EXISTS FOR (n:LineageGraphAnchor) REQUIRE n.deleted IS :: BOOLEAN;
-
-#6) Verify constraint has been initialized -
-SHOW CONSTRAINT YIELD name, type, entityType, labelsOrTypes, properties WHERE"lineage_graph_anchor_deleted_is_boolean_constraint" = name;
-
-#Output should be similar: "lineage_graph_anchor_deleted_is_boolean_constraint" "NODE_PROPERTY_TYPE""lineage_graph_anchor_deleted_is_boolean_constraint" "NODE_PROPERTY_TYPE""NODE" ["LineageGraphAnchor"] ["deleted"]
-
-#7) Exit out of lineage pod -
-:exit
-
-```
-
 #### 2.2.2 Upgrading MANTA service
 ```
 export COMPONENTS=mantaflow
@@ -1714,6 +1684,48 @@ cpd-cli manage apply-scale-config \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --components=datalineage \
 --scale=${SCALE}
+```
+
+- Apply Lineage Hotfix by using the new images
+
+```
+oc patch datalineage datalineage-cr -n ${PROJECT_CPD_INSTANCE} --type=merge -p '{"spec":{"datalineage_scanner_service_image_tag":"4022bf2f7d6600a0cedf6dcc7bb4e3844044a1904289c7b00009e9075207e0bf","datalineage_scanner_service_image_tag_metadata":"2.2.2","datalineage_scanner_worker_image_tag":"63e46406131fd74057afbd3a1f76d928f861434093f0d7810eacf8c7e952865f","datalineage_scanner_worker_image_tag_metadata":"2.2.4"}}'
+```
+
+Confirm Datalineage reconcile successfully.
+
+```
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=datalineage
+```
+
+- Apply the Lineage Performance fix by creating index and constrains for the Neo4j database
+
+```
+#1) Exec into datalineage pod -
+oc ${PROJECT_CPD_INST_OPERANDS} exec -it data-lineage-neo4j-server1-0 -- bash
+
+#2) Execute the cyper shell =
+cypher-shell -a "neo4j+ssc://localhost:7687" -u neo4j -p "$(cat /config/neo4j-auth/NEO4J_AUTH | cut -d/ -f2)"
+
+#3) Initialize a new databse index- 
+CREATE INDEX lineage_graph_anchor_property_deleted_index IF NOT EXISTS FOR(n:LineageGraphAnchor) ON (n.deleted);
+
+#4) Verify if new index is present -
+SHOW INDEX YIELD name, state, labelsOrTypes, properties WHERE"lineage_graph_anchor_property_deleted_index" = name;
+
+#Output should be similar: "lineage_graph_anchor_property_deleted_index" "ONLINE" ["LineageGraphAnchor"]["deleted"]
+
+#5) Initialize new constraints
+CREATE CONSTRAINT lineage_graph_anchor_deleted_is_boolean_constraint IF NOT EXISTS FOR (n:LineageGraphAnchor) REQUIRE n.deleted IS :: BOOLEAN;
+
+#6) Verify constraint has been initialized -
+SHOW CONSTRAINT YIELD name, type, entityType, labelsOrTypes, properties WHERE"lineage_graph_anchor_deleted_is_boolean_constraint" = name;
+
+#Output should be similar: "lineage_graph_anchor_deleted_is_boolean_constraint" "NODE_PROPERTY_TYPE""lineage_graph_anchor_deleted_is_boolean_constraint" "NODE_PROPERTY_TYPE""NODE" ["LineageGraphAnchor"] ["deleted"]
+
+#7) Exit out of lineage pod -
+:exit
+
 ```
 
 #### 4.1.4 Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage
