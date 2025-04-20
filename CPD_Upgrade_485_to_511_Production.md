@@ -962,6 +962,36 @@ Make changes to the limits like below.
 
 This change can be reverted after the upgrade completed successfully.
 
+##### Hotfix for WKC Operator to handle useFDB properly
+
+Back up the Operator image digest value:
+
+```bash
+oc get csv -n ${PROJECT_CPD_INST_OPERATORS} ibm-cpd-wkc.v2.1.1 -o yaml | grep "image: icr.io/cpopen/ibm-cpd-wkc-operator@sha256" > 5.1.1_wkc_operator_image.yaml
+```
+
+Patch and label the CSV:
+
+```bash
+oc patch csv -n ${PROJECT_CPD_INST_OPERATORS}  ibm-cpd-wkc.v2.1.1 --type='json' -p='[{"op":"replace","path":"/spec/install/spec/deployments/0/spec/template/spec/containers/0/image","value":"icr.io/cpopen/ibm-cpd-wkc-operator@sha256:408aa1070613b7be3c4515a657dd48c81d4f09f613e94664b4eaa43ddb8d0632"}]'
+
+oc label csv ibm-cpd-wkc.v2.1.1 support.operator.ibm.com/hotfix=true -n ${PROJECT_CPD_INST_OPERATORS} 
+```
+
+Ensure the Operator is up and running with the new image :
+
+```
+oc get pods -n ${PROJECT_CPD_INST_OPERATORS} | grep -i ibm-cpd-wkc-operator | grep -v "catalog"
+
+oc describe pod $(oc get pods -n ${PROJECT_CPD_INST_OPERATORS} | grep -i ibm-cpd-wkc-operator | grep -v "catalog" | awk '{print $1}') -n ${PROJECT_CPD_INST_OPERATORS} | grep "Image ID" 
+```
+
+Wait for WKC Operator to fully reconcile:
+
+```bash
+oc get wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
 #### 2.1.5 Applying the RSI patches
 
 1).Log the cpd-cli in to the Red Hat OpenShift Container Platform cluster.
