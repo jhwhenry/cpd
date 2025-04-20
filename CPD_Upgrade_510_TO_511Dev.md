@@ -1062,7 +1062,7 @@ cypher-shell -a "neo4j+ssc://localhost:7687" -u neo4j -p "$(cat /config/neo4j-au
 CREATE INDEX lineage_graph_anchor_property_deleted_index IF NOT EXISTS FOR(n:LineageGraphAnchor) ON (n.deleted);
 
 4) Verify if new index is present -
-SHOW INDEX YIELD name, state, labelsOrTypes, properties WHERE"lineage_graph_anchor_property_deleted_index" = name
+SHOW INDEX YIELD name, state, labelsOrTypes, properties WHERE"lineage_graph_anchor_property_deleted_index" = name;
 
 Output should be similar: "lineage_graph_anchor_property_deleted_index" "ONLINE" ["LineageGraphAnchor"]["deleted"]
 
