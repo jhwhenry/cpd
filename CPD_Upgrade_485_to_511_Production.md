@@ -1142,7 +1142,16 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 oc patch ZenService lite-cr -n ${PROJECT_CPD_INST_OPERANDS} --type merge -p '{"spec":{"vault_bridge_tls_tolerate_private_ca": true}}'
 ```
 
-**2)Combined CCS patch command** (Reducing the number of operator reconcilations): <br>
+**2)Resolve Mismatch from Catalog API**
+
+```
+oc project ${PROJECT_CPD_INST_OPERANDS}
+```
+
+[Run the script for resolving the mismatch from Catalog API](https://github.com/jhwhenry/cpd/blob/main/delete_rabbitmq_queues.sh.zip)
+
+
+**3)Combined CCS patch command** (Reducing the number of operator reconcilations): <br>
 
 - Configuring reporting settings for IBM Knowledge Catalog.
 
@@ -1153,10 +1162,10 @@ oc patch configmap ccs-features-configmap -n ${PROJECT_CPD_INST_OPERANDS} --type
 - Apply the patch for 1)asset-files-api deployment tuning and 2)Couchdb search container resource tuning
 
 ```
-oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"asset_files_call_socket_timeout_ms": 60000,"asset_files_api_resources": {"limits": {"cpu": "4", "memory": "32Gi", "ephemeral-storage": "1Gi"}, "requests": {"cpu": "200m", "memory": "256Mi", "ephemeral-storage": "10Mi"}}, "asset_files_api_replicas": 6,"asset_files_api_command":["/bin/bash"], "asset_files_api_args":["-c","cd /home/node/${MICROSERVICENAME}; source /scripts/exportSecrets.sh; export npm_config_cache=~node; node --max-old-space-size=12288 --max-http-header-size=32768 index.js"]}}'
+oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge --patch '{"spec":{"image_digests":{"wdp_connect_connection_image":"sha256:edb47779dfeec1b79b23bc1bc9fa73210536580dcc67a73baea81cfe29511c52","wdp_connect_connector_image":"sha256:36efece288f84e4829a130f038c81c6f0019263b507fd27dbb353c8301ab59a4","wdp_connect_flight_image":"sha256:c1d58f542fcf9e34b68eaddff32d77ed1000a6222331e6c24ba3f68237dd6655","portal_catalog_image":"sha256:cb6cabfc370214ed4d23a778414188b671b6efc3f0f6c74a7d0be4a2a89a0200"},"asset_files_call_socket_timeout_ms":60000,"asset_files_api_resources":{"limits":{"cpu":"4","memory":"32Gi","ephemeral-storage":"1Gi"},"requests":{"cpu":"200m","memory":"256Mi","ephemeral-storage":"10Mi"}},"asset_files_api_replicas":6,"asset_files_api_command":["/bin/bash"],"asset_files_api_args":["-c","cd /home/node/${MICROSERVICENAME};source /scripts/exportSecrets.sh;export npm_config_cache=~node;node --max-old-space-size=12288 --max-http-header-size=32768 index.js"]}}'
 ```
 
-**3)Combined WKC patch command** (Reducing the number of operator reconcilations): <br>
+**4)Combined WKC patch command** (Reducing the number of operator reconcilations): <br>
 
 - Figure out a proper PVC size for the PostgreSQL used by profiling migration.
 <br>
@@ -1170,10 +1179,40 @@ oc get pvc -n ${PROJECT_CPD_INST_OPERANDS} | grep file-api-claim | awk '{print $
 
 Specify the same or a bigger storage size for postgres storage accordingly in next step.
 
-- Patch the WKC : a)Setting a proper PVC size for PostgreSQL (profiling db) and b) WKC BI Data hotfix
+- Patch the WKC : a)Setting a proper PVC size for PostgreSQL (profiling db) and b) Hotfix for WKC BI Data, Lineage Performance, wkc-gov-ui
   
 ```
-oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"wdp_profiling_edb_postgres_storage_size":"200Gi","image_digests":{"wkc_bi_data_service_image":"sha256:34d2c0977dfa7de1f8efed425eb2bca2ec2b4bd0188454c799b081013af4c34f"}}}'
+oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"wdp_profiling_edb_postgres_storage_size":"200Gi","image_digests":"image_digests":{"wkc_bi_data_service_image":"sha256:34d2c0977dfa7de1f8efed425eb2bca2ec2b4bd0188454c799b081013af4c34f","wkc_metadata_imports_ui_image":"sha256:20d5b5caab1934acb2aebdc2432c88b20fc8353ab92de161d2ca33f809538b35","wkc_data_lineage_service_image":"sha256:436e09e0816470d1806a0b22722bc294d8bda81bbd653001bcd49e1a470c1fcb"},"wkc_gov_ui_image":{"name":"wkc-gov-ui@sha256","tag":"f88bbdee4c723e96ba72584f186da8a1618bd1234d5e7dc32a007af3b250a5e6","tag_metadata":"5.1.1501-amd64"}}}'
+
+```
+
+**Once WKC fully reconciled, apply the Lineage Performance fix.**
+
+```
+#1) Exec into datalineage pod -
+oc ${PROJECT_CPD_INST_OPERANDS} exec -it data-lineage-neo4j-server1-0 -- bash
+
+#2) Execute the cyper shell =
+cypher-shell -a "neo4j+ssc://localhost:7687" -u neo4j -p "$(cat /config/neo4j-auth/NEO4J_AUTH | cut -d/ -f2)"
+
+#3) Initialize a new databse index- 
+CREATE INDEX lineage_graph_anchor_property_deleted_index IF NOT EXISTS FOR(n:LineageGraphAnchor) ON (n.deleted);
+
+#4) Verify if new index is present -
+SHOW INDEX YIELD name, state, labelsOrTypes, properties WHERE"lineage_graph_anchor_property_deleted_index" = name;
+
+#Output should be similar: "lineage_graph_anchor_property_deleted_index" "ONLINE" ["LineageGraphAnchor"]["deleted"]
+
+#5) Initialize new constraints
+CREATE CONSTRAINT lineage_graph_anchor_deleted_is_boolean_constraint IF NOT EXISTS FOR (n:LineageGraphAnchor) REQUIRE n.deleted IS :: BOOLEAN;
+
+#6) Verify constraint has been initialized -
+SHOW CONSTRAINT YIELD name, type, entityType, labelsOrTypes, properties WHERE"lineage_graph_anchor_deleted_is_boolean_constraint" = name;
+
+#Output should be similar: "lineage_graph_anchor_deleted_is_boolean_constraint" "NODE_PROPERTY_TYPE""lineage_graph_anchor_deleted_is_boolean_constraint" "NODE_PROPERTY_TYPE""NODE" ["LineageGraphAnchor"] ["deleted"]
+
+#7) Exit out of lineage pod -
+:exit
 
 ```
 
