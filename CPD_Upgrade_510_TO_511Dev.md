@@ -1030,7 +1030,7 @@ oc project ${PROJECT_CPD_INST_OPERANDS}
 - Configuring reporting settings for IBM Knowledge Catalog.
 
 ```
-oc patch configmap ccs-features-configmap -n ${PROJECT_CPD_INST_OPERANDS} --type=json -p='[{"op": "replace", "path": "/data/enforceAuthorizeReporting", "value": "false"},{"op": "replace", "path": "/data/defaultAuthorizeReporting", "value": "true"}]'
+oc patch configmap ccs-features-configmap -n ${PROJECT_CPD_INST_OPERANDS} --type=json -p='[{"op": "replace", "path": "/data/enforceAuthorizeReporting", "value": "true"},{"op": "replace", "path": "/data/defaultAuthorizeReporting", "value": "true"}]'
 ```
 
 - Apply the patch for 1)asset-files-api deployment tuning and 2)Couchdb search container resource tuning 3)Catalog UI 4)wdpconnect
@@ -1380,7 +1380,7 @@ The following output is expected:
 
 ```
 defaultAuthorizeReporting: "true"
-enforceAuthorizeReporting: "false"
+enforceAuthorizeReporting: "true"
 ```
 
 2)Verify that the environemnt variable is set for ngp-projects-api.
@@ -1393,7 +1393,7 @@ The following output is expected:
 
 ```
 DEFAULT_AUTHORIZE_REPORTING=True
-ENFORCE_AUTHORIZE_REPORTING=False
+ENFORCE_AUTHORIZE_REPORTING=True
 ```
 
 3)Verify that the environment variable is set for catalog-api
@@ -1407,7 +1407,7 @@ The following output is expected:
 
 ```
 defaultAuthorizeReporting=true
-enforceAuthorizeReporting=false
+enforceAuthorizeReporting=true
 ```
 
 If any of the above output inconsistent with the expected ones, then follow below documentation for applying 'Allow Reporting' settings.
