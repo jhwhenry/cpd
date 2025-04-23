@@ -1111,7 +1111,7 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --co
 **Apply Profiling Lineage Hotfix**
 
 ```
-oc patch datalineage datalineage-cr -n ${PROJECT_CPD_INSTANCE} --type=merge -p '{"spec":{"datalineage_scanner_service_image_tag":"4022bf2f7d6600a0cedf6dcc7bb4e3844044a1904289c7b00009e9075207e0bf","datalineage_scanner_service_image_tag_metadata":"2.2.2","datalineage_scanner_worker_image_tag":"63e46406131fd74057afbd3a1f76d928f861434093f0d7810eacf8c7e952865f","datalineage_scanner_worker_image_tag_metadata":"2.2.4"}}'
+oc patch datalineage datalineage-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"datalineage_scanner_service_image_tag":"4022bf2f7d6600a0cedf6dcc7bb4e3844044a1904289c7b00009e9075207e0bf","datalineage_scanner_service_image_tag_metadata":"2.2.2","datalineage_scanner_worker_image_tag":"63e46406131fd74057afbd3a1f76d928f861434093f0d7810eacf8c7e952865f","datalineage_scanner_worker_image_tag_metadata":"2.2.4"}}'
 ```
 
 Confirm/Allow Datalineage to fully reconcile.
