@@ -1689,7 +1689,7 @@ cpd-cli manage apply-scale-config \
 - Apply Lineage Hotfix by using the new images
 
 ```
-oc patch datalineage datalineage-cr -n ${PROJECT_CPD_INSTANCE} --type=merge -p '{"spec":{"datalineage_scanner_service_image_tag":"4022bf2f7d6600a0cedf6dcc7bb4e3844044a1904289c7b00009e9075207e0bf","datalineage_scanner_service_image_tag_metadata":"2.2.2","datalineage_scanner_worker_image_tag":"63e46406131fd74057afbd3a1f76d928f861434093f0d7810eacf8c7e952865f","datalineage_scanner_worker_image_tag_metadata":"2.2.4"}}'
+oc patch datalineage datalineage-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"datalineage_scanner_service_image_tag":"4022bf2f7d6600a0cedf6dcc7bb4e3844044a1904289c7b00009e9075207e0bf","datalineage_scanner_service_image_tag_metadata":"2.2.2","datalineage_scanner_worker_image_tag":"63e46406131fd74057afbd3a1f76d928f861434093f0d7810eacf8c7e952865f","datalineage_scanner_worker_image_tag_metadata":"2.2.4"}}'
 ```
 
 Confirm Datalineage reconcile successfully.
