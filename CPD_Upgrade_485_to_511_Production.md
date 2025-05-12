@@ -1208,11 +1208,6 @@ oc get pvc -n ${PROJECT_CPD_INST_OPERANDS} | grep file-api-claim | awk '{print $
 Specify the same or a bigger storage size for postgres storage accordingly in next step.
 
 - Patch the WKC : a)Setting a proper PVC size for PostgreSQL (profiling db) and b) Hotfix for WKC BI Data, Lineage Performance, wkc-gov-ui
-  
-```
-oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"wdp_profiling_edb_postgres_storage_size":"200Gi","wkc_bi_data_service_liveness_probe_failure_threshold":3,"wkc_bi_data_ser vice_liveness_probe_period_seconds":30,"wkc_bi_data_service_readiness_probe_failure _threshold":3,"wkc_bi_data_service_readiness_probe_period_seconds":30,"image_digests":"image_digests":{"wkc_bi_data_service_image":"sha256:430e1ba3203de4ef896834d17ef76bc69375b3dd5602e237b5500a535b208775","wkc_metadata_imports_ui_image":"sha256:8187a39d259037be66eebc2377e7300ec38afe4b5bf250bc0bffdfa370cc42c7","wkc_data_lineage_service_image":"sha256:bc0a37a460f383f9a5fce0f7decd0a074db83b9df56d541f61835ea32a486c88","wdp_kg_ingestion_service_image":"sha256:349f6cf2e36388afe336ac6f9119a64c2be1804a3c255a6d538cc125e2507ae0"},"wkc_gov_ui_image":{"name":"wkc-gov-ui@sha256","tag":"f88bbdee4c723e96ba72584f186da8a1618bd1234d5e7dc32a007af3b250a5e6","tag_metadata":"5.1.1501-amd64"}}}'
-
-```
 
 ```
 oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{
