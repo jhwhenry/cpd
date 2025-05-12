@@ -1184,6 +1184,16 @@ oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{
             "memory":"2Gi"
          }
       },
+      "wdp-connect-connection_resources":{
+         "requests":{
+            "cpu":"150m",
+            "memory":"650Mi"
+         },
+         "limits":{
+            "cpu":"1",
+            "memory":"4Gi"
+         }
+      },
       "asset_files_call_socket_timeout_ms":60000,
       "asset_files_api_resources":{"limits":{"cpu":"4","memory":"32Gi","ephemeral-storage":"1Gi"},"requests":{"cpu":"200m","memory":"256Mi","ephemeral-storage":"10Mi"}},
       "asset_files_api_replicas":6,
