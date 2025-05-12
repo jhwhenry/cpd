@@ -1162,7 +1162,35 @@ oc patch configmap ccs-features-configmap -n ${PROJECT_CPD_INST_OPERANDS} --type
 - Apply the patch for 1)asset-files-api deployment tuning and 2)Couchdb search container resource tuning
 
 ```
-oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge --patch '{"spec":{"image_digests":{"wdp_connect_connection_image":"sha256:02826fa27eed4813f62bce2eccd66ee8ab17c2ee56df811551746d683aa7ae0f","wdp_connect_connector_image":"sha256:c85fcfadda98e2f7d193b12234dbec013105e50b9f59f157505c28f5e572edcc","wdp_connect_flight_image":"sha256:cda30760185008c723a87bd251f60cb6402f4814ee1523c99a167ad979c5919b","portal_catalog_image":"sha256:cb6cabfc370214ed4d23a778414188b671b6efc3f0f6c74a7d0be4a2a89a0200","catalog_api_image":"sha256:b03bd07d86992a057194c369d9b4211d14fdcf726e954af7a4ddc70caa30749e","catalog_api_jobs_image":"sha256:29dbaa7d9b4e6c19424b05e35e31db7cee1d66c06a0d633e56f5ad96f5786dab"},"asset_files_call_socket_timeout_ms":60000,"asset_files_api_resources":{"limits":{"cpu":"4","memory":"32Gi","ephemeral-storage":"1Gi"},"requests":{"cpu":"200m","memory":"256Mi","ephemeral-storage":"10Mi"}},"asset_files_api_replicas":6,"asset_files_api_command":["/bin/bash"],"asset_files_api_args":["-c","cd /home/node/${MICROSERVICENAME};source /scripts/exportSecrets.sh;export npm_config_cache=~node;node --max-old-space-size=12288 --max-http-header-size=32768 index.js"]}}'
+oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{
+   "spec":{
+      "image_digests":{
+         "wdp_connect_connection_image":"sha256:02826fa27eed4813f62bce2eccd66ee8ab17c2ee56df811551746d683aa7ae0f",
+         "wdp_connect_connector_image":"sha256:c85fcfadda98e2f7d193b12234dbec013105e50b9f59f157505c28f5e572edcc",
+         "wdp_connect_flight_image":"sha256:cda30760185008c723a87bd251f60cb6402f4814ee1523c99a167ad979c5919b",
+         "catalog_api_image":"sha256:b03bd07d86992a057194c369d9b4211d14fdcf726e954af7a4ddc70caa30749e",
+         "catalog_api_jobs_image":"sha256:29dbaa7d9b4e6c19424b05e35e31db7cee1d66c06a0d633e56f5ad96f5786dab",
+	 "portal_catalog_image":"sha256:cb6cabfc370214ed4d23a778414188b671b6efc3f0f6c74a7d0be4a2a89a0200"
+      },
+      "catalog_api_jobs_resources":{
+         "requests":{
+            "cpu":"20m",
+            "ephemeral-storage":"50Mi",
+            "memory":"256Mi"
+         },
+         "limits":{
+            "cpu":"300m",
+            "ephemeral-storage":"500Mi",
+            "memory":"2Gi"
+         }
+      },
+      "asset_files_call_socket_timeout_ms":60000,
+      "asset_files_api_resources":{"limits":{"cpu":"4","memory":"32Gi","ephemeral-storage":"1Gi"},"requests":{"cpu":"200m","memory":"256Mi","ephemeral-storage":"10Mi"}},
+      "asset_files_api_replicas":6,
+      "asset_files_api_command":["/bin/bash"],
+      "asset_files_api_args":["-c","cd /home/node/${MICROSERVICENAME};source /scripts/exportSecrets.sh;export npm_config_cache=~node;node --max-old-space-size=12288 --max-http-header-size=32768 index.js"]
+   }
+}'
 ```
 
 **4)Combined WKC patch command** (Reducing the number of operator reconcilations): <br>
@@ -1184,6 +1212,29 @@ Specify the same or a bigger storage size for postgres storage accordingly in ne
 ```
 oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{"spec":{"wdp_profiling_edb_postgres_storage_size":"200Gi","wkc_bi_data_service_liveness_probe_failure_threshold":3,"wkc_bi_data_ser vice_liveness_probe_period_seconds":30,"wkc_bi_data_service_readiness_probe_failure _threshold":3,"wkc_bi_data_service_readiness_probe_period_seconds":30,"image_digests":"image_digests":{"wkc_bi_data_service_image":"sha256:430e1ba3203de4ef896834d17ef76bc69375b3dd5602e237b5500a535b208775","wkc_metadata_imports_ui_image":"sha256:8187a39d259037be66eebc2377e7300ec38afe4b5bf250bc0bffdfa370cc42c7","wkc_data_lineage_service_image":"sha256:bc0a37a460f383f9a5fce0f7decd0a074db83b9df56d541f61835ea32a486c88","wdp_kg_ingestion_service_image":"sha256:349f6cf2e36388afe336ac6f9119a64c2be1804a3c255a6d538cc125e2507ae0"},"wkc_gov_ui_image":{"name":"wkc-gov-ui@sha256","tag":"f88bbdee4c723e96ba72584f186da8a1618bd1234d5e7dc32a007af3b250a5e6","tag_metadata":"5.1.1501-amd64"}}}'
 
+```
+
+```
+oc patch wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{
+   "spec":{
+      "wdp_profiling_edb_postgres_storage_size":"1500Gi",
+      "wkc_bi_data_service_liveness_probe_failure_threshold":3,
+      "wkc_bi_data_service_liveness_probe_period_seconds":30,
+      "wkc_bi_data_service_readiness_probe_failure _threshold":3,
+      "wkc_bi_data_service_readiness_probe_period_seconds":30,
+      "image_digests":{
+         "wkc_bi_data_service_image":"sha256:430e1ba3203de4ef896834d17ef76bc69375b3dd5602e237b5500a535b208775",
+         "wkc_data_lineage_service_image":"sha256:bc0a37a460f383f9a5fce0f7decd0a074db83b9df56d541f61835ea32a486c88",
+         "wdp_kg_ingestion_service_image":"sha256:349f6cf2e36388afe336ac6f9119a64c2be1804a3c255a6d538cc125e2507ae0",
+         "wkc_metadata_imports_ui_image":"sha256:8187a39d259037be66eebc2377e7300ec38afe4b5bf250bc0bffdfa370cc42c7"
+      },
+      "wkc_gov_ui_image":{
+         "name":"wkc-gov-ui@sha256",
+         "tag":"f88bbdee4c723e96ba72584f186da8a1618bd1234d5e7dc32a007af3b250a5e6",
+         "tag_metadata":"5.1.1501-amd64"
+      }
+   }
+}'
 ```
 
 #### 2.2.2 Upgrading MANTA service
