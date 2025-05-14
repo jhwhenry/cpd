@@ -1591,7 +1591,7 @@ In Cloud Pak for Data 5.1.1, profiling results are stored in a PostgreSQL databa
 Sample override.yaml file:
 
 ```
-namespace: cpd
+namespace: hptv-prodcloudpak
 blockStorageClass: ocs-storagecluster-ceph-rbd
 fileStorageClass: ocs-storagecluster-cephfs
 docker_registry_prefix: cp.icr.io/cp/cpd
