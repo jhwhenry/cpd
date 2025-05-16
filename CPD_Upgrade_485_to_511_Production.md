@@ -1721,7 +1721,7 @@ In Cloud Pak for Data 5.1.1, profiling results are stored in a PostgreSQL databa
 Sample override.yaml file:
 
 ```
-namespace: cpd
+namespace: hptv-prodcloudpak
 blockStorageClass: ocs-storagecluster-ceph-rbd
 fileStorageClass: ocs-storagecluster-cephfs
 docker_registry_prefix: cp.icr.io/cp/cpd
@@ -1899,7 +1899,7 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --co
 
 ```
 #1) Exec into datalineage pod -
-oc ${PROJECT_CPD_INST_OPERANDS} exec -it data-lineage-neo4j-server1-0 -- bash
+oc -n ${PROJECT_CPD_INST_OPERANDS} exec -it data-lineage-neo4j-server1-0 -- bash
 
 #2) Execute the cyper shell =
 cypher-shell -a "neo4j+ssc://localhost:7687" -u neo4j -p "$(cat /config/neo4j-auth/NEO4J_AUTH | cut -d/ -f2)"
