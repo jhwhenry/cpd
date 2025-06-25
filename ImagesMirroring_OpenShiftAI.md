@@ -46,7 +46,7 @@ oc mirror help
 ## Build the ImageSetConfiguration file 
 
 Create an ImageSetConfiguration file `ocp_ai_416.yaml` for OpenShift AI 2.16 as below:
-***Note***: The `169.63.188.34:8080` in the `registry` section needs to be changed to your private image registry location accordingly.
+***Note***: The `159.33.188.34:8080` in the `registry` section needs to be changed to your private image registry location accordingly.
 
 ```
 kind: ImageSetConfiguration
@@ -54,7 +54,7 @@ apiVersion: mirror.openshift.io/v1alpha2
 archiveSize: 4                                                      
 storageConfig:                                                      
   registry:
-    imageURL: 169.63.188.34:8080/cp               
+    imageURL: 159.33.188.34:8080/cp               
     skipTLS: true
 mirror:
   platform:
@@ -76,11 +76,11 @@ mirror:
 
 ## Start the mirroring
 
-***Note***: The `169.63.188.34:8080` in below commands needs to be changed to your private image registry location accordingly.
+***Note***: The `159.33.188.34:8080` in below commands needs to be changed to your private image registry location accordingly.
 
 ```
 cd /root/mirroring
-oc mirror --config=./ocp_ai_416.yaml docker://169.63.188.34:8080 --source-skip-tls --dest-skip-tls --verbose 9
+oc mirror --config=./ocp_ai_416.yaml docker://159.33.188.34:8080 --source-skip-tls --dest-skip-tls --verbose 9
 ```
 
 Once complete, there’s a folder named oc-mirror-workspace created looks like below:
