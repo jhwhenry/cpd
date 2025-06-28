@@ -127,6 +127,104 @@ export COMPONENTS=ibm-licensing,cpfs,cpd_platform,ikc_premium,datastage_ent,data
 
 ```
 
+## Source the environment variable
+
+```
+sourc cpd_vars.sh
+```
+
+## Configuring image content source policy
+
+Run the following command to get the list of image content source policy resources:
+
+```
+oc get imageContentSourcePolicy -o yaml > icsp.yaml
+oc get ImageDigestMirrorSet -o yaml > idms.yaml
+```
+
+If the command returns No resources found, then run below commands:
+```
+${CPDM_OC_LOGIN}
+
+cpd-cli manage apply-icsp \
+--registry=${PRIVATE_REGISTRY_LOCATION}
+```
+
+Get the status of the nodes:
+```
+oc get nodes
+```
+
+Wait until all the nodes are Ready before you proceed to the next step. 
+
+## Updating the global image pull secret
+This step may take minutes to complete.
+
+```
+cpd-cli manage add-cred-to-global-pull-secret \
+--registry=${PRIVATE_REGISTRY_LOCATION} \
+--registry_pull_user=${PRIVATE_REGISTRY_PULL_USER} \
+--registry_pull_password=${PRIVATE_REGISTRY_PULL_PASSWORD}
+```
+
+Get the status of the nodes:
+
+```
+oc get nodes
+```
+
+Wait until all the nodes are Ready before you proceed to the next step. 
+
+
+## Changing the process IDs limit
+
+Check whether there is an existing kubeletconfig on the cluster:
+
+```
+oc get kubeletconfig
+```
+
+If the above command returns the name of a kubeletconfig:
+
+```
+export KUBELET_CONFIG=<kubeletconfig-name>
+
+oc patch kubeletconfig ${KUBELET_CONFIG} \
+--type=merge \
+--patch='{"spec":{"kubeletConfig":{"podPidsLimit":16384}}}'
+```
+
+If no kubeletconfig found:
+
+```
+oc apply -f - << EOF
+apiVersion: machineconfiguration.openshift.io/v1
+kind: KubeletConfig
+metadata:
+  name: cpd-kubeletconfig
+spec:
+  kubeletConfig:
+    podPidsLimit: 16384
+  machineConfigPoolSelector:
+    matchExpressions:
+    - key: pools.operator.machineconfiguration.openshift.io/worker
+      operator: Exists
+EOF
+```
+
+## Changing load balancer timeout settings
+Increasing the load balancer timeout settings prevents connections from being closed before processes complete. <br>
+
+The minimum recommended timeout is:
+```
+    Client timeout: 1800s (30m)
+    Server timeout: 1800s (30m)
+```
+
+[Reference] (https://www.ibm.com/docs/en/software-hub/5.2.x?topic=settings-changing-load-balancer)
+
+
+
 
 ## Mirroring images directly to a private container registry
 
