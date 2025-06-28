@@ -302,7 +302,8 @@ cpd-cli manage get-cpd-instance-details \
 ```
 cpd-cli manage apply-entitlement \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---entitlement=cpd-enterprise
+--entitlement=cpd-enterprise \
+--production=false
 ```
 
 ```
@@ -314,7 +315,8 @@ cpd-cli manage apply-entitlement \
 ```
 cpd-cli manage apply-entitlement \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---entitlement=data-lineage
+--entitlement=data-lineage \
+--production=false
 ```
 
 ## Installing the operators
