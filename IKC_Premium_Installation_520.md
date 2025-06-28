@@ -221,8 +221,7 @@ The minimum recommended timeout is:
     Client timeout: 1800s (30m)
     Server timeout: 1800s (30m)
 ```
-
-[Reference] (https://www.ibm.com/docs/en/software-hub/5.2.x?topic=settings-changing-load-balancer)
+[Reference](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=settings-changing-load-balancer)
 
 
 ## Manually creating projects
