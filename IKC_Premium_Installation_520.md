@@ -3,6 +3,7 @@
 ---
 
 ## Setting up a client workstation
+
 ### Set the installation directory
 
 ***Note***:
@@ -41,7 +42,7 @@ Validate with the following command
 cpd-cli version
 ```
 
-## Creating an environment variables file
+### Creating an environment variables file
 
 Create the cpd_vars.sh shell script with file content like below. <br>
 
@@ -127,13 +128,14 @@ export COMPONENTS=ibm-licensing,cpfs,cpd_platform,ikc_premium,datastage_ent,data
 
 ```
 
-## Source the environment variable
+### Source the environment variable
 
 ```
 sourc cpd_vars.sh
 ```
 
-## Configuring image content source policy
+## Change cluster settings 
+### Configuring image content source policy
 
 Run the following command to get the list of image content source policy resources:
 
@@ -157,7 +159,7 @@ oc get nodes
 
 Wait until all the nodes are Ready before you proceed to the next step. 
 
-## Updating the global image pull secret
+### Updating the global image pull secret
 This step may take minutes to complete.
 
 ```
@@ -175,8 +177,7 @@ oc get nodes
 
 Wait until all the nodes are Ready before you proceed to the next step. 
 
-
-## Changing the process IDs limit
+### Changing the process IDs limit
 
 Check whether there is an existing kubeletconfig on the cluster:
 
@@ -212,7 +213,7 @@ spec:
 EOF
 ```
 
-## Changing load balancer timeout settings
+### Changing load balancer timeout settings
 Increasing the load balancer timeout settings prevents connections from being closed before processes complete. <br>
 
 The minimum recommended timeout is:
@@ -224,66 +225,173 @@ The minimum recommended timeout is:
 [Reference] (https://www.ibm.com/docs/en/software-hub/5.2.x?topic=settings-changing-load-balancer)
 
 
-
-
-## Mirroring images directly to a private container registry
-
-From a client workstation that can connect to the internet: 
-
-### Log in to the IBM Entitled Registry : 
+## Manually creating projects
 
 ```
-cpd-cli manage login-entitled-registry \
-${IBM_ENTITLEMENT_KEY}
+#Shared cluster components
+oc new-project ${PROJECT_CERT_MANAGER}
+oc new-project ${PROJECT_LICENSE_SERVICE}
+oc new-project ${PROJECT_SCHEDULING_SERVICE}
+
+#Instance operators and operands
+oc new-project ${PROJECT_CPD_INST_OPERATORS}
+oc new-project ${PROJECT_CPD_INST_OPERANDS}
 ```
 
-### Log in to the private container registry:
+## Installing shared cluster components
+
+Install the Certificate manager and the License Service:
+```
+cpd-cli manage apply-cluster-components \
+--release=${VERSION} \
+--license_acceptance=true \
+--licensing_ns=${PROJECT_LICENSE_SERVICE}
+```
+
+Wait for the cpd-cli to return the following message before proceeding to the next step:
 
 ```
-cpd-cli manage login-private-registry \
-${PRIVATE_REGISTRY_LOCATION} \
-${PRIVATE_REGISTRY_USER} \
-${PRIVATE_REGISTRY_PASSWORD}
+[SUCCESS]... The apply-cluster-components command ran successfully.
 ```
 
-### Mirror the images to the private container registry
+## Applying the required permissions to the projects (namespaces) for CPD instance
+
+Applying the required permissions by running the authorize-instance-topology command
 
 ```
-cpd-cli manage mirror-images \
+cpd-cli manage authorize-instance-topology \
+--cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+```
+
+## Installing Software Hub
+
+Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster: 
+
+```
+${CPDM_OC_LOGIN}
+```
+
+Install the required components for an instance of IBM Software Hub
+
+```
+cpd-cli manage setup-instance \
+--release=${VERSION} \
+--license_acceptance=true \
+--cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--block_storage_class=${STG_CLASS_BLOCK} \
+--file_storage_class=${STG_CLASS_FILE} \
+--run_storage_tests=false
+```
+Confirm that the status of the operands is Completed
+
+```
+cpd-cli manage get-cr-status \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+```
+
+Get the URL and default credentials of the web client: 
+```
+cpd-cli manage get-cpd-instance-details \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--get_admin_initial_credentials=true
+```
+
+## Applying your entitlements without node pinning
+
+```
+cpd-cli manage apply-entitlement \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--entitlement=cpd-enterprise
+```
+
+```
+cpd-cli manage apply-entitlement \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--entitlement=ikc-premium
+```
+
+```
+cpd-cli manage apply-entitlement \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--entitlement=data-lineage
+```
+
+## Installing the operators
+
+Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster: 
+
+```
+${CPDM_OC_LOGIN}
+```
+
+Install the operators in the operators project for the instance.
+
+```
+cpd-cli manage apply-olm \
+--release=${VERSION} \
+--cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--components=${COMPONENTS}
+```
+
+## Create the appropriate db2u-product-cm ConfigMap for using the elevated privilege
+
+```
+oc apply -f - <<EOF
+apiVersion: v1
+data:
+  DB2U_RUN_WITH_LIMITED_PRIVS: "false"
+kind: ConfigMap
+metadata:
+  name: db2u-product-cm
+  namespace: ${PROJECT_CPD_INST_OPERATORS}
+EOF
+```
+
+Validate the content of the db2u-product-cm configure map 
+```
+oc get cm db2u-product-cm  -n ${PROJECT_CPD_INST_OPERATORS} -o yaml
+```
+
+## Update the OpenShift AI
+
+
+## Install IKC Premium
+
+Create a file named `install-options.yml` in the work directory and specify installation options in it as follows
+
+```
+################################################################################
+# IBM Knowledge Catalog parameters
+################################################################################
+custom_spec:
+  wkc:
+    enableDataQuality: True
+    enableModelsOn: 'cpu'
+```
+
+Apply the custom resource
+
+```
+cpd-cli manage apply-cr \
 --components=${COMPONENTS} \
 --release=${VERSION} \
---target_registry=${PRIVATE_REGISTRY_LOCATION} \
---arch=amd64 \
---case_download=true
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--block_storage_class=${STG_CLASS_BLOCK} \
+--file_storage_class=${STG_CLASS_FILE} \
+--license_acceptance=true
 ```
 
-For each component, the command generates a log file in the work directory. 
-
-<br>
-
-Run the following command to print out any errors in the log files:
+Validate the upgrade
 
 ```
-grep "error" mirror_*.log
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-Confirm that the images were mirrored to the private container registry:
+## Apply the Day 0 patch
 
-```
-
-cpd-cli manage list-images \
---components=${COMPONENTS} \
---release=${VERSION} \
---target_registry=${PRIVATE_REGISTRY_LOCATION} \
---case_download=false
-```
-
-Check the output for errors: 
-
-```
-grep "level=fatal" list_images.csv
-```
-
+https://www.ibm.com/support/pages/node/7236425
 
 ---
 
