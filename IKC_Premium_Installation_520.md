@@ -335,7 +335,7 @@ cpd-cli manage apply-olm \
 --components=${COMPONENTS}
 ```
 
-## Create the appropriate db2u-product-cm ConfigMap for using the elevated privilege
+## Create the appropriate db2u-product-cm ConfigMap for using the limited privilege
 
 ```
 oc apply -f - <<EOF
