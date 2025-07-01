@@ -342,7 +342,7 @@ cpd-cli manage apply-olm \
 oc apply -f - <<EOF
 apiVersion: v1
 data:
-  DB2U_RUN_WITH_LIMITED_PRIVS: "false"
+  DB2U_RUN_WITH_LIMITED_PRIVS: "true"
 kind: ConfigMap
 metadata:
   name: db2u-product-cm
