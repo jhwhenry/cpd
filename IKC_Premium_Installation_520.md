@@ -230,7 +230,6 @@ The minimum recommended timeout is:
 #Shared cluster components
 oc new-project ${PROJECT_CERT_MANAGER}
 oc new-project ${PROJECT_LICENSE_SERVICE}
-oc new-project ${PROJECT_SCHEDULING_SERVICE}
 
 #Instance operators and operands
 oc new-project ${PROJECT_CPD_INST_OPERATORS}
