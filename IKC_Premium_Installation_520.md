@@ -369,6 +369,8 @@ Create a file named `install-options.yml` in the work directory and specify inst
 custom_spec:
   wkc:
     enableDataQuality: True
+    enableSemanticAutomation: True
+    enableSemanticEnrichment: True
     enableModelsOn: 'cpu'
 ```
 
