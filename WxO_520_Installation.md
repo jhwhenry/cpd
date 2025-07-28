@@ -131,7 +131,7 @@ export COMPONENTS=ibm-licensing,scheduler,cpfs,cpd_platform,watsonx_orchestrate
 ### Source the environment variable
 
 ```
-sourc cpd_vars.sh
+source cpd_vars.sh
 ```
 
 ## Change cluster settings 
