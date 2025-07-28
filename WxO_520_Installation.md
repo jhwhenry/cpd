@@ -124,7 +124,7 @@ export VERSION=5.2.0
 
 # To export the variable, you must uncomment the command.
 
-export COMPONENTS=ibm-licensing,cpfs,cpd_platform,ikc_premium,datastage_ent,datalineage
+export COMPONENTS=ibm-licensing,scheduler,cpfs,cpd_platform,watsonx_orchestrate
 
 ```
 
