@@ -42,6 +42,11 @@ Validate with the following command
 cpd-cli version
 ```
 
+#### 4.Restart the olm-utils container
+```
+cpd-cli manage restart-container
+```
+
 ### Creating an environment variables file
 
 Create the cpd_vars.sh shell script with file content like below. <br>
