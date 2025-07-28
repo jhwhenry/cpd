@@ -42,6 +42,11 @@ Validate with the following command
 cpd-cli version
 ```
 
+#### 4.Restart the olm-utils container
+```
+cpd-cli manage restart-container
+```
+
 ## Creating an environment variables file
 
 Create the cpd_vars.sh shell script with below file content.
@@ -114,14 +119,14 @@ cpd-cli manage mirror-images \
 --case_download=true
 ```
 
-For each component, the command generates a log file in the work directory. 
+For each component, the command generates a log file in the `work` directory. 
 
 <br>
 
 Run the following command to print out any errors in the log files:
 
 ```
-grep "error" mirror_*.log
+grep "error" $(podman inspect olm-utils-play-v3 | jq -r '.[0].Mounts[0].Source')/mirror_*.log
 ```
 
 Confirm that the images were mirrored to the private container registry:
