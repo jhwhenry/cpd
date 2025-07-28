@@ -4,15 +4,24 @@
 
 ## Setting up a client workstation
 
+### Set the installation directory
+
+***Note***:
+<br>
+You can change the directory path if needed.
+
+```
+export WXO_INSTALL_DIR=/opt/ibm/wxo
+```
 ### Installing the IBM Cloud Pak for Data command-line interface
 
-Download Version 14.0.2 of the cpd-cli from the IBM/cpd-cli repository on GitHub <br>
+Download Version 14.2.0 of the cpd-cli from the IBM/cpd-cli repository on GitHub <br>
 
 #### 1.Download with wget
 
 ```
-mkdir /root/mirroring
-cd /root/mirroring
+mkdir -p $WXO_INSTALL_DIR
+cd $WXO_INSTALL_DIR
 wget https://github.com/IBM/cpd-cli/releases/download/v14.2.0/cpd-cli-linux-EE-14.2.0.tgz
 ```
 
@@ -25,7 +34,7 @@ tar -xvf cpd-cli-linux-EE-14.2.0.tgz
 #### 3.Make the cpd-cli executable from any directory.
 
 ```
-export PATH=/root/mirroring/cpd-cli-linux-EE-14.2.0-2081:$PATH
+export PATH=$WXO_INSTALL_DIR/cpd-cli-linux-EE-14.2.0-2081:$PATH
 ```
 
 Validate with the following command
