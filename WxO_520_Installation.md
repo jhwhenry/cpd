@@ -134,7 +134,13 @@ export COMPONENTS=ibm-licensing,scheduler,cpfs,cpd_platform,watsonx_orchestrate
 source cpd_vars.sh
 ```
 
-## Change cluster settings 
+## Change cluster settings
+Log the cpd-cli into the OpenShift cluster: 
+
+```
+${CPDM_OC_LOGIN}
+```
+
 ### Configuring image content source policy
 
 Run the following command to get the list of image content source policy resources:
@@ -146,8 +152,6 @@ oc get ImageDigestMirrorSet -o yaml > idms.yaml
 
 If the command returns No resources found, then run below commands:
 ```
-${CPDM_OC_LOGIN}
-
 cpd-cli manage apply-icsp \
 --registry=${PRIVATE_REGISTRY_LOCATION}
 ```
@@ -160,6 +164,12 @@ oc get nodes
 Wait until all the nodes are Ready before you proceed to the next step. 
 
 ### Updating the global image pull secret
+Log the cpd-cli into the OpenShift cluster: 
+
+```
+${CPDM_OC_LOGIN}
+```
+
 This step may take minutes to complete.
 
 ```
@@ -237,6 +247,11 @@ oc new-project ${PROJECT_CPD_INST_OPERANDS}
 ```
 
 ## Installing shared cluster components
+Log the cpd-cli into the OpenShift cluster: 
+
+```
+${CPDM_OC_LOGIN}
+```
 
 Install the Certificate manager and the License Service:
 ```
@@ -297,6 +312,12 @@ cpd-cli manage get-cpd-instance-details \
 ```
 
 ## Applying your entitlements without node pinning
+Log the cpd-cli into the OpenShift cluster: 
+
+```
+${CPDM_OC_LOGIN}
+```
+Apply the entitlements.
 
 ```
 cpd-cli manage apply-entitlement \
@@ -308,13 +329,7 @@ cpd-cli manage apply-entitlement \
 ```
 cpd-cli manage apply-entitlement \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---entitlement=ikc-premium
-```
-
-```
-cpd-cli manage apply-entitlement \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---entitlement=data-lineage \
+--entitlement=watsonx-orchestrate \
 --production=false
 ```
 
@@ -357,7 +372,13 @@ oc get cm db2u-product-cm  -n ${PROJECT_CPD_INST_OPERATORS} -o yaml
 ## Update the OpenShift AI
 
 
-## Install IKC Premium
+## Install watonsx Orchestrate
+
+Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster: 
+
+```
+${CPDM_OC_LOGIN}
+```
 
 Create a file named `install-options.yml` in the work directory and specify installation options in it as follows
 
