@@ -72,12 +72,16 @@ export PRIVATE_REGISTRY_PASSWORD=<The password for logging into the private imag
 
 # ------------------------------------------------------------------------------
 
-
 export COMPONENTS=ibm-licensing,scheduler,cpfs,cpd_platform,watsonx_orchestrate
-
 
 ```
 
+Source the environment variable file.
+
+```
+chmod +x cpd_vars.sh
+source cpd_vars.sh
+```
 
 ## Mirroring images directly to a private container registry
 
