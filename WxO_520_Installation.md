@@ -150,7 +150,7 @@ oc get imageContentSourcePolicy -o yaml > icsp.yaml
 oc get ImageDigestMirrorSet -o yaml > idms.yaml
 ```
 
-If the command returns No resources found, then run below commands:
+If the command returns `No resources found`, then run below commands:
 ```
 cpd-cli manage apply-icsp \
 --registry=${PRIVATE_REGISTRY_LOCATION}
