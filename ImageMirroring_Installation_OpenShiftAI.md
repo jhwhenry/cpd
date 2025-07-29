@@ -52,9 +52,9 @@ Configure the oc-mirror credentials by following below documentation.
 
 ## Build the ImageSetConfiguration file
 
-Create an ImageSetConfiguration file openshift_ai_416.yaml for OpenShift AI 2.16 as below:
+Create an ImageSetConfiguration file `openshift_ai_416.yaml` for OpenShift AI 2.19 as below:
 
-**Note:** The `159.33.188.34:8080` in the registry section needs to be changed to your private image registry location accordingly.
+**Note:** The `169.63.179.172:8080` in the registry section needs to be changed to your private image registry location accordingly.
 
 ```
 kind: ImageSetConfiguration
@@ -62,7 +62,7 @@ apiVersion: mirror.openshift.io/v1alpha2
 archiveSize: 4                                                      
 storageConfig:                                                      
   registry:
-    imageURL: 159.33.188.34:8080/cp               
+    imageURL: 169.63.179.172:8080/cp               
     skipTLS: true
 mirror:
   platform:
@@ -75,8 +75,8 @@ mirror:
     packages:
     - name: "rhods-operator"
       channels:
-      - name: "stable-2.16"
-        minVersion: "2.16.2"                                             
+      - name: "stable-2.19"
+        minVersion: "2.19.2"                                             
   additionalImages:
   - name: registry.redhat.io/ubi9/ubi:latest                        
   helm: {}
@@ -89,7 +89,7 @@ mirror:
 
 ```
 cd $WXO_INSTALL_DIR
-oc mirror --config=./ocp_ai_416.yaml docker://159.33.188.34:8080 --source-skip-tls --dest-skip-tls --verbose 9
+oc mirror --config=./openshift_ai_416.yaml docker://169.63.179.172:8080 --source-skip-tls --dest-skip-tls --verbose 9
 ```
 Once complete, there’s a folder named `oc-mirror-workspace` created looks like below:
 
