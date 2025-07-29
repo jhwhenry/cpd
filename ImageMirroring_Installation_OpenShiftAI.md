@@ -82,7 +82,7 @@ mirror:
   helm: {}
 ```
 
-## Start the mirroring
+## Mirror images
 
 **Note:** The `169.63.179.172:8080` in below commands needs to be changed to your private image registry location accordingly.
 
@@ -133,5 +133,23 @@ All the nodes should be `Ready` before you proceed to the next step. For example
 ```
 watch -n 5 "oc get nodes"
 ```
+## Installing the OpenShift AI
+
+### Disable the default OperatorHub sources
+```
+oc patch OperatorHub cluster --type json -p '[{"op": "add", "path": "/spec/disableAllDefaultSources", "value": true}]'
+```
+
+### Create the catalog source
+Create the catalog source with the yaml file generated in the `Mirror images` step.
+```
+oc apply -f $WXO_INSTALL_DIR/oc-mirror-workspace/results-1750641947/catalogSource-cs-redhat-operator-index.yaml
+```
+
+Validate whether catalog source created successfully.
+```
+oc get pods -n openshift-marketplace | grep -i cs-redhat-operator-index
+```
+Make sure the pod of the cs-redhat-operator-index catalog source is up and running.
 
 End of document
