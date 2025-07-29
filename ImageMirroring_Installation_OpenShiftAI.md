@@ -190,4 +190,135 @@ spec:
 EOF
 ```
 
+Check the status of the rhods-operator-* pod in the redhat-ods-operator project:
+```
+oc get pods -n redhat-ods-operator
+```
+
+Confirm that the pod is Running. The command returns a response with the following format:
+```
+NAME                              READY   STATUS    RESTARTS   AGE
+rhods-operator-56c85d44c9-vtk74   1/1     Running   0          3h57m
+```
+
+### Create a DSC Initialization (DSCInitialization) object in the redhat-ods-monitoring project
+
+```
+cat <<EOF |oc apply -f -
+apiVersion: dscinitialization.opendatahub.io/v1
+kind: DSCInitialization
+metadata:
+  name: default-dsci
+spec:
+  applicationsNamespace: redhat-ods-applications
+  monitoring:
+    managementState: Managed
+    namespace: redhat-ods-monitoring
+  serviceMesh:
+    managementState: Removed
+  trustedCABundle:
+    managementState: Managed
+    customCABundle: ""
+EOF
+```
+
+Check the phase of the DSC Initialization (DSCInitialization) object:
+```
+oc get dscinitialization
+```
+
+Confirm that the object is Ready. The command returns a response with the following format:
+```
+NAME           AGE     PHASE
+default-dsci   4d18h   Ready
+```
+### Create a Data Science Cluster (DataScienceCluster) object
+```
+cat <<EOF |oc apply -f -
+apiVersion: datasciencecluster.opendatahub.io/v1
+kind: DataScienceCluster
+metadata:
+  name: default-dsc
+spec:
+  components:
+    codeflare:
+      managementState: Removed
+    dashboard:
+      managementState: Removed
+    datasciencepipelines:
+      managementState: Removed
+    kserve:
+      managementState: Managed
+      defaultDeploymentMode: RawDeployment
+      serving:
+        managementState: Removed
+        name: knative-serving
+    kueue:
+      managementState: Removed
+    modelmeshserving:
+      managementState: Removed
+    ray:
+      managementState: Removed
+    trainingoperator:
+      managementState: Managed
+    trustyai:
+      managementState: Removed
+    workbenches:
+      managementState: Removed
+EOF
+```
+The Red Hat OpenShift AI Operator installs and manages the services that are listed as Managed. Services that are Removed are not installed.
+
+Wait for the Data Science Cluster object to be Ready.
+
+To check the status of the object, run:
+```
+oc get datasciencecluster default-dsc -o jsonpath='"{.status.phase}" {"\n"}'
+```
+
+Confirm that the status of the following pods in the redhat-ods-applications project are Running: 
+<br>
+
+- kserve-controller-manager-* pod
+- kubeflow-training-operator-* pod
+- odh-model-controller-* pod
+
+```
+oc get pods -n redhat-ods-applications
+```
+The command returns a response with the following format:
+```
+NAME                                         READY   STATUS      RESTARTS   AGE
+kserve-controller-manager-57796d5b44-sh9n5   1/1     Running     0          4m57s
+kubeflow-training-operator-7b99d5584c-rh5hb  1/1     Running     0          4m57s
+```
+
+### Edit the inferenceservice-config configuration map in the redhat-ods-applications project:
+- Log in to the Red Hat OpenShift Container Platform web console as a cluster administrator.
+- From the navigation menu, select Workloads > Configmaps.
+- From the Project list, select redhat-ods-applications.
+- Click the inferenceservice-config resource. Then, open the YAML tab.
+<br>
+In the metadata.annotations section of the file, add `opendatahub.io/managed: 'false'`:
+```
+    metadata:
+      annotations:
+        internal.config.kubernetes.io/previousKinds: ConfigMap
+        internal.config.kubernetes.io/previousNames: inferenceservice-config
+        internal.config.kubernetes.io/previousNamespaces: opendatahub
+        opendatahub.io/managed: 'false'
+```
+
+Find the following entry in the file:
+```
+"domainTemplate": "{{ .Name }}-{{ .Namespace }}.{{ .IngressDomain }}",
+```
+
+Update the value of the domainTemplate field to "example.com":
+```
+"domainTemplate": "example.com",
+```
+
+Click Save.
+
 End of document
