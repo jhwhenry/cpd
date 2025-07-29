@@ -379,7 +379,7 @@ noobaa-account-watsonx-orchestrate \
 noobaa-cert-watsonx-orchestrate \
 noobaa-uri-watsonx-orchestrate
 ```
-If the command returns Error from server (NotFound), re-run the `setup-mcg` command in the preceding step.
+If the command returns `Error from server (NotFound)`, re-run the `setup-mcg` command in the preceding step.
 
 ### Install Red Hat OpenShift Serverless Knative Eventing
 If OpenShift Serverless Knative Eventing has been installed and configured, you can skip this step.
