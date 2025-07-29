@@ -192,53 +192,6 @@ oc get nodes
 
 Wait until all the nodes are Ready before you proceed to the next step. 
 
-### Changing the process IDs limit
-
-Check whether there is an existing kubeletconfig on the cluster:
-
-```
-oc get kubeletconfig
-```
-
-If the above command returns the name of a kubeletconfig:
-
-```
-export KUBELET_CONFIG=<kubeletconfig-name>
-
-oc patch kubeletconfig ${KUBELET_CONFIG} \
---type=merge \
---patch='{"spec":{"kubeletConfig":{"podPidsLimit":16384}}}'
-```
-
-If no kubeletconfig found:
-
-```
-oc apply -f - << EOF
-apiVersion: machineconfiguration.openshift.io/v1
-kind: KubeletConfig
-metadata:
-  name: cpd-kubeletconfig
-spec:
-  kubeletConfig:
-    podPidsLimit: 16384
-  machineConfigPoolSelector:
-    matchExpressions:
-    - key: pools.operator.machineconfiguration.openshift.io/worker
-      operator: Exists
-EOF
-```
-
-### Changing load balancer timeout settings
-Increasing the load balancer timeout settings prevents connections from being closed before processes complete. <br>
-
-The minimum recommended timeout is:
-```
-    Client timeout: 1800s (30m)
-    Server timeout: 1800s (30m)
-```
-[Reference](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=settings-changing-load-balancer)
-
-
 ## Manually creating projects
 
 ```
@@ -355,26 +308,78 @@ cpd-cli manage apply-olm \
 --components=${COMPONENTS}
 ```
 
-## Create the appropriate db2u-product-cm ConfigMap for using the limited privilege
+## Install and configure Multicloud Object Gateway
 
-```
-oc apply -f - <<EOF
-apiVersion: v1
-data:
-  DB2U_RUN_WITH_LIMITED_PRIVS: "true"
-kind: ConfigMap
-metadata:
-  name: db2u-product-cm
-  namespace: ${PROJECT_CPD_INST_OPERATORS}
-EOF
-```
+### Install Multicloud Object Gateway
+If Multicloud Object Gateway has been installed and configured, you can skip this step.
+If this task is not complete, see [Installing Multicloud Object Gateway](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/setup-cluster-storage-mcg.html).
 
-Validate the content of the db2u-product-cm configure map 
-```
-oc get cm db2u-product-cm  -n ${PROJECT_CPD_INST_OPERATORS} -o yaml
-```
+### Create the secrets that watsonx Orchestrate uses to connect to Multicloud Object Gateway
 
-## Update the OpenShift AI
+- 1.Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster:
+```
+${CPDM_OC_LOGIN}
+```
+- 2.Get the names of the secrets that contain the NooBaa account credentials and certificate:
+```
+oc get secrets --namespace=openshift-storage
+```
+- 3.Set the following environment variables based on the names of the secrets on your cluster.
+<br>
+Set `NOOBAA_ACCOUNT_CREDENTIALS_SECRET` to the name of the secret that contains the NooBaa account credentials. The default name is `noobaa-admin`.
+If you created multiple backing stores, ensure that you specify the credentials for the appropriate backing store.
+```
+export NOOBAA_ACCOUNT_CREDENTIALS_SECRET=<secret-name>
+```
+Set `NOOBAA_ACCOUNT_CERTIFICATE_SECRET` to the name of the secret that contains the NooBaa account certificate. The default name is `noobaa-s3-serving-cert`.
+```
+export NOOBAA_ACCOUNT_CERTIFICATE_SECRET=<secret-name>
+```
+- 4.Run the setup-mcg command to create the secrets for watsonx Assistant, which is automatically installed with watsonx Orchestrate:
+```
+cpd-cli manage setup-mcg \
+--components=watson_assistant \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--noobaa_account_secret=${NOOBAA_ACCOUNT_CREDENTIALS_SECRET} \
+--noobaa_cert_secret=${NOOBAA_ACCOUNT_CERTIFICATE_SECRET}
+```
+Wait for the cpd-cli to return the following message before proceeding to the next step:
+```
+[SUCCESS] ... setup-mcg completed successfully.
+```
+Confirm that the watson-assistant secrets were created in the operands project for the instance:
+```
+oc get secrets --namespace=${PROJECT_CPD_INST_OPERANDS} \
+noobaa-account-watson-assistant \
+noobaa-cert-watson-assistant \
+noobaa-uri-watson-assistant
+```
+If the command returns `Error from server (NotFound)`, re-run the `setup-mcg` command in the preceding step.
+
+- 5. Run the `setup-mcg` command to create the secrets for watsonx Orchestrate:
+```
+cpd-cli manage setup-mcg \
+--components=watsonx_orchestrate \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--noobaa_account_secret=${NOOBAA_ACCOUNT_CREDENTIALS_SECRET} \
+--noobaa_cert_secret=${NOOBAA_ACCOUNT_CERTIFICATE_SECRET}
+```
+Wait for the cpd-cli to return the following message before proceeding to the next step:
+```
+[SUCCESS] ... setup-mcg completed successfully.
+```
+Confirm that the secrets were created in the operands project for the instance:
+```
+oc get secrets --namespace=${PROJECT_CPD_INST_OPERANDS} \
+noobaa-account-watsonx-orchestrate \
+noobaa-cert-watsonx-orchestrate \
+noobaa-uri-watsonx-orchestrate
+```
+If the command returns Error from server (NotFound), re-run the `setup-mcg` command in the preceding step.
+
+## Install the OpenShift AI
+If OpenShift AI has been installed and configured, you can skip this step.
+If this task is not complete, see [Installing Red Hat OpenShift AI](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-openshift-ai.html).
 
 
 ## Install watonsx Orchestrate
