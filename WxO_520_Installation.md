@@ -291,22 +291,9 @@ cpd-cli manage apply-entitlement \
 --production=false
 ```
 
-## Installing the operators
-
-Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster: 
-
-```
-${CPDM_OC_LOGIN}
-```
-
-Install the operators in the operators project for the instance.
-
-```
-cpd-cli manage apply-olm \
---release=${VERSION} \
---cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
---components=${COMPONENTS}
-```
+## Install the OpenShift AI
+If OpenShift AI has been installed and configured, you can skip this step.
+If this task is not complete, see [Installing Red Hat OpenShift AI](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-openshift-ai.html).
 
 ## Install and configure Multicloud Object Gateway
 
@@ -377,11 +364,27 @@ noobaa-uri-watsonx-orchestrate
 ```
 If the command returns Error from server (NotFound), re-run the `setup-mcg` command in the preceding step.
 
-## Install the OpenShift AI
-If OpenShift AI has been installed and configured, you can skip this step.
-If this task is not complete, see [Installing Red Hat OpenShift AI](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-openshift-ai.html).
+## Install Red Hat OpenShift Serverless Knative Eventing
+If OpenShift Serverless Knative Eventing has been installed and configured, you can skip this step.
+If this task is not complete, see [Installing Red Hat OpenShift Serverless Knative Eventing]([https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-openshift-ai.html](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-eventing.html)).
 
 
+## Installing the operators
+
+Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster: 
+
+```
+${CPDM_OC_LOGIN}
+```
+
+Install the operators in the operators project for the instance.
+
+```
+cpd-cli manage apply-olm \
+--release=${VERSION} \
+--cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--components=${COMPONENTS}
+```
 ## Install watonsx Orchestrate
 
 Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster: 
