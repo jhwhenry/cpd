@@ -84,7 +84,7 @@ mirror:
 
 ## Start the mirroring
 
-**Note:** The `159.33.188.34:8080` in below commands needs to be changed to your private image registry location accordingly.
+**Note:** The `169.63.179.172:8080` in below commands needs to be changed to your private image registry location accordingly.
 
 ```
 cd $WXO_INSTALL_DIR
