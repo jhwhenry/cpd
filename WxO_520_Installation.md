@@ -291,38 +291,49 @@ cpd-cli manage apply-entitlement \
 --production=false
 ```
 
-## Install the OpenShift AI
+## Install the pre-requisites
+### Install the GPU operators
+If the GPU operators has been installed and configured, you can skip this step.
+If this task is not complete, see [Installing operators for services that require GPUs](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-openshift-ai.html](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-node-gpu.html).
+
+### Install the OpenShift AI
 If OpenShift AI has been installed and configured, you can skip this step.
 If this task is not complete, see [Installing Red Hat OpenShift AI](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-openshift-ai.html).
 
-## Install and configure Multicloud Object Gateway
+### Install and configure Multicloud Object Gateway
 
-### Install Multicloud Object Gateway
+#### Install Multicloud Object Gateway
 If Multicloud Object Gateway has been installed and configured, you can skip this step.
 If this task is not complete, see [Installing Multicloud Object Gateway](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/setup-cluster-storage-mcg.html).
 
-### Create the secrets that watsonx Orchestrate uses to connect to Multicloud Object Gateway
+#### Create the secrets that watsonx Orchestrate uses to connect to Multicloud Object Gateway
 
-- 1.Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster:
+- 1.Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster
 ```
 ${CPDM_OC_LOGIN}
 ```
-- 2.Get the names of the secrets that contain the NooBaa account credentials and certificate:
+- 2.Get the names of the secrets that contain the NooBaa account credentials and certificate
 ```
 oc get secrets --namespace=openshift-storage
 ```
 - 3.Set the following environment variables based on the names of the secrets on your cluster.
 <br>
+
 Set `NOOBAA_ACCOUNT_CREDENTIALS_SECRET` to the name of the secret that contains the NooBaa account credentials. The default name is `noobaa-admin`.
 If you created multiple backing stores, ensure that you specify the credentials for the appropriate backing store.
+
 ```
 export NOOBAA_ACCOUNT_CREDENTIALS_SECRET=<secret-name>
 ```
+
 Set `NOOBAA_ACCOUNT_CERTIFICATE_SECRET` to the name of the secret that contains the NooBaa account certificate. The default name is `noobaa-s3-serving-cert`.
+
 ```
 export NOOBAA_ACCOUNT_CERTIFICATE_SECRET=<secret-name>
 ```
-- 4.Run the setup-mcg command to create the secrets for watsonx Assistant, which is automatically installed with watsonx Orchestrate:
+
+- 4.Run the setup-mcg command to create the secrets for watsonx Assistant, which is automatically installed with watsonx Orchestrate
+
 ```
 cpd-cli manage setup-mcg \
 --components=watson_assistant \
@@ -331,19 +342,23 @@ cpd-cli manage setup-mcg \
 --noobaa_cert_secret=${NOOBAA_ACCOUNT_CERTIFICATE_SECRET}
 ```
 Wait for the cpd-cli to return the following message before proceeding to the next step:
+
 ```
 [SUCCESS] ... setup-mcg completed successfully.
 ```
+
 Confirm that the watson-assistant secrets were created in the operands project for the instance:
+
 ```
 oc get secrets --namespace=${PROJECT_CPD_INST_OPERANDS} \
 noobaa-account-watson-assistant \
 noobaa-cert-watson-assistant \
 noobaa-uri-watson-assistant
 ```
+
 If the command returns `Error from server (NotFound)`, re-run the `setup-mcg` command in the preceding step.
 
-- 5. Run the `setup-mcg` command to create the secrets for watsonx Orchestrate:
+- 5. Run the `setup-mcg` command to create the secrets for watsonx Orchestrate
 ```
 cpd-cli manage setup-mcg \
 --components=watsonx_orchestrate \
@@ -351,10 +366,12 @@ cpd-cli manage setup-mcg \
 --noobaa_account_secret=${NOOBAA_ACCOUNT_CREDENTIALS_SECRET} \
 --noobaa_cert_secret=${NOOBAA_ACCOUNT_CERTIFICATE_SECRET}
 ```
+
 Wait for the cpd-cli to return the following message before proceeding to the next step:
 ```
 [SUCCESS] ... setup-mcg completed successfully.
 ```
+
 Confirm that the secrets were created in the operands project for the instance:
 ```
 oc get secrets --namespace=${PROJECT_CPD_INST_OPERANDS} \
@@ -364,7 +381,7 @@ noobaa-uri-watsonx-orchestrate
 ```
 If the command returns Error from server (NotFound), re-run the `setup-mcg` command in the preceding step.
 
-## Install Red Hat OpenShift Serverless Knative Eventing
+### Install Red Hat OpenShift Serverless Knative Eventing
 If OpenShift Serverless Knative Eventing has been installed and configured, you can skip this step.
 If this task is not complete, see [Installing Red Hat OpenShift Serverless Knative Eventing]([https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-openshift-ai.html](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-eventing.html)).
 
