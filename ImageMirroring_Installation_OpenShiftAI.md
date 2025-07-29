@@ -80,7 +80,6 @@ mirror:
   additionalImages:
   - name: registry.redhat.io/ubi9/ubi:latest                        
   helm: {}
-
 ```
 
 ## Start the mirroring
