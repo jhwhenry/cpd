@@ -152,4 +152,42 @@ oc get pods -n openshift-marketplace | grep -i cs-redhat-operator-index
 ```
 Make sure the pod of the cs-redhat-operator-index catalog source is up and running.
 
+### Create the redhat-ods-operator project
+```
+oc new-project redhat-ods-operator
+```
+### Create the rhods-operator operator group
+```
+cat <<EOF |oc apply -f -
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  name: rhods-operator
+  namespace: redhat-ods-operator
+EOF
+```
+
+### Create the rhods-operator operator subscription
+**Note:**
+You may have to change the catalog source name accordingly.
+```
+export CHANNEL_VERSION=stable-2.19
+
+cat <<EOF |oc apply -f -
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: rhods-operator
+  namespace: redhat-ods-operator
+spec:
+  name: rhods-operator
+  channel: ${CHANNEL_VERSION}
+  source: cs-redhat-operator-index
+  sourceNamespace: openshift-marketplace
+  config:
+     env:
+        - name: "DISABLE_DSC_CONFIG"
+EOF
+```
+
 End of document
