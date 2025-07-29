@@ -294,7 +294,7 @@ cpd-cli manage apply-entitlement \
 ## Install the pre-requisites
 ### Install the GPU operators
 If the GPU operators has been installed and configured, you can skip this step.
-If this task is not complete, see [Installing operators for services that require GPUs](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-openshift-ai.html](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-node-gpu.html).
+If this task is not complete, see [Installing operators for services that require GPUs](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-node-gpu.html).
 
 ### Install the OpenShift AI
 If OpenShift AI has been installed and configured, you can skip this step.
