@@ -79,6 +79,9 @@ export PRIVATE_REGISTRY_PASSWORD=<The password for logging into the private imag
 
 export COMPONENTS=ibm-licensing,scheduler,cpfs,cpd_platform,watsonx_orchestrate
 
+#Choose the Foundation models to be usedfor watsonx Orchestrate
+#https://www.ibm.com/docs/en/software-hub/5.2.x?topic=information-determining-which-models-optional-images-mirror#mirror-model-list__orchestrate-models__title__1
+export IMAGE_GROUPS=ibmwxSlate30mEnglishRtrvr
 ```
 
 Source the environment variable file.
