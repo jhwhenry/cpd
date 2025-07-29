@@ -358,7 +358,7 @@ noobaa-uri-watson-assistant
 
 If the command returns `Error from server (NotFound)`, re-run the `setup-mcg` command in the preceding step.
 
-- 5. Run the `setup-mcg` command to create the secrets for watsonx Orchestrate
+- 5.Run the `setup-mcg` command to create the secrets for watsonx Orchestrate
 ```
 cpd-cli manage setup-mcg \
 --components=watsonx_orchestrate \
