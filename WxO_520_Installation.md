@@ -414,26 +414,56 @@ Create a file named `install-options.yml` in the work directory and specify inst
 
 ```
 ################################################################################
-# IBM Knowledge Catalog parameters
+# watsonx Orchestrate parameters
 ################################################################################
-custom_spec:
-  wkc:
-    enableDataQuality: True
-    enableSemanticAutomation: True
-    enableSemanticEnrichment: True
-    enableModelsOn: 'cpu'
+
+watson_orchestrate_watsonx_ai_type: false
+watson_orchestrate_ootb_models:
+  - ibm-slate-30m-english-rtrvr
 ```
 
 Apply the custom resource
 
 ```
 cpd-cli manage apply-cr \
---components=${COMPONENTS} \
+--components=watsonx_orchestrate \
 --release=${VERSION} \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --block_storage_class=${STG_CLASS_BLOCK} \
 --file_storage_class=${STG_CLASS_FILE} \
+--param-file=/tmp/work/install-options.yml \
 --license_acceptance=true
+```
+
+Patch the custom resource
+
+```
+oc patch wo wo \
+--namespace=${PROJECT_CPD_INST_OPERANDS} \
+--type=merge \
+--patch='{
+  "spec": {
+    "watsonAssistants": {
+      "config": {
+        "configOverrides": {
+          "enabled_components": {
+            "store": {
+              "ifm": true
+            }
+          },
+          "watsonx_enabled": true,
+          "ifm": {
+            "model_config": {
+              "ootb": {
+                "ibm-slate-30m-english-rtrvr": {}
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}'
 ```
 
 Validate the upgrade
