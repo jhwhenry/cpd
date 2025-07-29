@@ -1,4 +1,4 @@
-# Images mirroring - OpenShift Serverless Knative Eventing
+# Images mirroring and Installation - OpenShift Serverless Knative Eventing
 
 
 ---
@@ -150,6 +150,38 @@ Validate whether catalog source created successfully.
 oc get pods -n openshift-marketplace | grep -i cs-redhat-operator-index
 ```
 Make sure the pod of the cs-redhat-operator-index catalog source is up and running.
+
+### Install IBM Events Operator
+
+1. Log into OpenShift cluster for the cpd-cli.
+
+```bash
+${CPDM_OC_LOGIN}
+```
+2.Authorize the projects where the software will be installed to communicate:
+```
+cpd-cli manage authorize-instance-topology \
+--release=${VERSION} \
+--cpd_operator_ns=ibm-knative-events \
+--cpd_instance_ns=knative-eventing
+```
+3.Install the IBM Events Operator in the ibm-knative-events project:
+```
+cpd-cli manage setup-instance-topology \
+--release=${VERSION} \
+--cpd_operator_ns=ibm-knative-events \
+--cpd_instance_ns=knative-eventing \
+--block_storage_class=${STG_CLASS_BLOCK} \
+--license_acceptance=true
+```
+
+4.Install the Red Hat OpenShift Serverless Knative Eventing and IBM Events software.
+
+```bash
+cpd-cli manage deploy-knative-eventing \
+--release=${VERSION} \
+--block_storage_class=${STG_CLASS_BLOCK}
+```
 
 ---
 
