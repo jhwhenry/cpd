@@ -2,22 +2,22 @@
 
 ---
 
-## Setting up a client workstation
+## 1 Setting up a client workstation
 
-### Set the installation directory
+### 1.1 Set the installation directory
 
-***Note***:
+**Note**:
 <br>
-You can change the directory path if needed.
+You can change the directory path if necessary.
 
 ```
 export WXO_INSTALL_DIR=/opt/ibm/wxo
 ```
-### Installing the IBM Cloud Pak for Data command-line interface
+### 1.2 Installing the IBM Cloud Pak for Data command-line interface
 
 Download Version 14.2.0 of the cpd-cli from the IBM/cpd-cli repository on GitHub <br>
 
-#### 1.Download with wget
+#### 1.2.1 Download with wget
 
 ```
 mkdir -p $WXO_INSTALL_DIR
@@ -25,13 +25,13 @@ cd $WXO_INSTALL_DIR
 wget https://github.com/IBM/cpd-cli/releases/download/v14.2.0/cpd-cli-linux-EE-14.2.0.tgz
 ```
 
-#### 2.Extract the tar file
+#### 1.2.2 Extract the tar file
 
 ```
 tar -xvf cpd-cli-linux-EE-14.2.0.tgz
 ```
 
-#### 3.Make the cpd-cli executable from any directory.
+#### 1.2.3 Make the cpd-cli executable from any directory.
 
 ```
 export PATH=$WXO_INSTALL_DIR/cpd-cli-linux-EE-14.2.0-2081:$PATH
@@ -42,12 +42,12 @@ Validate with the following command
 cpd-cli version
 ```
 
-#### 4.Restart the olm-utils container
+#### 1.2.4 Restart the olm-utils container
 ```
 cpd-cli manage restart-container
 ```
 
-### Creating an environment variables file
+### 1.3 Creating an environment variables file
 
 Create the cpd_vars.sh shell script with file content like below. <br>
 
@@ -131,22 +131,24 @@ export VERSION=5.2.0
 
 export COMPONENTS=ibm-licensing,scheduler,cpfs,cpd_platform,watsonx_orchestrate
 
+#Choose the Foundation models to be usedfor watsonx Orchestrate
+export IMAGE_GROUPS=ibmwxSlate30mEnglishRtrvr
 ```
 
-### Source the environment variable
+### 1.4 Source the environment variable
 
 ```
 source cpd_vars.sh
 ```
 
-## Change cluster settings
+## 2 Change cluster settings
 Log the cpd-cli into the OpenShift cluster: 
 
 ```
 ${CPDM_OC_LOGIN}
 ```
 
-### Configuring image content source policy
+### 2.1 Configuring image content source policy
 
 Run the following command to get the list of image content source policy resources:
 
@@ -168,7 +170,7 @@ oc get nodes
 
 Wait until all the nodes are Ready before you proceed to the next step. 
 
-### Updating the global image pull secret
+### 2.2 Updating the global image pull secret
 Log the cpd-cli into the OpenShift cluster: 
 
 ```
@@ -192,7 +194,7 @@ oc get nodes
 
 Wait until all the nodes are Ready before you proceed to the next step. 
 
-## Manually creating projects
+## 3 Manually creating projects
 
 ```
 #Shared cluster components
@@ -204,7 +206,7 @@ oc new-project ${PROJECT_CPD_INST_OPERATORS}
 oc new-project ${PROJECT_CPD_INST_OPERANDS}
 ```
 
-## Installing shared cluster components
+## 4 Installing shared cluster components
 Log the cpd-cli into the OpenShift cluster: 
 
 ```
@@ -225,7 +227,7 @@ Wait for the cpd-cli to return the following message before proceeding to the ne
 [SUCCESS]... The apply-cluster-components command ran successfully.
 ```
 
-## Applying the required permissions to the projects (namespaces) for CPD instance
+## 5 Applying the required permissions to the projects (namespaces) for CPD instance
 
 Applying the required permissions by running the authorize-instance-topology command
 
@@ -235,7 +237,7 @@ cpd-cli manage authorize-instance-topology \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-## Installing Software Hub
+## 6 Installing Software Hub
 
 Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster: 
 
@@ -269,7 +271,7 @@ cpd-cli manage get-cpd-instance-details \
 --get_admin_initial_credentials=true
 ```
 
-## Applying your entitlements without node pinning
+## 7 Applying your entitlements without node pinning
 Log the cpd-cli into the OpenShift cluster: 
 
 ```
@@ -291,22 +293,22 @@ cpd-cli manage apply-entitlement \
 --production=false
 ```
 
-## Install the pre-requisites
-### Install the GPU operators
+## 8 Install the prerequisite software
+### 8.1 Install the GPU operators
 If the GPU operators has been installed and configured, you can skip this step.
 If this task is not complete, see [Installing operators for services that require GPUs](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-node-gpu.html).
 
-### Install the OpenShift AI
+### 8.2 Install the OpenShift AI
 If OpenShift AI has been installed and configured, you can skip this step.
 If this task is not complete, see [Installing Red Hat OpenShift AI](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-openshift-ai.html).
 
-### Install and configure Multicloud Object Gateway
+### 8.3 Install and configure Multicloud Object Gateway
 
-#### Install Multicloud Object Gateway
+#### 8.3.1 Install Multicloud Object Gateway
 If Multicloud Object Gateway has been installed and configured, you can skip this step.
 If this task is not complete, see [Installing Multicloud Object Gateway](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/setup-cluster-storage-mcg.html).
 
-#### Create the secrets that watsonx Orchestrate uses to connect to Multicloud Object Gateway
+#### 8.3.2 Create the secrets that watsonx Orchestrate uses to connect to Multicloud Object Gateway
 
 - 1.Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster
 ```
@@ -381,12 +383,12 @@ noobaa-uri-watsonx-orchestrate
 ```
 If the command returns `Error from server (NotFound)`, re-run the `setup-mcg` command in the preceding step.
 
-### Install Red Hat OpenShift Serverless Knative Eventing
+### 8.4 Install Red Hat OpenShift Serverless Knative Eventing
 If OpenShift Serverless Knative Eventing has been installed and configured, you can skip this step.
 If this task is not complete, see [Installing Red Hat OpenShift Serverless Knative Eventing]([https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-openshift-ai.html](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-eventing.html)).
 
 
-## Installing the operators
+## 9 Installing the operators
 
 Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster: 
 
@@ -402,7 +404,7 @@ cpd-cli manage apply-olm \
 --cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
 --components=${COMPONENTS}
 ```
-## Install watonsx Orchestrate
+## 10 Install watonsx Orchestrate
 
 Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster: 
 
@@ -472,7 +474,7 @@ Validate the upgrade
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-## Apply the Day 0 patch
+## 11 Apply the Day 0 patch
 
 https://www.ibm.com/support/pages/node/7236425
 
