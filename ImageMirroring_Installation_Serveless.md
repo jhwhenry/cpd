@@ -9,7 +9,7 @@
 
 ***Note***:
 <br>
-You can change the directory path if needed.
+You can change the directory path as you want.
 
 ```
 export WXO_INSTALL_DIR=/opt/ibm/wxo
