@@ -1,4 +1,4 @@
-# Images mirroring and Installation - OpenShift Serverless
+# Images mirroring and installation - OpenShift Serverless
 
 
 ---
