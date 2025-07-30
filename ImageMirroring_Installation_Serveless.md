@@ -183,6 +183,38 @@ cpd-cli manage deploy-knative-eventing \
 --block_storage_class=${STG_CLASS_BLOCK}
 ```
 
+## Troubleshooting
+#### "knativeeventings.operator.knative.dev" not found
+**Symptom**
+<br>
+During running the step 4 `Install the Red Hat OpenShift Serverless Knative Eventing and IBM Events software` in the `Install IBM Events Operator`, you may encounter the command failure with the error message like below.
+```
+Error from server (NotFound): customresourcedefinitions.apiextensions.k8s.io "knativeeventings.operator.knative.dev" not found
+```
+**Resolution**
+<br>
+Check whether the serverless csv was created successfully.
+
+```
+oc get csv -n openshift-serverless | grep -i serverless-operator
+```
+
+The result should look like below.
+
+```
+serverless-operator.v1.36.0         Red Hat OpenShift Serverless   1.36.0    serverless-operator.v1.35.0   Succeeded
+```
+
+If no result found, then it means there's something wrong when creating the Serverless operator. It's recommended [installing the Serverless operator from the OpenShift web console](https://docs.redhat.com/en/documentation/red_hat_openshift_serverless/1.35/html/installing_openshift_serverless/install-serverless-operator#serverless-install-web-console_install-serverless-operator).
+<br>
+**Note**:
+<br>
+- Ensure the correct catalog source is used accordingly.
+- Check if the installplan is set to be Automatic. If not, you may have to approval it.
+
+After the operator installed successfully, then rerun the command `cpd-cli manage deploy-knative-eventing`
+
+
 ---
 
 End of document
