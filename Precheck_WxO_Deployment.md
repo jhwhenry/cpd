@@ -247,9 +247,3 @@ cpd-cli health storage-performance \
 ```
 4. Run the cleanup
 Run a [cleanup script](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=health-storage-performance#health-storage-perf__cleanup__title__1) to remove any resources that were created after you ran the cpd-cli health storage-performance command. 
-
-## Collect PVC size
-
-```bash
-oc get pvc -A > pvc_list.txt
-```
