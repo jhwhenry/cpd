@@ -233,6 +233,7 @@ EOF
 
 3. Run command.
 <br>
+
 **NOTE:**
 Remember that the `image-tag` option, it needs to match what it is in the `imageurl` in the `param.yml` file.
 
