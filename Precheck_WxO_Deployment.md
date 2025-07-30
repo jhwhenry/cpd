@@ -65,6 +65,22 @@ oc get csv -n=openshift-serverless | grep serverless-operator > serverless-opera
 oc get csv -n=${PROJECT_IBM_EVENTS} | grep ibm-events > ibm-events.txt
 ```
 
+## Check the OpenShift AI Operator
+
+1. Verify Red Hat OpenShift Serverless Operator version.
+
+```bash
+oc get pods -A | grep -i rhods-operator > openshift-ai.txt
+```
+
+```bash
+oc get subs -A | grep -i rhods-operator >> openshift-ai.txt
+```
+
+```bash
+oc get DSCInitialization -A | grep -i dsci >> openshift-ai.txt
+```
+
 ## Check the secrets used for connecting to the MCG
 Get the names of the secrets that contain the NooBaa account credentials and certificate
 
