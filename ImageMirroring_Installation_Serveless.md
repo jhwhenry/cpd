@@ -184,7 +184,7 @@ cpd-cli manage deploy-knative-eventing \
 ```
 
 ## Troubleshooting
-#### "knativeeventings.operator.knative.dev" not found
+#### 1. "knativeeventings.operator.knative.dev" not found
 **Symptom**
 <br>
 During running the step 4 `Install the Red Hat OpenShift Serverless Knative Eventing and IBM Events software` in the `Install IBM Events Operator`, you may encounter the command failure with the error message like below.
