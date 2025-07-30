@@ -1,4 +1,4 @@
-# Images mirroring and installation for the OpenShift AI installation
+# Images mirroring and installation - OpenShift AI
 
 ---
 
