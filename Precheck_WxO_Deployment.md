@@ -88,7 +88,7 @@ oc get DSCInitialization -A | grep -i dsci >> openshift-ai.txt
 Get the names of the secrets that contain the NooBaa account credentials and certificate
 
 ```bash
-oc get secrets --namespace=openshift-storage > secrets.txt
+oc get secrets --namespace=openshift-storage > ocp-storage-secrets.txt
 ```
 
 Get the watson-assistant secrets were created in the operands project for the watson assistant instance:
@@ -96,7 +96,7 @@ Get the watson-assistant secrets were created in the operands project for the wa
 oc get secrets --namespace=${PROJECT_CPD_INST_OPERANDS} \
 noobaa-account-watson-assistant \
 noobaa-cert-watson-assistant \
-noobaa-uri-watson-assistant
+noobaa-uri-watson-assistant > wa-secrects.txt
 ```
 
 ## Check the node resources
