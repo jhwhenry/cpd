@@ -1,4 +1,4 @@
-# Images mirroring and Installation - OpenShift Serverless Knative Eventing
+# Images mirroring and Installation - OpenShift Serverless
 
 
 ---
