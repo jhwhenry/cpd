@@ -14,8 +14,10 @@ mkdir -p /opt/ibm/wxo/pre-installation
 cd /opt/ibm/wxo/pre-installation
 ```
 
-**NOTE:**
-<br>Please zip the folder created at the end of the session for further analysis of SWAT Team.
+**NOTE**
+
+<br>
+Please zip the folder created at the end of the session for further analysis of SWAT Team.
 
 ## Collect namespaces related resources and settings
 
@@ -27,6 +29,7 @@ ${OC_LOGIN}
 
 2. Export variables
 <br>
+
 **Note**: Change the namesapces as needed
 
 ```bash
