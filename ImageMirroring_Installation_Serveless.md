@@ -3,20 +3,20 @@
 
 ---
 
-## Setting up a client workstation
+## 1 Set up a client workstation
 
-### Set the installation directory
+### 1.1 Set the installation directory
 
-***Note***:
+**Note**:
 <br>
 You can change the directory path as you want.
 
 ```
 export WXO_INSTALL_DIR=/opt/ibm/wxo
 ```
-### Install the oc client and oc-mirror plugin
+### 1.2 Install the oc client and oc-mirror plugin
 
-#### 1.Download with wget
+#### 1.2.1 Download with wget
 
 ```
 mkdir -p $WXO_INSTALL_DIR
@@ -26,14 +26,14 @@ wget https://mirror.openshift.com/pub/openshift-v4/x86_64/clients/ocp/4.16.40/oc
 
 ```
 
-#### 2.Extract the tar file
+#### 1.2.2 Extract the tar file
 
 ```
 tar -xvf openshift-client-linux-4.16.40.tar.gz
 tar -xvf oc-mirror.tar.gz
 ```
 
-#### 3.Make the oc client executable from any directory.
+#### 1.2.3 Make the oc client executable from any directory.
 
 ```
 cp oc /usr/bin/oc
@@ -47,11 +47,11 @@ oc version
 oc mirror help
 ```
 
-#### 4.Configure the oc-mirror credentials
+### 1.3 Configure the oc-mirror credentials
 Configure the oc-mirror credentials by following below documentation.
 [Configuring credentials that allow images to be mirrored](https://docs.redhat.com/en/documentation/openshift_container_platform/4.16/html/disconnected_installation_mirroring/installing-mirroring-disconnected?_gl=1*1w781l1*_ga*Nzg0NTU2NDczLjE3NTM0MDU0Nzc.*_ga_FYECCCS21D*czE3NTM3NDM3MjQkbzExJGcxJHQxNzUzNzQ2MzM1JGo0NCRsMCRoMA..#installation-adding-registry-pull-secret_installing-mirroring-disconnected)
 
-## Build the ImageSetConfiguration file 
+## 2 Build the ImageSetConfiguration file 
 
 Create an ImageSetConfiguration file `ocp_serverless_416.yaml` for Serverless Knative Eventing as below:
 ***Note***: The `159.33.188.34:8080` in the `registry` section needs to be changed to your private image registry location accordingly.
@@ -81,7 +81,7 @@ mirror:
   helm: {}
 ```
 
-## Mirror images
+## 3 Mirror images
 
 **Note:** The `169.63.179.172:8080` in below commands needs to be changed to your private image registry location accordingly.
 
@@ -112,14 +112,14 @@ catalogSource-cs-redhat-operator-index.yaml  charts  imageContentSourcePolicy.ya
 ```
 
 
-## Apply the ImageDigestMirrorSet
-### 1.Login the OCP cluster using the cluster admin role.
+## 4 Apply the ImageDigestMirrorSet
+### 4.1 Login the OCP cluster using the cluster admin role.
 For example:
 ```
 oc login https://api.685849c881da5dd628552ad6.am1.xxx.yyy.com:6443 -u kubeadmin -p DP73S-iSmys-SuQ6j-9Ax8f
 ```
 
-### 2.Apply the ImageDigestMirrorSet
+### 4.2 Apply the ImageDigestMirrorSet
 For example:
 ```
 cd /root/mirroring/oc-mirror-workspace/results-1750641947
@@ -132,14 +132,14 @@ All the nodes should be `Ready` before you proceed to the next step. For example
 ```
 watch -n 5 "oc get nodes"
 ```
-## Installing the OpenShift Serverless Knative Eventing
+## 5 Install the OpenShift Serverless Knative Eventing
 
-### Disable the default OperatorHub sources
+### 5.1 Disable the default OperatorHub sources
 ```
 oc patch OperatorHub cluster --type json -p '[{"op": "add", "path": "/spec/disableAllDefaultSources", "value": true}]'
 ```
 
-### Create the catalog source
+### 5.2 Create the catalog source
 Create the catalog source with the yaml file generated in the `Mirror images` step.
 ```
 oc apply -f $WXO_INSTALL_DIR/oc-mirror-workspace/results-1750641947/catalogSource-cs-redhat-operator-index.yaml
@@ -151,7 +151,7 @@ oc get pods -n openshift-marketplace | grep -i cs-redhat-operator-index
 ```
 Make sure the pod of the cs-redhat-operator-index catalog source is up and running.
 
-### Install IBM Events Operator
+### 5.3 Install IBM Events Operator
 
 1. Log into OpenShift cluster for the cpd-cli.
 
@@ -175,7 +175,7 @@ cpd-cli manage setup-instance-topology \
 --license_acceptance=true
 ```
 
-4.Install the Red Hat OpenShift Serverless Knative Eventing and IBM Events software.
+### 5.4 Install OpenShift Serverless Knative Eventing
 
 ```bash
 cpd-cli manage deploy-knative-eventing \
