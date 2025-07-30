@@ -450,10 +450,10 @@ oc patch wo wo \
         "configOverrides": {
           "enabled_components": {
             "store": {
-              "ifm": true
+              "ifm": false
             }
           },
-          "watsonx_enabled": true,
+          "watsonx_enabled": false,
           "ifm": {
             "model_config": {
               "ootb": {
