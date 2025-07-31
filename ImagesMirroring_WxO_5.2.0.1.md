@@ -91,7 +91,6 @@ export PRIVATE_REGISTRY_PASSWORD=<The password for logging into the private imag
 export COMPONENTS=ibm-licensing,scheduler,cpfs,cpd_platform,watsonx_orchestrate
 
 #Choose the Foundation models to be usedfor watsonx Orchestrate
-#https://www.ibm.com/docs/en/software-hub/5.2.x?topic=information-determining-which-models-optional-images-mirror#mirror-model-list__orchestrate-models__title__1
 export IMAGE_GROUPS=ibmwxSlate30mEnglishRtrvr
 ```
 
@@ -122,7 +121,15 @@ ${PRIVATE_REGISTRY_USER} \
 ${PRIVATE_REGISTRY_PASSWORD}
 ```
 
-### 3.3 Mirror the images to the private container registry
+### 3.3 Downloading CASE packages
+
+```
+cpd-cli manage case-download \
+--components=${COMPONENTS} \
+--release=${VERSION}
+```
+
+### 3.4 Mirror the images to the private container registry
 
 ```
 cpd-cli manage mirror-images \
@@ -154,12 +161,22 @@ cpd-cli manage list-images \
 --case_download=false
 ```
 
+The output is saved to the `list_images.csv` file in the `work/offline/${VERSION}` directory. 
+<br>
+
+Make sure the `list_images.csv` exists.
+
+```
+ls $(podman inspect olm-utils-play-v3 | jq -r '.[0].Mounts[0].Source')/offline/${VERSION}
+```
+
 Check the output for errors: 
 
 ```
-grep "level=fatal" list_images.csv
+grep "level=fatal" $(podman inspect olm-utils-play-v3 | jq -r '.[0].Mounts[0].Source')/offline/${VERSION}/list_images.csv
 ```
 
+The command returns images that failed because of authorization errors or network errors. If no result returned, it means the images were mirrored successfully.
 
 ---
 
