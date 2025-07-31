@@ -88,7 +88,9 @@ export PRIVATE_REGISTRY_PASSWORD=<The password for logging into the private imag
 
 # ------------------------------------------------------------------------------
 
-export COMPONENTS=ibm-licensing,scheduler,cpfs,cpd_platform,watsonx_orchestrate
+#export COMPONENTS=ibm-licensing,scheduler,cpfs,cpd_platform,watsonx_orchestrate
+
+export COMPONENTS=watsonx_orchestrate
 
 #Choose the Foundation models to be usedfor watsonx Orchestrate
 export IMAGE_GROUPS=ibmwxSlate30mEnglishRtrvr
