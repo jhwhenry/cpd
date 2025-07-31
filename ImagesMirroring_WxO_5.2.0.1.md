@@ -58,52 +58,24 @@ cpd-cli
 cpd-cli manage restart-container
 ```
 
-## 2 Creating an environment variables file
+## 2 Update the existing environment variables file
 
-Create the cpd_vars.sh shell script with below file content.
+- Make sure the `VERSION` and the private image registry information are specified properly.
+- Replace `watson_assistant` with `watsonx_orchestrate` in the `COMPONENTS` environment varibale.
+- Add the 'IMAGE_GROUPS' environment variable
 
 ```
-
-#===============================================================================
-
-# ------------------------------------------------------------------------------
-
-export VERSION=5.2.0
-
-# ------------------------------------------------------------------------------
-
-export IBM_ENTITLEMENT_KEY=<your IBM Entitlement key>
-
-# ------------------------------------------------------------------------------
-# Private image registry information
-# ------------------------------------------------------------------------------
-
-export PRIVATE_REGISTRY_LOCATION=<your private image registry location>
-export PRIVATE_REGISTRY_USER=<The user name for logging into the private image registry>
-export PRIVATE_REGISTRY_PASSWORD=<The password for logging into the private image registry>
-
-# ------------------------------------------------------------------------------
-
-# Components
-
-# ------------------------------------------------------------------------------
-
-#export COMPONENTS=ibm-licensing,scheduler,cpfs,cpd_platform,watsonx_orchestrate
-
-export COMPONENTS=watsonx_orchestrate
-
 #Choose the Foundation models to be usedfor watsonx Orchestrate
 export IMAGE_GROUPS=ibmwxSlate30mEnglishRtrvr
 ```
-
-Source the environment variable file.
+- Source the environment variable file.
 
 ```
 chmod +x cpd_vars.sh
 source cpd_vars.sh
 ```
 
-## 3 Mirroring images directly to a private container registry
+## 3 Mirroring images directly to the private container registry
 
 From a client workstation that can connect to the internet: 
 
