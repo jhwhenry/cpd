@@ -57,70 +57,16 @@ cpd-cli
 cpd-cli manage restart-container
 ```
 
-### 1.3 Creating an environment variables file
+### 1.3 Update the existing environment variables file
 
-Create the cpd_vars.sh shell script with file content like below. <br>
+Update the cpd_vars.sh shell script with file content like below. <br>
 
 ***Note***:
 <br>
-Change the Cluster information 
 
+Make sure the `VERSION`, `COMPONENTS` and `IMAGE_GROUPS` are specified properly.
 
 ```
-#===============================================================================
-# Cloud Pak for Data installation variables
-#===============================================================================
-
-# ------------------------------------------------------------------------------
-# Cluster
-# ------------------------------------------------------------------------------
-
-export OCP_URL=<enter your Red Hat OpenShift Container Platform URL>
-export OPENSHIFT_TYPE=self-managed
-export IMAGE_ARCH=amd64
-export OCP_USERNAME=<enter your username>
-export OCP_PASSWORD=<enter your password>
-# export OCP_TOKEN=sha256~JkYN46_DwXlQ4bWCOwu_rfWq_RghLsUqMCY_rkGkv4U
-export SERVER_ARGUMENTS="--server=${OCP_URL}"
-export LOGIN_ARGUMENTS="--username=${OCP_USERNAME} --password=${OCP_PASSWORD}"
-export CPDM_OC_LOGIN="cpd-cli manage login-to-ocp ${SERVER_ARGUMENTS} ${LOGIN_ARGUMENTS}"
-export OC_LOGIN="oc login ${OCP_URL} ${LOGIN_ARGUMENTS}"
-
-
-# ------------------------------------------------------------------------------
-# Projects
-# ------------------------------------------------------------------------------
-
-export PROJECT_CERT_MANAGER=ibm-cert-manager
-export PROJECT_LICENSE_SERVICE=ibm-licensing
-export PROJECT_SCHEDULING_SERVICE=ibm-cpd-scheduler
-export PROJECT_IBM_EVENTS=ibm-knative-events
-# export PROJECT_PRIVILEGED_MONITORING_SERVICE=<enter your privileged monitoring service project>
-export PROJECT_CPD_INST_OPERATORS=cpd-operators
-export PROJECT_CPD_INST_OPERANDS=cpd
-
-# ------------------------------------------------------------------------------
-# Storage
-# ------------------------------------------------------------------------------
-
-export STG_CLASS_BLOCK=ocs-storagecluster-ceph-rbd
-export STG_CLASS_FILE=ocs-storagecluster-cephfs
-
-export IBM_ENTITLEMENT_KEY=<Your IBM Entitlement Key>
-
-# ------------------------------------------------------------------------------
-# Private container registry
-# ------------------------------------------------------------------------------
-# Set the following variables if you mirror images to a private container registry.
-#
-# To export these variables, you must uncomment each command in this section.
-
-export PRIVATE_REGISTRY_LOCATION=<enter the location of your private container registry>
-export PRIVATE_REGISTRY_PUSH_USER=<enter the username of a user that can push to the registry>
-export PRIVATE_REGISTRY_PUSH_PASSWORD=<enter the password of the user that can push to the registry>
-export PRIVATE_REGISTRY_PULL_USER=<enter the username of a user that can pull from the registry>
-export PRIVATE_REGISTRY_PULL_PASSWORD=<enter the password of the user that can pull from the registry>
-
 # ------------------------------------------------------------------------------
 # IBM Software Hub version
 # ------------------------------------------------------------------------------
@@ -151,137 +97,7 @@ export IMAGE_GROUPS=ibmwxSlate30mEnglishRtrvr
 source cpd_vars.sh
 ```
 
-## 2 Change cluster settings
-Log the cpd-cli into the OpenShift cluster: 
-
-```
-${CPDM_OC_LOGIN}
-```
-
-### 2.1 Configuring image content source policy
-
-Run the following command to get the list of image content source policy resources:
-
-```
-oc get imageContentSourcePolicy -o yaml > icsp.yaml
-oc get ImageDigestMirrorSet -o yaml > idms.yaml
-```
-
-If the command returns `No resources found`, then run below commands:
-```
-cpd-cli manage apply-icsp \
---registry=${PRIVATE_REGISTRY_LOCATION}
-```
-
-Get the status of the nodes:
-```
-oc get nodes
-```
-
-Wait until all the nodes are Ready before you proceed to the next step. 
-
-### 2.2 Updating the global image pull secret
-Log the cpd-cli into the OpenShift cluster: 
-
-```
-${CPDM_OC_LOGIN}
-```
-
-This step may take minutes to complete.
-
-```
-cpd-cli manage add-cred-to-global-pull-secret \
---registry=${PRIVATE_REGISTRY_LOCATION} \
---registry_pull_user=${PRIVATE_REGISTRY_PULL_USER} \
---registry_pull_password=${PRIVATE_REGISTRY_PULL_PASSWORD}
-```
-
-Get the status of the nodes:
-
-```
-oc get nodes
-```
-
-Wait until all the nodes are Ready before you proceed to the next step. 
-
-## 3 Manually creating projects
-
-```
-#Shared cluster components
-oc new-project ${PROJECT_CERT_MANAGER}
-oc new-project ${PROJECT_LICENSE_SERVICE}
-
-#Instance operators and operands
-oc new-project ${PROJECT_CPD_INST_OPERATORS}
-oc new-project ${PROJECT_CPD_INST_OPERANDS}
-```
-
-## 4 Installing shared cluster components
-Log the cpd-cli into the OpenShift cluster: 
-
-```
-${CPDM_OC_LOGIN}
-```
-
-Install the Certificate manager and the License Service:
-```
-cpd-cli manage apply-cluster-components \
---release=${VERSION} \
---license_acceptance=true \
---licensing_ns=${PROJECT_LICENSE_SERVICE}
-```
-
-Wait for the cpd-cli to return the following message before proceeding to the next step:
-
-```
-[SUCCESS]... The apply-cluster-components command ran successfully.
-```
-
-## 5 Applying the required permissions to the projects (namespaces) for CPD instance
-
-Applying the required permissions by running the authorize-instance-topology command
-
-```
-cpd-cli manage authorize-instance-topology \
---cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
-```
-
-## 6 Installing Software Hub
-
-Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster: 
-
-```
-${CPDM_OC_LOGIN}
-```
-
-Install the required components for an instance of IBM Software Hub
-
-```
-cpd-cli manage setup-instance \
---release=${VERSION} \
---license_acceptance=true \
---cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---block_storage_class=${STG_CLASS_BLOCK} \
---file_storage_class=${STG_CLASS_FILE} \
---run_storage_tests=false
-```
-Confirm that the status of the operands is Completed
-
-```
-cpd-cli manage get-cr-status \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
-```
-
-Get the URL and default credentials of the web client: 
-```
-cpd-cli manage get-cpd-instance-details \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---get_admin_initial_credentials=true
-```
-
-## 7 Applying your entitlements without node pinning
+## 2 Applying the entitlement
 Log the cpd-cli into the OpenShift cluster: 
 
 ```
@@ -292,33 +108,11 @@ Apply the entitlements.
 ```
 cpd-cli manage apply-entitlement \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---entitlement=cpd-enterprise \
---production=false
-```
-
-```
-cpd-cli manage apply-entitlement \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --entitlement=watsonx-orchestrate \
 --production=false
 ```
 
-## 8 Install the prerequisite software
-### 8.1 Install the GPU operators
-If the GPU operators has been installed and configured, you can skip this step.
-If this task is not complete, see [Installing operators for services that require GPUs](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-node-gpu.html).
-
-### 8.2 Install the OpenShift AI
-If OpenShift AI has been installed and configured, you can skip this step.
-If this task is not complete, see [Installing Red Hat OpenShift AI](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-openshift-ai.html).
-
-### 8.3 Install and configure Multicloud Object Gateway
-
-#### 8.3.1 Install Multicloud Object Gateway
-If Multicloud Object Gateway has been installed and configured, you can skip this step.
-If this task is not complete, see [Installing Multicloud Object Gateway](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/setup-cluster-storage-mcg.html).
-
-#### 8.3.2 Create the secrets that watsonx Orchestrate uses to connect to Multicloud Object Gateway
+## 3 Create the secrets that watsonx Orchestrate uses to connect to Multicloud Object Gateway
 
 - 1.Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster
 ```
@@ -393,12 +187,12 @@ noobaa-uri-watsonx-orchestrate
 ```
 If the command returns `Error from server (NotFound)`, re-run the `setup-mcg` command in the preceding step.
 
-### 8.4 Install Red Hat OpenShift Serverless Knative Eventing
+### 4 Install Red Hat OpenShift Serverless Knative Eventing
 If OpenShift Serverless Knative Eventing has been installed and configured, you can skip this step.
 If this task is not complete, see [Installing Red Hat OpenShift Serverless Knative Eventing]([https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-openshift-ai.html](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-eventing.html)).
 
 
-## 9 Installing the operators
+## 5 Installing the operators
 
 Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster: 
 
@@ -412,9 +206,9 @@ Install the operators in the operators project for the instance.
 cpd-cli manage apply-olm \
 --release=${VERSION} \
 --cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
---components=${COMPONENTS}
+--components=watsonx_orchestrate
 ```
-## 10 Install watonsx Orchestrate
+## 6 Install watonsx Orchestrate
 
 Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster: 
 
@@ -428,8 +222,7 @@ Create a file named `install-options.yml` in the work directory and specify inst
 ################################################################################
 # watsonx Orchestrate parameters
 ################################################################################
-
-watson_orchestrate_watsonx_ai_type: false
+#watson_orchestrate_syom_models: []
 watson_orchestrate_ootb_models:
   - ibm-slate-30m-english-rtrvr
 ```
@@ -447,46 +240,11 @@ cpd-cli manage apply-cr \
 --license_acceptance=true
 ```
 
-Patch the custom resource
-
-```
-oc patch wo wo \
---namespace=${PROJECT_CPD_INST_OPERANDS} \
---type=merge \
---patch='{
-  "spec": {
-    "watsonAssistants": {
-      "config": {
-        "configOverrides": {
-          "enabled_components": {
-            "store": {
-              "ifm": false
-            }
-          },
-          "watsonx_enabled": false,
-          "ifm": {
-            "model_config": {
-              "ootb": {
-                "ibm-slate-30m-english-rtrvr": {}
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}'
-```
-
 Validate the upgrade
 
 ```
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
-
-## 11 Apply the Day 0 patch
-
-https://www.ibm.com/support/pages/node/7236425
 
 ---
 
