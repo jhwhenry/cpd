@@ -71,7 +71,6 @@ export IMAGE_GROUPS=ibmwxSlate30mEnglishRtrvr
 - Source the environment variable file.
 
 ```
-chmod +x cpd_vars.sh
 source cpd_vars.sh
 ```
 
