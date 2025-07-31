@@ -41,7 +41,10 @@ Validate with the following command
 ```
 cpd-cli version
 ```
-The output looks like below.
+The output looks like below. <br>
+
+**Note**: The build number is `2124`
+
 ```
 cpd-cli
         Version: 14.2.0
