@@ -189,7 +189,7 @@ If the command returns `Error from server (NotFound)`, re-run the `setup-mcg` co
 
 ### 4 Install Red Hat OpenShift Serverless Knative Eventing
 If OpenShift Serverless Knative Eventing has been installed and configured, you can skip this step.
-If this task is not complete, see [Installing Red Hat OpenShift Serverless Knative Eventing]([https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-openshift-ai.html](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-eventing.html)).
+If this task is not complete, see [Installing Red Hat OpenShift Serverless Knative Eventing](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-eventing.html).
 
 
 ## 5 Installing the operators
