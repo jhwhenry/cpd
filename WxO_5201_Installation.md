@@ -59,38 +59,15 @@ cpd-cli manage restart-container
 
 ### 1.3 Update the existing environment variables file
 
-Update the cpd_vars.sh shell script with file content like below. <br>
+- Make sure the `VERSION` and the private image registry information are specified properly.
+- Replace `watson_assistant` with `watsonx_orchestrate` in the `COMPONENTS` environment varibale.
+- Add the 'IMAGE_GROUPS' environment variable
 
-***Note***:
-<br>
-
-Make sure the `VERSION`, `COMPONENTS` and `IMAGE_GROUPS` are specified properly. Replace `watson_assistant` with `watsonx_orchestrate` in the `COMPONENTS` environment varibale.
 ```
-# ------------------------------------------------------------------------------
-# IBM Software Hub version
-# ------------------------------------------------------------------------------
-
-export VERSION=5.2.0
-
-# ------------------------------------------------------------------------------
-
-# Components
-
-# ------------------------------------------------------------------------------
-
-# Set the following variable if you want to install or upgrade multiple components at the same time.
-
-#
-
-# To export the variable, you must uncomment the command.
-
-export COMPONENTS=ibm-licensing,scheduler,cpfs,cpd_platform,watsonx_orchestrate
-
 #Choose the Foundation models to be usedfor watsonx Orchestrate
 export IMAGE_GROUPS=ibmwxSlate30mEnglishRtrvr
 ```
-
-### 1.4 Source the environment variable
+- Source the environment variable file.
 
 ```
 source cpd_vars.sh
