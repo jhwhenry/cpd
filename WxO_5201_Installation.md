@@ -64,8 +64,7 @@ Update the cpd_vars.sh shell script with file content like below. <br>
 ***Note***:
 <br>
 
-Make sure the `VERSION`, `COMPONENTS` and `IMAGE_GROUPS` are specified properly.
-
+Make sure the `VERSION`, `COMPONENTS` and `IMAGE_GROUPS` are specified properly. Replace `watson_assistant` with `watsonx_orchestrate` in the `COMPONENTS` environment varibale.
 ```
 # ------------------------------------------------------------------------------
 # IBM Software Hub version
