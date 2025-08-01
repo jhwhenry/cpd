@@ -85,7 +85,7 @@ Apply the entitlements.
 cpd-cli manage apply-entitlement \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --entitlement=watsonx-orchestrate \
---production=false
+--production=true
 ```
 
 ## 3 Create the secrets that watsonx Orchestrate uses to connect to Multicloud Object Gateway
