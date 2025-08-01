@@ -116,10 +116,11 @@ ${PRIVATE_REGISTRY_PASSWORD}
 ```
 cpd-cli manage mirror-images \
 --components=${COMPONENTS} \
+--groups=${IMAGE_GROUPS} \
 --release=${VERSION} \
 --target_registry=${PRIVATE_REGISTRY_LOCATION} \
 --arch=amd64 \
---case_download=true
+--case_download=false
 ```
 
 For each component, the command generates a log file in the `work` directory. 
