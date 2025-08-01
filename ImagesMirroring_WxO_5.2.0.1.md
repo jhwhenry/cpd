@@ -107,6 +107,7 @@ cpd-cli manage case-download \
 ```
 cpd-cli manage mirror-images \
 --components=${COMPONENTS} \
+--groups=${IMAGE_GROUPS} \
 --release=${VERSION} \
 --target_registry=${PRIVATE_REGISTRY_LOCATION} \
 --arch=amd64 \
