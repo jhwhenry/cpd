@@ -143,19 +143,27 @@ cpd-cli manage mirror-images \
 ```
 
 - Validate the image mirroring
+ 
 <br>
+
 For each component, the command generates a log file in the `work` directory. 
+
 <br>
+
 1)Run the following command to validate if any errors in the log files:
+
 ```
 grep "error" $(podman inspect olm-utils-play-v3 | jq -r '.[0].Mounts[0].Source')/mirror_*.log
 ```
 
-2)Validate if the `slate-30m-english-rtrvr` foundation model image mirrored
+2)Validate if the `slate-30m-english-rtrvr` foundation model image mirrored.
+
 ```
 cat $(podman inspect olm-utils-play-v3 | jq -r '.[0].Mounts[0].Source')/mirror_ibm-watsonx-ai-ifm.log | grep -i a5e595fe75ae7d6a59bd9750fd88a283cd12fec5a643a2d1d16834298ea9f3b6
 ```
+
 The output looks like below.
+
 ```
 sha256:a5e595fe75ae7d6a59bd9750fd88a283cd12fec5a643a2d1d16834298ea9f3b6 -> 5.2.0-202505122243
 ```
