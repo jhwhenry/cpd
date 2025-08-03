@@ -121,7 +121,9 @@ The output looks like below.
 ### 3.4 Mirror the images to the private container registry
 
 - Mirror the images without specifying the image group
+
 <br>
+
 ```
 cpd-cli manage mirror-images \
 --components=${COMPONENTS} \
@@ -132,6 +134,7 @@ cpd-cli manage mirror-images \
 ```
 
 - Mirror the images for the foundation model (slate-30m-english-rtrvr)
+
 ```
 cpd-cli manage mirror-images \
 --components=watsonx_ai_ifm \
