@@ -120,7 +120,7 @@ The output looks like below.
 
 ### 3.4 Mirror the images to the private container registry
 
-- Mirror the images without specifying the image group
+- Mirror the WxO images
 
 <br>
 
@@ -133,7 +133,7 @@ cpd-cli manage mirror-images \
 --retry_count=2 --retry_delay=5 -v
 ```
 
-- Mirror the images for the foundation model (slate-30m-english-rtrvr)
+- Mirror the images of the foundation model (slate-30m-english-rtrvr)
 
 ```
 cpd-cli manage mirror-images \
