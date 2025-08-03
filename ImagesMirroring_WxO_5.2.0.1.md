@@ -95,11 +95,27 @@ ${PRIVATE_REGISTRY_PASSWORD}
 ```
 
 ### 3.3 Downloading CASE packages
-
+- Backup existing watsonx Orchestrate CASE folder.
+```
+mv $(podman inspect olm-utils-play-v3 | jq -r '.[0].Mounts[0].Source')/offline/${VERSION}/.ibm-pak/data/cases/ibm-watsonx-orchestrate $(podman inspect olm-utils-play-v3 | jq -r '.[0].Mounts[0].Source')/offline/${VERSION}/.ibm-pak/data/cases/ibm-watsonx-orchestrate_5200
+```
+- Download the CASE files of watsonx Orchestrate 5.2.0.1.
 ```
 cpd-cli manage case-download \
 --components=${COMPONENTS} \
 --release=${VERSION}
+```
+- Validate the CASE files of watsonx Orchestrate 5.2.0.1 have been downloaded successfully.
+```
+ls -alrt $(podman inspect olm-utils-play-v3 | jq -r '.[0].Mounts[0].Source')/offline/${VERSION}/.ibm-pak/data/cases/ibm-watsonx-orchestrate/6.0.0 | grep -i ibm-watsonx-orchestrate-6.0.0+20250722.201300
+
+```
+The output looks like below.
+```
+-rw-r--r--. 1 itzuser root  37086 Aug  3 00:56 ibm-watsonx-orchestrate-6.0.0+20250722.201300-images.csv
+-rw-r--r--. 1 itzuser root     32 Aug  3 00:56 ibm-watsonx-orchestrate-6.0.0+20250722.201300-charts.csv
+-rw-r--r--. 1 itzuser root   1274 Aug  3 00:56 ibm-watsonx-orchestrate-6.0.0+20250722.201300-airgap-metadata.yaml
+-rw-r--r--. 1 itzuser root 491147 Aug  3 00:56 ibm-watsonx-orchestrate-6.0.0+20250722.201300.tgz
 ```
 
 ### 3.4 Mirror the images to the private container registry
