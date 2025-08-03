@@ -131,10 +131,10 @@ cpd-cli manage mirror-images \
 --retry_count=2 --retry_delay=5 -v
 ```
 
-- Mirror the images with the image group 
+- Mirror the images for the foundation model (slate-30m-english-rtrvr)
 ```
 cpd-cli manage mirror-images \
---components=${COMPONENTS} \
+--components=watsonx_ai_ifm \
 --groups=${IMAGE_GROUPS} \
 --release=${VERSION} \
 --target_registry=${PRIVATE_REGISTRY_LOCATION} \
@@ -142,20 +142,27 @@ cpd-cli manage mirror-images \
 --retry_count=2 --retry_delay=5 -v
 ```
 
-For each component, the command generates a log file in the `work` directory. 
-
+- Validate the image mirroring
 <br>
-
-Run the following command to print out any errors in the log files:
-
+For each component, the command generates a log file in the `work` directory. 
+<br>
+1)Run the following command to validate if any errors in the log files:
 ```
 grep "error" $(podman inspect olm-utils-play-v3 | jq -r '.[0].Mounts[0].Source')/mirror_*.log
 ```
 
-Confirm that the images were mirrored to the private container registry:
-
+2)Validate if the `slate-30m-english-rtrvr` foundation model image mirrored
+```
+cat $(podman inspect olm-utils-play-v3 | jq -r '.[0].Mounts[0].Source')/mirror_ibm-watsonx-ai-ifm.log | grep -i a5e595fe75ae7d6a59bd9750fd88a283cd12fec5a643a2d1d16834298ea9f3b6
+```
+The output looks like below.
+```
+sha256:a5e595fe75ae7d6a59bd9750fd88a283cd12fec5a643a2d1d16834298ea9f3b6 -> 5.2.0-202505122243
 ```
 
+3)Confirm that all the required images were mirrored to the private container registry:
+
+```
 cpd-cli manage list-images \
 --components=${COMPONENTS} \
 --release=${VERSION} \
