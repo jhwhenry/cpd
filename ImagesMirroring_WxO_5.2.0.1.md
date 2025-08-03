@@ -120,6 +120,18 @@ The output looks like below.
 
 ### 3.4 Mirror the images to the private container registry
 
+- Mirror the images without specifying the image group
+<br>
+```
+cpd-cli manage mirror-images \
+--components=${COMPONENTS} \
+--release=${VERSION} \
+--target_registry=${PRIVATE_REGISTRY_LOCATION} \
+--case_download=false \
+--retry_count=2 --retry_delay=5 -v
+```
+
+- Mirror the images with the image group 
 ```
 cpd-cli manage mirror-images \
 --components=${COMPONENTS} \
