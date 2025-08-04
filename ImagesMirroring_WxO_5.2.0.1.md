@@ -53,11 +53,6 @@ cpd-cli
         CPD Release Version: 5.2.0
 ```
 
-#### 1.2.4 Restart the olm-utils container
-```
-cpd-cli manage restart-container
-```
-
 ## 2 Update the existing environment variables file
 
 - Make sure the `VERSION` and the private image registry information are specified properly.
@@ -74,18 +69,23 @@ export IMAGE_GROUPS=ibmwxSlate30mEnglishRtrvr
 source cpd_vars.sh
 ```
 
-## 3 Mirroring images directly to the private container registry
+## 3 Restart the olm-utils container
+```
+cpd-cli manage restart-container
+```
+
+## 4 Mirroring images directly to the private container registry
 
 From a client workstation that can connect to the internet: 
 
-### 3.1 Log in to the IBM Entitled Registry
+### 4.1 Log in to the IBM Entitled Registry
 
 ```
 cpd-cli manage login-entitled-registry \
 ${IBM_ENTITLEMENT_KEY}
 ```
 
-### 3.2 Log in to the private container registry:
+### 4.2 Log in to the private container registry:
 
 ```
 cpd-cli manage login-private-registry \
@@ -95,7 +95,7 @@ ${PRIVATE_REGISTRY_PUSH_PASSWORD}
 
 ```
 
-### 3.3 Downloading CASE packages
+### 4.3 Downloading CASE packages
 - Backup existing watsonx Orchestrate CASE folder.
 ```
 mv $(podman inspect olm-utils-play-v3 | jq -r '.[0].Mounts[0].Source')/offline/${VERSION}/.ibm-pak/data/cases/ibm-watsonx-orchestrate $(podman inspect olm-utils-play-v3 | jq -r '.[0].Mounts[0].Source')/offline/${VERSION}/.ibm-pak/data/cases/ibm-watsonx-orchestrate_5200
@@ -119,7 +119,7 @@ The output looks like below.
 -rw-r--r--. 1 itzuser root 491147 Aug  3 00:56 ibm-watsonx-orchestrate-6.0.0+20250722.201300.tgz
 ```
 
-### 3.4 Mirror the images to the private container registry
+### 4.4 Mirror the images to the private container registry
 
 - Mirror the WxO images
 
