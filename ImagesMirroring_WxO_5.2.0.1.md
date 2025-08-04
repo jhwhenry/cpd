@@ -103,7 +103,7 @@ mv $(podman inspect olm-utils-play-v3 | jq -r '.[0].Mounts[0].Source')/offline/$
 - Download the CASE files of watsonx Orchestrate 5.2.0.1.
 ```
 cpd-cli manage case-download \
---components=${COMPONENTS} \
+--components=watsonx_orchestrate \
 --release=${VERSION}
 ```
 - Validate the CASE files of watsonx Orchestrate 5.2.0.1 have been downloaded successfully.
@@ -127,7 +127,7 @@ The output looks like below.
 
 ```
 cpd-cli manage mirror-images \
---components=${COMPONENTS} \
+--components=watsonx_orchestrate \
 --release=${VERSION} \
 --target_registry=${PRIVATE_REGISTRY_LOCATION} \
 --case_download=false \
