@@ -52,11 +52,6 @@ cpd-cli
         CPD Release Version: 5.2.0
 ```
 
-#### 1.2.4 Restart the olm-utils container
-```
-cpd-cli manage restart-container
-```
-
 ### 1.3 Update the existing environment variables file
 
 - Make sure the `VERSION` and the private image registry information are specified properly.
@@ -71,6 +66,12 @@ export IMAGE_GROUPS=ibmwxSlate30mEnglishRtrvr
 
 ```
 source cpd_vars.sh
+```
+
+
+### 1.4 Restart the olm-utils container
+```
+cpd-cli manage restart-container
 ```
 
 ## 2 Applying the entitlement
