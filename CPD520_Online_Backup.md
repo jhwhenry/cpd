@@ -253,13 +253,6 @@ NAME           PROVIDER    BUCKET             PREFIX              PHASE        L
 dpa-sample-1   aws         ${BUCKET_NAME}     ${BUCKET_PREFIX}    Available    <timestamp>
 ```
 
-2. Create folder to put all the information gather.
-
-```bash
-mkdir -p /opt/ibm/wxo/pre-installation
-cd /opt/ibm/wxo/pre-installation
-```
-
 ## Installing the jq JSON command-line utility
 
 ```
