@@ -53,7 +53,7 @@ Create an shell script named `oadp_br_vars.sh`.
 <br>
 Here's an example. Change the envirable variable value if needed.
 ```
-export OADP_PROJECT=<The project where you want to install the OADP operator. The default project is openshift-adp>
+export OADP_PROJECT=adp-openshift
 export ACCESS_KEY_ID=<The access key ID to access the object store>
 export SECRET_ACCESS_KEY=<The access key secret to access the object store>
 export CPDBR_VELERO_PLUGIN_IMAGE_LOCATION=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/cpdbr-velero-plugin:${VERSION}.${IMAGE_ARCH}
@@ -94,6 +94,17 @@ cpd-cli oadp install \
 --verbose
 ```
 -Install the Red Hat OADP operator.
+
+Check whether the OADP operator already installed or not.
+
+```
+oc get csv -A | grep "OADP Operator"
+
+cpd-cli oadp version
+```
+
+If the OADP operator Not installed, then run below command.
+
 ```
 cpd-cli oadp install \
   --component oadp-operator \
