@@ -93,7 +93,7 @@ cpd-cli oadp install \
 --log-level=debug \
 --verbose
 ```
--Install the Red Hat OADP operator.
+- Install the Red Hat OADP operator.
 
 Check whether the OADP operator already installed or not.
 
