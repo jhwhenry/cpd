@@ -434,3 +434,6 @@ To view logs of the tenant backup and all sub-backups, run the following command
 ```
 cpd-cli oadp tenant-backup log ${TENANT_BACKUP_NAME}
 ```
+
+## Reference
+[IBM Software Hub online backup and restore to the same cluster with the OADP utility](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=cluster-backup-restore-software-hub-oadp-utility)
