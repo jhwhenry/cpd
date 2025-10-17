@@ -28,7 +28,7 @@ oc get resourcequota -A -o yaml > resourcequota.yaml
 
 If the above command is not available, run
 ```
-oc get resourcequota -n <namespace_name>
+oc get resourcequota -n <namespace_name> > resourcequota.yaml
 ```
 
 #### limitrange
@@ -37,7 +37,7 @@ oc get limitrange -A -o yaml > limitrange.yaml
 ```
 If the above command is not available, run
 ```
-oc get limitrange -n <namespace_name>
+oc get limitrange -n <namespace_name> > limitrange.yaml
 ```
 #### networkpolicies
 ```
@@ -46,7 +46,7 @@ oc get networkpolicies -A -o yaml > networkpolicies.yaml
 
 If the above command is not available, run
 ```
-oc get networkpolicies -n <namespace_name>
+oc get networkpolicies -n <namespace_name> > networkpolicies.yaml
 ```
 
 ## Run health check commands
