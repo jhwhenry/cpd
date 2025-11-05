@@ -148,11 +148,6 @@ ${CPDM_OC_LOGIN}
 ```
 
 ### 2.1 Updating the global image pull secret
-Log the cpd-cli into the OpenShift cluster: 
-
-```
-${CPDM_OC_LOGIN}
-```
 
 This step may take minutes to complete.
 
