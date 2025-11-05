@@ -11,7 +11,7 @@
 You can change the directory path if needed.
 
 ```
-export IKC_PREMIUM_INSTALL_DIR=/opt/ibm/watsonx
+export WATSONX_INSTALL_DIR=/opt/ibm/watsonx
 ```
 ### Installing the IBM Cloud Pak for Data command-line interface
 
@@ -20,8 +20,8 @@ Download Version 14.2.0 of the cpd-cli from the IBM/cpd-cli repository on GitHub
 #### 1.Download with wget
 
 ```
-mkdir -p $IKC_PREMIUM_INSTALL_DIR
-cd $IKC_PREMIUM_INSTALL_DIR
+mkdir -p $WATSONX_INSTALL_DIR
+cd $WATSONX_INSTALL_DIR
 wget https://github.com/IBM/cpd-cli/releases/download/v14.2.1/cpd-cli-linux-EE-14.2.1.tgz
 ```
 
@@ -34,7 +34,7 @@ tar -xvf cpd-cli-linux-EE-14.2.1.tgz
 #### 3.Make the cpd-cli executable from any directory.
 
 ```
-export PATH=$WXO_INSTALL_DIR/cpd-cli-linux-EE-14.2.1-2542:$PATH
+export PATH=$WATSONX_INSTALL_DIR/cpd-cli-linux-EE-14.2.1-2542:$PATH
 ```
 
 Validate with the following command
@@ -135,38 +135,13 @@ sourc cpd_vars.sh
 ```
 
 ## Change cluster settings 
-### Configuring image content source policy
-
-Run the following command to get the list of image content source policy resources:
-
-```
-oc get imageContentSourcePolicy -o yaml > icsp.yaml
-oc get ImageDigestMirrorSet -o yaml > idms.yaml
-```
-
-If the command returns No resources found, then run below commands:
-```
-${CPDM_OC_LOGIN}
-
-cpd-cli manage apply-icsp \
---registry=${PRIVATE_REGISTRY_LOCATION}
-```
-
-Get the status of the nodes:
-```
-oc get nodes
-```
-
-Wait until all the nodes are Ready before you proceed to the next step. 
 
 ### Updating the global image pull secret
 This step may take minutes to complete.
 
 ```
-cpd-cli manage add-cred-to-global-pull-secret \
---registry=${PRIVATE_REGISTRY_LOCATION} \
---registry_pull_user=${PRIVATE_REGISTRY_PULL_USER} \
---registry_pull_password=${PRIVATE_REGISTRY_PULL_PASSWORD}
+cpd-cli manage add-icr-cred-to-global-pull-secret \
+--entitled_registry_key=${IBM_ENTITLEMENT_KEY}
 ```
 
 Get the status of the nodes:
