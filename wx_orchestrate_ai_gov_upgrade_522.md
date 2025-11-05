@@ -1,29 +1,29 @@
-# CPD Upgrade Runbook - v.4.8.5 to 5.1.1
+# watsonx Upgrade Runbook - v.5.2.1 to 5.2.2
 
 ---
 
 ## Upgrade documentation
 
-[Upgrading from IBM Cloud Pak for Data Version 4.8 to Version 5.1](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=upgrading-from-cloud-pak-data-version-48)
+[Upgrading from IBM Cloud Pak for Data Version 5.2.1 to Version 5.2.2](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=upgrading-from-version-52)
 
 ## Upgrade context
 
 From
 
 ```
-OCP: 4.14
-CPD: 4.8.5
-Storage: Storage Fusion 2.7.2
-Componenets: cpd_platform,wkc,analyticsengine,mantaflow,datalineage,ws,ws_runtimes,wml,openscale,db2wh
+OCP: OpenShift Dedicated 4.17.26 on Google Cloud
+CPD: 5.2.1
+Storage: Google Cloud Netapp Volumes and Persistent Disk on Google Cloud
+Componenets: cpd_platform,watsonx_orchestrate,watsonx_ai,watsonx_governance,watson_speech,voice_gateway
 ```
 
 To
 
 ```
-OCP: 4.14
-CPD: 5.1.1
-Storage: Storage Fusion 2.7.2
-Componenets: cpd_platform,wkc,analyticsengine,mantaflow,datalineage,ws,ws_runtimes,wml,openscale,db2wh
+OCP: OpenShift Dedicated 4.17.26 on Google Cloud 
+CPD: 5.2.2
+Storage: Google Cloud Netapp Volumes and Persistent Disk on Google Cloud
+Componenets: cpd_platform,watsonx_orchestrate,watsonx_ai,watsonx_governance,watson_speech,voice_gateway
 ```
 
 ## Pre-requisites
@@ -31,16 +31,16 @@ Componenets: cpd_platform,wkc,analyticsengine,mantaflow,datalineage,ws,ws_runtim
 #### 1. Backup of the cluster is done.
 
 Backup your Cloud Pak for Data cluster before the upgrade.
-For details, see [Backing up and restoring Cloud Pak for Data](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=administering-backing-up-restoring-software-hub).
+For details, see [Backing up and restoring Cloud Pak for Data](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=administering-backing-up-restoring-software-hub).
 
 **Note:**
-Make sure there are no scheduled backups conflicting with the scheduled upgrade.
+Some services don't support the offline OADP backup. Review the backup documentation and take the dedicate approach when necessary.
 
 #### 2. The image mirroring completed successfully
 
 If a private container registry is in-use to host the IBM Cloud Pak for Data software images, you must mirror the updated images from the IBM® Entitled Registry to the private container registry. `<br>`
 Reference: `<br>`
-[Mirroring images to private image registry](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=prufpcr-mirroring-images-private-container-registry)
+[Mirroring images to private image registry](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=registry-mirroring-images-private-container)
 `<br>`
 
 #### 3. The permissions required for the upgrade is ready
@@ -53,7 +53,7 @@ Reference: `<br>`
 
 However, if you want to enable users with fewer permissions to complete some of the installation tasks, follow the steps in this documentation and get the roles with required permission prepared.
 
-[Reauthorizing the instance administrator](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=hub-reauthorizing-instance-administrator)
+[Reauthorizing the instance administrator](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=hub-reauthorizing-instance-administrator)
 
 <br>
 
