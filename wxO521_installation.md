@@ -388,8 +388,7 @@ Create a file named `install-options.yml` in the work directory and specify inst
 ################################################################################
 # watsonx Orchestrate parameters
 ################################################################################
-
-watson_orchestrate_watsonx_ai_type: false
+#watson_orchestrate_syom_models: []
 watson_orchestrate_ootb_models:
   - ibm-slate-30m-english-rtrvr
 ```
@@ -407,38 +406,7 @@ cpd-cli manage apply-cr \
 --license_acceptance=true
 ```
 
-Patch the custom resource
-
-```
-oc patch wo wo \
---namespace=${PROJECT_CPD_INST_OPERANDS} \
---type=merge \
---patch='{
-  "spec": {
-    "watsonAssistants": {
-      "config": {
-        "configOverrides": {
-          "enabled_components": {
-            "store": {
-              "ifm": false
-            }
-          },
-          "watsonx_enabled": false,
-          "ifm": {
-            "model_config": {
-              "ootb": {
-                "ibm-slate-30m-english-rtrvr": {}
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}'
-```
-
-Validate the upgrade
+Validate the installation
 
 ```
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
