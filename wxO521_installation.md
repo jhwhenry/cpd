@@ -22,19 +22,19 @@ Download Version 14.2.0 of the cpd-cli from the IBM/cpd-cli repository on GitHub
 ```
 mkdir -p $WXO_INSTALL_DIR
 cd $WXO_INSTALL_DIR
-wget https://github.com/IBM/cpd-cli/releases/download/v14.2.0/cpd-cli-linux-EE-14.2.0.tgz
+wget https://github.com/IBM/cpd-cli/releases/download/v14.2.1/cpd-cli-linux-EE-14.2.1.tgz
 ```
 
 #### 1.2.2 Extract the tar file
 
 ```
-tar -xvf cpd-cli-linux-EE-14.2.0.tgz
+tar -xvf cpd-cli-linux-EE-14.2.1.tgz
 ```
 
 #### 1.2.3 Make the cpd-cli executable from any directory.
 
 ```
-export PATH=$WXO_INSTALL_DIR/cpd-cli-linux-EE-14.2.0-2081:$PATH
+export PATH=$WXO_INSTALL_DIR/cpd-cli-linux-EE-14.2.1-2542:$PATH
 ```
 
 Validate with the following command
@@ -115,7 +115,7 @@ export PRIVATE_REGISTRY_PULL_PASSWORD=<enter the password of the user that can p
 # IBM Software Hub version
 # ------------------------------------------------------------------------------
 
-export VERSION=5.2.0
+export VERSION=5.2.1
 
 # ------------------------------------------------------------------------------
 
@@ -129,8 +129,7 @@ export VERSION=5.2.0
 
 # To export the variable, you must uncomment the command.
 
-export COMPONENTS=ibm-licensing,scheduler,cpfs,cpd_platform,watsonx_orchestrate
-
+export COMPONENTS=ibm-licensing,scheduler,cpfs,cpd_platform,watsonx_orchestrate,watsonx_ai,watsonx_governance,watson_speech,voice_gateway
 #Choose the Foundation models to be usedfor watsonx Orchestrate
 export IMAGE_GROUPS=ibmwxSlate30mEnglishRtrvr
 ```
@@ -148,29 +147,7 @@ Log the cpd-cli into the OpenShift cluster:
 ${CPDM_OC_LOGIN}
 ```
 
-### 2.1 Configuring image content source policy
-
-Run the following command to get the list of image content source policy resources:
-
-```
-oc get imageContentSourcePolicy -o yaml > icsp.yaml
-oc get ImageDigestMirrorSet -o yaml > idms.yaml
-```
-
-If the command returns `No resources found`, then run below commands:
-```
-cpd-cli manage apply-icsp \
---registry=${PRIVATE_REGISTRY_LOCATION}
-```
-
-Get the status of the nodes:
-```
-oc get nodes
-```
-
-Wait until all the nodes are Ready before you proceed to the next step. 
-
-### 2.2 Updating the global image pull secret
+### 2.1 Updating the global image pull secret
 Log the cpd-cli into the OpenShift cluster: 
 
 ```
@@ -180,10 +157,8 @@ ${CPDM_OC_LOGIN}
 This step may take minutes to complete.
 
 ```
-cpd-cli manage add-cred-to-global-pull-secret \
---registry=${PRIVATE_REGISTRY_LOCATION} \
---registry_pull_user=${PRIVATE_REGISTRY_PULL_USER} \
---registry_pull_password=${PRIVATE_REGISTRY_PULL_PASSWORD}
+cpd-cli manage add-icr-cred-to-global-pull-secret \
+--entitled_registry_key=${IBM_ENTITLEMENT_KEY}
 ```
 
 Get the status of the nodes:
