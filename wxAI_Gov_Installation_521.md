@@ -367,6 +367,7 @@ cpd-cli manage apply-cr \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --block_storage_class=${STG_CLASS_BLOCK} \
 --file_storage_class=${STG_CLASS_FILE} \
+--param-file=/tmp/work/install-options.yml \
 --license_acceptance=true
 ```
 
@@ -396,11 +397,12 @@ Apply the custom resource
 
 ```
 cpd-cli manage apply-cr \
---components=watsonx_ai \
+--components=watsonx_governance \
 --release=${VERSION} \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --block_storage_class=${STG_CLASS_BLOCK} \
 --file_storage_class=${STG_CLASS_FILE} \
+--param-file=/tmp/work/install-options.yml \
 --license_acceptance=true
 ```
 
