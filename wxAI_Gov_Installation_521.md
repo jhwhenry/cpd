@@ -283,15 +283,27 @@ cpd-cli manage apply-entitlement \
 ```
 cpd-cli manage apply-entitlement \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---entitlement=ikc-premium
+--entitlement=watsonx-ai \
+--production=false
 ```
 
 ```
 cpd-cli manage apply-entitlement \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---entitlement=data-lineage \
+--entitlement=watsonx-gov-mm \
 --production=false
 ```
+
+```
+cpd-cli manage apply-entitlement \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--entitlement=watsonx-gov-rc \
+--production=false
+```
+
+## Install the OpenShift AI
+If OpenShift AI has been installed and configured, you can skip this step.
+If this task is not complete, see [Installing Red Hat OpenShift AI](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/install/prep-cluster-openshift-ai.html).
 
 ## Installing the operators
 
@@ -329,30 +341,28 @@ Validate the content of the db2u-product-cm configure map
 oc get cm db2u-product-cm  -n ${PROJECT_CPD_INST_OPERATORS} -o yaml
 ```
 
-## Update the OpenShift AI
+## Install the OpenShift AI
+[Install the OpenShift AI](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=software-installing-red-hat-openshift-ai)
 
-
-## Install IKC Premium
+## Install watsonx.ai
 
 Create a file named `install-options.yml` in the work directory and specify installation options in it as follows
 
 ```
-################################################################################
-# IBM Knowledge Catalog parameters
-################################################################################
-custom_spec:
-  wkc:
-    enableDataQuality: True
-    enableSemanticAutomation: True
-    enableSemanticEnrichment: True
-    enableModelsOn: 'cpu'
+########################################################################
+# watsonx.ai parameters
+########################################################################
+custom_spec:  
+ watsonx_ai:
+  tuning_disabled: true
+  lite_install: false
 ```
 
 Apply the custom resource
 
 ```
 cpd-cli manage apply-cr \
---components=${COMPONENTS} \
+--components=watsonx_ai \
 --release=${VERSION} \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --block_storage_class=${STG_CLASS_BLOCK} \
@@ -366,9 +376,39 @@ Validate the upgrade
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-## Apply the Day 0 patch
+## Install watsonx.governance
 
-https://www.ibm.com/support/pages/node/7236425
+Create a file named `install-options.yml` in the work directory and specify installation options in it as follows
+
+```
+################################################################################
+# watsonx.governance parameters
+################################################################################
+custom_spec:
+  watsonx_governance:
+    installType: all
+    enableFactsheet: true
+    enableOpenpages: true
+    enableOpenscale: true
+```
+
+Apply the custom resource
+
+```
+cpd-cli manage apply-cr \
+--components=watsonx_ai \
+--release=${VERSION} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--block_storage_class=${STG_CLASS_BLOCK} \
+--file_storage_class=${STG_CLASS_FILE} \
+--license_acceptance=true
+```
+
+Validate the upgrade
+
+```
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+```
 
 ---
 
