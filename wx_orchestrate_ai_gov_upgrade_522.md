@@ -125,16 +125,16 @@ Summarize and close out the upgrade
 Create a directory for the cpd-cli utility.
 
 ```
-export CPD511_WORKSPACE=/ibm/cpd/511
-mkdir -p ${CPD511_WORKSPACE}
-cd ${CPD511_WORKSPACE}
+export CPD_WORKSPACE=/ibm/cpd/522
+mkdir -p ${CPD_WORKSPACE}
+cd ${CPD_WORKSPACE}
 
 ```
 
-Download the cpd-cli for 5.1.1
+Download the cpd-cli for 5.2.2
 
 ```
-wget https://github.com/IBM/cpd-cli/releases/download/v14.1.1/cpd-cli-linux-EE-14.1.1.tgz
+wget https://github.com/IBM/cpd-cli/releases/download/v14.2.2/cpd-cli-linux-EE-14.2.2.tgz
 ```
 
 2. Install tools.
@@ -146,41 +146,41 @@ yum install openssl httpd-tools podman skopeo wget -y
 The version in below commands may need to be updated accordingly.
 
 ```
-tar xvf cpd-cli-linux-EE-14.1.1.tgz
-mv cpd-cli-linux-EE-14.1.1-1650/* .
-rm -rf cpd-cli-linux-EE-14.1.1-1650
+tar xvf cpd-cli-linux-EE-14.2.2.tgz
+mv cpd-cli-linux-EE-14.2.2-2727/* .
+rm -rf cpd-cli-linux-EE-14.2.2-2727
 ```
 
-3. Copy the cpd_vars.sh file used by the CPD 4.8.5 to the folder ${CPD511_WORKSPACE}.
+3. Copy the cpd_vars.sh file used by the CPD 5.2.2 to the folder ${CPD_WORKSPACE}.
 
 ```
-cd ${CPD511_WORKSPACE}
-cp <the file path of the cpd_vars.sh file used by the CPD 4.8.5 > cpd_vars_511.sh
+cd ${CPD_WORKSPACE}
+cp <the file path of the cpd_vars.sh file used by the CPD 5.2.1 > cpd_vars_522.sh
 ```
 
 4. Make cpd-cli executable anywhere
 
 ```
-vi cpd_vars_511.sh
+vi cpd_vars_522.sh
 ```
 
-Add below two lines into the head of cpd_vars_511.sh
+Add below two lines into the head of cpd_vars_522.sh
 
 ```
-export CPD511_WORKSPACE=/ibm/cpd/511
-export PATH=${CPD511_WORKSPACE}:$PATH
+export CPD_WORKSPACE=/ibm/cpd/522
+export PATH=${CPD_WORKSPACE}:$PATH
 ```
 
 Update the CPD_CLI_MANAGE_WORKSPACE variable
 
 ```
-export CPD_CLI_MANAGE_WORKSPACE=${CPD511_WORKSPACE}
+export CPD_CLI_MANAGE_WORKSPACE=${CPD_WORKSPACE}
 ```
 
-Run this command to apply cpd_vars_511.sh
+Run this command to apply cpd_vars_522.sh
 
 ```
-source cpd_vars_511.sh
+source cpd_vars_522.sh
 ```
 
 Check out with this commands
@@ -193,10 +193,10 @@ Output like this
 
 ```
 cpd-cli
-	Version: 14.1.1
-	Build Date: 2025-02-20T18:45:49
-	Build Number: 1650
-	CPD Release Version: 5.1.1
+	Version: 14.2.2
+	Build Date: 2025-10-25T13:04:21
+	Build Number: 2727
+	SWH Release Version: 5.2.2
 ```
 
 5.Update the OpenShift CLI
@@ -209,22 +209,22 @@ oc version
 
 If the version doesn't match the OpenShift cluster version, update it accordingly.
 
-#### 1.2.2 Update environment variables for the upgrade to Version 5.1.1
+#### 1.1.2 Update environment variables for the upgrade to Version 5.2.2
 
 ```
-vi cpd_vars_511.sh
+vi cpd_vars_522.sh
 ```
 
 1.Locate the VERSION entry and update the environment variable for VERSION.
 
 ```
-export VERSION=5.1.1
+export VERSION=5.2.2
 ```
 
 2.Locate the COMPONENTS entry and confirm the COMPONENTS entry is accurate.
 
 ```
-export COMPONENTS=ibm-cert-manager,ibm-licensing,cpfs,cpd_platform,ws,ws_runtimes,wml,wkc,analyticsengine,mantaflow,datalineage,openscale,db2wh
+export COMPONENTS=ibm-licensing,cpfs,cpd_platform,watsonx_orchestrate,watsonx_ai,watsonx_governance,watson_speech,voice_gateway
 ```
 
 Save the changes. `<br>`
@@ -232,25 +232,16 @@ Save the changes. `<br>`
 Confirm that the script does not contain any errors.
 
 ```
-bash ./cpd_vars_511.sh
+bash ./cpd_vars_522.sh
 ```
 
-Run this command to apply cpd_vars_511.sh
+Run this command to apply cpd_vars_522.sh
 
 ```
-source cpd_vars_511.sh
+source cpd_vars_522.sh
 ```
 
-3.Locate the Cluster section of the script and add the following environment variables.
-
-```
-export SERVER_ARGUMENTS="--server=${OCP_URL}"
-export LOGIN_ARGUMENTS="--username=${OCP_USERNAME} --password=${OCP_PASSWORD}"
-export CPDM_OC_LOGIN="cpd-cli manage login-to-ocp ${SERVER_ARGUMENTS} ${LOGIN_ARGUMENTS}"
-export OC_LOGIN="oc login ${OCP_URL} ${LOGIN_ARGUMENTS}"
-```
-
-#### 1.2.3 Obtaining the olm-utils-v3 image
+#### 1.1.3 Obtaining the olm-utils-v3 image
 
 **Note:** If the bastion node is internet connected, then you can ignore below steps in this section.
 
@@ -268,9 +259,9 @@ export OLM_UTILS_LAUNCH_ARGS=" --network=host"
 
 ```
 
-For details please refer to IBM documentation [Obtaining the olm-utils-v3 image](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=pruirn-obtaining-olm-utils-v3-image)
+For details please refer to IBM documentation [Obtaining the olm-utils-v3 image](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=pruirn-obtaining-olm-utils-v3-image)
 
-#### 1.2.4 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
+#### 1.1.4 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
 
 ```
 cpd-cli manage restart-container
@@ -283,44 +274,7 @@ cpd-cli manage restart-container
 podman ps | grep olm-utils-v3
 ```
 
-#### 1.2.5 Ensure the images were mirrored to the private container registry
-
-- Check the log files in the work directory generated during the image mirroring
-
-```
-grep "error" ${CPD_CLI_MANAGE_WORKSPACE}/work/mirror_*.log
-```
-
-- Log in to the private container registry.
-
-```
-cpd-cli manage login-private-registry \
-${PRIVATE_REGISTRY_LOCATION} \
-${PRIVATE_REGISTRY_PULL_USER} \
-${PRIVATE_REGISTRY_PULL_PASSWORD}
-```
-
-- Confirm that the images were mirrored to the private container registry:
-  Inspect the contents of the private container registry:
-
-```
-cpd-cli manage list-images \
---components=${COMPONENTS} \
---release=${VERSION} \
---target_registry=${PRIVATE_REGISTRY_LOCATION} \
---case_download=false
-```
-
-The output is saved to the list_images.csv file in the work/offline/${VERSION} directory.`<br>`
-Check the output for errors:
-
-```
-grep "level=fatal" ${CPD_CLI_MANAGE_WORKSPACE}/work/offline/${VERSION}/list_images.csv
-```
-
-The command returns images that are missing or that cannot be inspected which needs to be addressed.
-
-#### 1.2.6 Creating a profile for upgrading the service instances
+#### 1.1.5 Creating a profile for upgrading the service instances
 
 Create a profile on the workstation from which you will upgrade the service instances. `<br>`
 
@@ -331,9 +285,9 @@ The profile must be associated with a Cloud Pak for Data user who has either the
 
 Click this link and follow these steps for getting it done.
 
-[Creating a profile to use the cpd-cli management commands](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=cli-creating-cpd-profile)
+[Creating a profile to use the cpd-cli management commands](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=cli-creating-cpd-profile)
 
-### 1.3 Health check OCP & CPD
+### 1.2 Health check OCP & CPD
 
 1. Check OCP status
 
