@@ -38,16 +38,17 @@ Some services don't support the offline OADP backup. Review the backup documenta
 
 #### 2. The image mirroring completed successfully
 
-If a private container registry is in-use to host the IBM Cloud Pak for Data software images, you must mirror the updated images from the IBM® Entitled Registry to the private container registry. `<br>`
-Reference: `<br>`
+If a private container registry is in-use to host the IBM Cloud Pak for Data software images, you must mirror the updated images from the IBM® Entitled Registry to the private container registry. 
+<br>
+Reference: 
 [Mirroring images to private image registry](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=registry-mirroring-images-private-container)
-`<br>`
+
 
 #### 3. The permissions required for the upgrade is ready
 
 - Openshift cluster permissions
-  `<br>`
-  An Openshift cluster administrator can complete all of the installation tasks.
+
+An Openshift cluster administrator can complete all of the installation tasks.
 
 <br>
 
@@ -276,7 +277,7 @@ podman ps | grep olm-utils-v3
 
 #### 1.1.5 Creating a profile for upgrading the service instances
 
-Create a profile on the workstation from which you will upgrade the service instances. `<br>`
+Create a profile on the workstation from which you will upgrade the service instances. 
 
 The profile must be associated with a Cloud Pak for Data user who has either the following permissions:
 
@@ -334,24 +335,10 @@ Run this command and make sure all pods healthy.
 oc get po --no-headers --all-namespaces -o wide | grep -Ev '([[:digit:]])/\1.*R' | grep -v 'Completed'
 ```
 
-3. Check private container registry status if installed
-
-Log into bastion node, where the private container registry is usually installed, as root.
-Run this command in terminal and make sure it can succeed.
-
-```
-podman login --username $PRIVATE_REGISTRY_PULL_USER --password $PRIVATE_REGISTRY_PULL_PASSWORD $PRIVATE_REGISTRY_LOCATION --tls-verify=false
-```
-
-You can run this command to verify the images in private container registry.
-
-```
-curl -k -u ${PRIVATE_REGISTRY_PULL_USER}:${PRIVATE_REGISTRY_PULL_PASSWORD} https://${PRIVATE_REGISTRY_LOCATION}/v2/_catalog?n=6000 | jq .
-```
 
 ## Part 2: Upgrade
 
-### 2.1 Upgrade CPD to 5.1.1
+### 2.1 Upgrade CPD to 5.2.2
 
 #### 2.1.1 Upgrading shared cluster components
 
@@ -361,23 +348,23 @@ curl -k -u ${PRIVATE_REGISTRY_PULL_USER}:${PRIVATE_REGISTRY_PULL_PASSWORD} https
 ${CPDM_OC_LOGIN}
 ```
 
-2.Confirm the project which the License Service is in.
-Run the following command:
+2.Upgrade the License Service.
+
+Confirm the project in which the License Service is running.
+<br>
 
 ```
 oc get deployment -A |  grep ibm-licensing-operator
 ```
 
-Make sure the project returned by the command matches the environment variable PROJECT_LICENSE_SERVICE in your environment variables script `cpd_vars_511.sh`.
-`<br>`
-
-3.Upgrade the Certificate manager and License Service.
+Make sure the project returned by the command matches the environment variable PROJECT_LICENSE_SERVICE in your environment variables script `cpd_vars_522.sh`.
+<br>
+Upgrade the License Service.
 
 ```
 cpd-cli manage apply-cluster-components \
 --release=${VERSION} \
 --license_acceptance=true \
---cert_manager_ns=${PROJECT_CERT_MANAGER} \
 --licensing_ns=${PROJECT_LICENSE_SERVICE}
 ```
 
@@ -396,17 +383,23 @@ Approve the upgrade request and run below command as soon as we find it.
 oc patch installplan $(oc get ip -n ${PROJECT_CPD_INST_OPERATORS} -o=jsonpath='{.items[?(@.spec.approved==false)].metadata.name}') -n ${PROJECT_CPD_INST_OPERATORS} --type merge --patch '{"spec":{"approved":true}}'
 ```
 
-`<br>`Confirm that the Certificate manager pods in the ${PROJECT_CERT_MANAGER} project are Running:
-
-```
-oc get pod -n ${PROJECT_CERT_MANAGER}
-```
-
 Confirm that the License Service pods are Running or Completed::
 
 ```
 oc get pods --namespace=${PROJECT_LICENSE_SERVICE}
 ```
+
+3.Upgrade the scheduling service
+<br>
+Confirm whether the scheduling service is installed on the cluster.
+
+```
+oc get scheduling -A
+```
+
+If the scheduling service is installed, the command returns information about the project where the scheduling service is installed and the version that is installed. Ensure that the COMPONENTS variable in your environment variables script includes the scheduler component.
+<br>
+If the scheduling service is not installed, the command returns an empty response.
 
 #### 2.1.2 Preparing to upgrade the CPD instance to IBM Software Hub
 
