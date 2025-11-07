@@ -46,23 +46,8 @@ Reference:
 
 #### 3. The permissions required for the upgrade is ready
 
-- Openshift cluster permissions
-
-An Openshift cluster administrator can complete all of the installation tasks.
-
-<br>
-
-However, if you want to enable users with fewer permissions to complete some of the installation tasks, follow the steps in this documentation and get the roles with required permission prepared.
-
-[Reauthorizing the instance administrator](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=hub-reauthorizing-instance-administrator)
-
-<br>
-
-- Cloud Pak for Data permissions
-
-<br>
-The Cloud Pak for Data administrator role or permissions is required for upgrading the service instances.
-
+- Openshift cluster administrator permissions
+- Cloud Pak for Data administrator permissions
 - Permission to access the private image registry for pushing or pull images
 - Access to the Bastion node for executing the upgrade commands
 
@@ -129,7 +114,6 @@ Create a directory for the cpd-cli utility.
 export CPD_WORKSPACE=/ibm/cpd/522
 mkdir -p ${CPD_WORKSPACE}
 cd ${CPD_WORKSPACE}
-
 ```
 
 Download the cpd-cli for 5.2.2
@@ -201,7 +185,7 @@ cpd-cli
 ```
 
 5.Update the OpenShift CLI
-`<br>`
+<br>
 Check the OpenShift CLI version.
 
 ```
@@ -228,7 +212,7 @@ export VERSION=5.2.2
 export COMPONENTS=ibm-licensing,cpfs,cpd_platform,watsonx_orchestrate,watsonx_ai,watsonx_governance,watson_speech,voice_gateway
 ```
 
-Save the changes. `<br>`
+Save the changes. <br>
 
 Confirm that the script does not contain any errors.
 
@@ -290,26 +274,12 @@ Click this link and follow these steps for getting it done.
 
 ### 1.2 Health check OCP & CPD
 
-1. Check OCP status
-
+Check and make sure the cluster operators, nodes, and machine configure pool are in healthy status.
+<br>
 Log onto bastion node, in the termial log into OCP and run this command.
 
 ```
-oc get co
-```
-
-Make sure All the cluster operators should be in AVAILABLE status. And not in PROGRESSING or DEGRADED status.
-
-Run this command and make sure all nodes in Ready status.
-
-```
-oc get nodes
-```
-
-Run this command and make sure all the machine configure pool are in healthy status.
-
-```
-oc get mcp
+oc get nodes,co,mcp
 ```
 
 2. Check Cloud Pak for Data status
@@ -319,10 +289,7 @@ Log onto bastion node, and make sure IBM Cloud Pak for Data command-line interfa
 Run this command in terminal and make sure the Lite and all the services' status are in Ready status.
 
 ```
-cpd-cli manage login-to-ocp \
---username=${OCP_USERNAME} \
---password=${OCP_PASSWORD} \
---server=${OCP_URL}
+{CPDM_OC_LOGIN}
 ```
 
 ```
@@ -369,8 +336,9 @@ cpd-cli manage apply-cluster-components \
 ```
 
 **Note**:
-`<br><br>`Monitor the install plan and approved them as needed.
-`<br>`
+<br>
+Monitor the install plan and approved them as needed.
+<br>
 In another terminal, keep running below command and monitoring "InstallPlan" to find which one need manual approval.
 
 ```
@@ -418,20 +386,61 @@ Apply the IBM Cloud Pak for Data Enterprise Edition for the non-production envir
 ```
 cpd-cli manage apply-entitlement \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---entitlement=cpd-enterprise
+--entitlement=cpd-enterprise \
+--production=false
 ```
 
-Apply the IBM Manta Data Lineage license for the non-production environment.
+Apply the watsonx.ai license for the non-production environment.
 
 ```
 cpd-cli manage apply-entitlement \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---entitlement=data-lineage
+--entitlement=watsonx-ai \
+--production=false
 ```
 
-Reference: `<br>`
+Apply the watsonx.governance license for the non-production environment.
 
-[Applying your entitlements](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=puish-applying-your-entitlements)
+```
+cpd-cli manage apply-entitlement \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--entitlement=watsonx-gov-mm \
+--production=false
+```
+
+```
+cpd-cli manage apply-entitlement \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--entitlement=watsonx-gov-rc \
+--production=false
+```
+
+Apply the watsonx Orchestrate license for the non-production environment.
+```
+cpd-cli manage apply-entitlement \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--entitlement=watsonx-orchestrate \
+--production=false
+```
+
+Apply the watson Speech license.
+
+```
+cpd-cli manage apply-entitlement \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--entitlement=speech-to-text
+```
+
+```
+cpd-cli manage apply-entitlement \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--entitlement=text-to-speech
+```
+
+Reference: 
+<br>
+
+[Applying your entitlements](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=aye-applying-your-entitlements-without-node-pinning-3)
 
 #### 2.1.3 Upgrading to IBM Software Hub
 
