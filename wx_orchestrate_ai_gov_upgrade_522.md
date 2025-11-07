@@ -253,7 +253,7 @@ cpd-cli manage restart-container
 ```
 
 **Note:**
-`<br>`Check and confirm the olm-utils-v3 container is up and running.
+<br>Check and confirm the olm-utils-v3 container is up and running.
 
 ```
 podman ps | grep olm-utils-v3
@@ -378,9 +378,9 @@ ${CPDM_OC_LOGIN}
 ```
 
 2.Applying your entitlements to monitor and report use against license terms
-`<br>`
+<br>
 **Non-Production enironment**
-`<br>`
+<br>
 Apply the IBM Cloud Pak for Data Enterprise Edition for the non-production environment.
 
 ```
@@ -450,25 +450,14 @@ Reference:
 ${CPDM_OC_LOGIN}
 ```
 
-2.Review the license terms for the software that is installed on this instance of IBM Software Hub.
-`<br>`
-The licenses are available online. Run the appropriate commands based on the license that you purchased:
-
-```
-cpd-cli manage get-license \
---release=${VERSION} \
---license-type=EE
-```
-
-3.Upgrade the required operators and custom resources for the instance.
+2.Upgrade the required operators and custom resources for the instance.
 
 ```
 cpd-cli manage setup-instance \
 --release=${VERSION} \
 --license_acceptance=true \
 --cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---run_storage_tests=true
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
 In another terminal, keep running below command and monitoring "InstallPlan" to find which one need manual approval.
@@ -490,26 +479,6 @@ cpd-cli manage get-cr-status \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \ 
 --components=cpd_platform
 ```
-
-4.Create a custom route
-
-<br>
-
-- Changing the hostname of the route
-
-<br>
-
-Ensure the `custom_hostname` and `route_secret` are set properly before running belwo command.
-
-```
-cpd-cli manage setup-route \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---custom_hostname=<The route of your production environment> \
---route_type=passthrough \
---route_secret=<your-external-tls-secret-name>
-```
-
-[Create a custom route using cpd-cli](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=manage-setup-route)
 
 #### 2.1.4 Upgrade the operators for the services
 
@@ -544,67 +513,7 @@ Check the version for both CSV and Subscription and ensure the CPD Operators hav
 oc get csv,sub -n ${PROJECT_CPD_INST_OPERATORS}
 ```
 
-[Operator and operand versions](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=planning-operator-operand-versions)
-
-<br>
-
-Increase the resource limits of the CCS operator for avoiding potention problems when dealing with large data volume.
-
-<br>
-
-Have a backup of the CCS CSV yaml file.
-
-```
-oc get csv ibm-cpd-ccs.v10.1.0 -n ${PROJECT_CPD_INST_OPERATORS} -o yaml > ibm-cpd-ccs-csv-511.yaml
-```
-
-Edit the CCS CSV:
-
-```
-oc edit csv ibm-cpd-ccs.v10.1.0 -n ${PROJECT_CPD_INST_OPERATORS} 
-```
-
-Make changes to the limits like below.
-
-```
-    resources:
-      limits:
-        cpu: 4
-        ephemeral-storage: 5Gi
-        memory: 8Gi
-```
-
-This change can be reverted after the upgrade completed successfully.
-
-##### Hotfix for WKC Operator to handle useFDB properly
-
-Back up the Operator image digest value:
-
-```bash
-oc get csv -n ${PROJECT_CPD_INST_OPERATORS} ibm-cpd-wkc.v2.1.1 -o yaml | grep "image: icr.io/cpopen/ibm-cpd-wkc-operator@sha256" > 5.1.1_wkc_operator_image.yaml
-```
-
-Patch and label the CSV:
-
-```bash
-oc patch csv -n ${PROJECT_CPD_INST_OPERATORS}  ibm-cpd-wkc.v2.1.1 --type='json' -p='[{"op":"replace","path":"/spec/install/spec/deployments/0/spec/template/spec/containers/0/image","value":"icr.io/cpopen/ibm-cpd-wkc-operator@sha256:408aa1070613b7be3c4515a657dd48c81d4f09f613e94664b4eaa43ddb8d0632"}]'
-
-oc label csv ibm-cpd-wkc.v2.1.1 support.operator.ibm.com/hotfix=true -n ${PROJECT_CPD_INST_OPERATORS} 
-```
-
-Ensure the Operator is up and running with the new image :
-
-```
-oc get pods -n ${PROJECT_CPD_INST_OPERATORS} | grep -i ibm-cpd-wkc-operator | grep -v "catalog"
-
-oc describe pod $(oc get pods -n ${PROJECT_CPD_INST_OPERATORS} | grep -i ibm-cpd-wkc-operator | grep -v "catalog" | awk '{print $1}') -n ${PROJECT_CPD_INST_OPERATORS} | grep "Image ID" 
-```
-
-Wait for WKC Operator to fully reconcile:
-
-```bash
-oc get wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS}
-```
+[Operator and operand versions](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=planning-operator-operand-versions)
 
 #### 2.1.5 Applying the RSI patches
 
@@ -631,7 +540,7 @@ cpd-cli manage apply-rsi-patches \
 ```
 
 4).Creat new patches required for migrating profiling results
-`<br>`
+<br>
 a).Identify the location of the `work` directory and create the `rsi` folder under it.
 
 ```
@@ -714,7 +623,7 @@ custom_spec:
 ```
 
 **Note:**
-`<br>`
+<br>
 1)Make sure you edit or create the `install-options.yml` file in the right `work` folder.
 
 <br>
@@ -730,7 +639,7 @@ The `Source` property value in the output is the location of the `work` folder.
 <br>
 
 2)Make sure the `useFDB` is set to be `True` in the install-options.yml file.
-`<br>`
+<br>
 
 ##### 2.Upgrade WKC with custom installation
 
@@ -760,7 +669,7 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 
 ##### 4.Apply the customizations
 
-**1).Apply the change for supporting CyberArk Vault with a private CA signed certificate**: `<br>`
+**1).Apply the change for supporting CyberArk Vault with a private CA signed certificate**: <br>
 
 ```
 oc patch ZenService lite-cr -n ${PROJECT_CPD_INST_OPERANDS} --type merge -p '{"spec":{"vault_bridge_tls_tolerate_private_ca": true}}'
@@ -774,7 +683,7 @@ oc project ${PROJECT_CPD_INST_OPERANDS}
 
 [Run the script for resolving the mismatch from Catalog API](https://github.com/jhwhenry/cpd/blob/main/delete_rabbitmq_queues.sh.zip)
 
-**3)Combined CCS patch command** (Reducing the number of operator reconcilations): `<br>`
+**3)Combined CCS patch command** (Reducing the number of operator reconcilations): <br>
 
 - Configuring reporting settings for IBM Knowledge Catalog.
 
@@ -826,12 +735,12 @@ oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{
 }'
 ```
 
-**4)Combined WKC patch command** (Reducing the number of operator reconcilations): `<br>`
+**4)Combined WKC patch command** (Reducing the number of operator reconcilations): <br>
 
 - Figure out a proper PVC size for the PostgreSQL used by profiling migration.
-  `<br>`
+  <br>
   Check the asset-files-api pvc size. Specify the same or a bigger storage size for preparing the postgresql with the proper storage size to accomendate the profiling migration.
-  `<br>`
+  <br>
   Get the file-api-claim pvc size.
 
 ```
@@ -907,9 +816,9 @@ export COMPONENTS=analyticsengine
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
 ```
 
-The Analytics Engine serive should have been upgraded as part of the WKC service upgrade. If the Analytics Engine service version is **not 5.1.1**, then run below commands for the upgrade. `<br>`
+The Analytics Engine serive should have been upgraded as part of the WKC service upgrade. If the Analytics Engine service version is **not 5.1.1**, then run below commands for the upgrade. <br>
 
-Check if the Analytics Engine service was installed with the custom install options. `<br>`
+Check if the Analytics Engine service was installed with the custom install options. <br>
 
 ```
 cpd-cli manage apply-cr \
@@ -929,7 +838,7 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --co
 ##### 2.2.3.2 Upgrading the service instances
 
 **Note:**  cpd profile api key may expire after upgrade. If we are not able to list the instances, should be attempted once the Custom route is created so that the Admin can login.
-`<br>`
+<br>
 Find the proper CPD user profile to use.
 
 ```
@@ -1012,7 +921,7 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --co
 ```
 
 Upgrading Db2 Warehouse service instances:
-`<br>`
+<br>
 
 - Get a list of your Db2 Warehouse service instances
 
@@ -1023,7 +932,7 @@ cpd-cli service-instance list \
 ```
 
 - Upgrade Db2 Warehouse service instances
-  `<br>`
+  <br>
   Run the following command to check whether your Db2 Warehouse service instances is in running state(You can refer to the web console for getting the service instance name) :
 
 ```
@@ -1084,7 +993,7 @@ VAULT_BRIDGE_TLS_RENEGOTIATE=true
 ### 3.2 CCS post-upgrade tasks
 
 **1.Add the label back to cronjobs**
-`<br>`
+<br>
 After the reconciliation is completed, add the label back to cronjobs
 
 ```
@@ -1101,7 +1010,7 @@ oc get ccs ccs-cr -o yaml | grep -i wdp_connect_connection_jdbc_drivers_reposito
 Make sure the `wdp_connect_connection_jdbc_drivers_repository_mode` parameter set to be enabled.
 
 **3.Check the heap size in asset-files-api deployment**
-`<br>`
+<br>
 Check if the heap size 12288 is set as expected.
 
 ```
@@ -1111,7 +1020,7 @@ oc get deployment asset-files-api -o yaml | grep -i -A5 'max-old-space-size=1228
 ### 3.3 WKC post-upgrade tasks
 
 **1.Validate the 'Allow ' settings for Catalogs and Projects**
-`<br>`
+<br>
 1)Check the Reporting settings in the ccs-features-configmap.
 
 ```
@@ -1159,7 +1068,7 @@ If any of the above output inconsistent with the expected ones, then follow belo
 [Configuring reporting settings for IBM Knowledge Catalog](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=administering-configuring-reporting-settings)
 
 **2.Bulk sync assets for global search**
-`<br>`
+<br>
 As we aim to have bulk re-sync run in the background of the day to day operations, let's tweak concurrency to a level that allows for adequate throughput for the rest of the wkc-search clients.
 
 <br>
@@ -1209,7 +1118,7 @@ chmod +x wkc-search-reindexing-concurrency-tweak.sh
 ```
 
 4)Run bulk script cpd_gs_sync.sh following this documentation [Bulk sync assets for global search](https://www.ibm.com/docs/en/SSNFH6_5.1.x/wsj/admin/admin-bulk-sync.html).
-`<br>`
+<br>
 
 **Note**
 
@@ -1227,14 +1136,14 @@ oc logs $(oc get pods --no-headers | grep -i wkc-search-reindexing-job- | head -
 <br>
 
 **3.Add potential missing permissions for the pre-defined Data Quality Analyst and Data Steward roles**
-`<br>`
+<br>
 
 ```
 oc delete pod $(oc get pod -n ${PROJECT_CPD_INST_OPERANDS} -o custom-columns="Name:metadata.name" -l app.kubernetes.io/component=zen-watcher --no-headers) -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
 **4. Migrating profiling results after upgrading**
-`<br>`
+<br>
 In Cloud Pak for Data 5.1.1, profiling results are stored in a PostgreSQL database instead of the asset-files storage. To make existing profiling results available after upgrading from an earlier release, migrate the results following this IBM documentation.
 [Migrating profiling results after upgrading](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=administering-migrating-profiling-results)
 
@@ -1254,7 +1163,7 @@ wdp_profiling_postgres_action: MIGRATE
 ```
 
 **Note**
-`<br>`
+<br>
 1).The nohup command is recommended for the migration of a large number of records.
 
 ```
@@ -1262,7 +1171,7 @@ nohup ansible-playbook /opt/ansible/5.1.1/roles/wkc-core/wdp_profiling_postgres_
 ```
 
 2).Validate the job log for successful migration of profiling data; then run the `CLEAN` option.
-`<br>`
+<br>
 **Important:** The data is permanently deleted and can't be restored. Therefore, use this option only after all results are copied successfully and you do no longer need the results in the asset-files storage. So recommend taking a note of this procedure and run it after the tests passed from the end-users.
 
 <br>
@@ -1450,7 +1359,7 @@ SHOW CONSTRAINT YIELD name, type, entityType, labelsOrTypes, properties WHERE"li
 #### 4.1.4 Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage
 
 **Note:**
-`<br>`
+<br>
 
 - Migration needs to be run as root or by a user with sudo access.
 
@@ -1459,7 +1368,7 @@ SHOW CONSTRAINT YIELD name, type, entityType, labelsOrTypes, properties WHERE"li
 #### 4.1.5 Post-migration tasks
 
 **1. Resync glossary assets**
-`<br>`
+<br>
 1)Get the Bearer token for calling CPD REST API
 
 ```
