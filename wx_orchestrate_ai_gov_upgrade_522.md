@@ -1974,6 +1974,10 @@ Resynchronize your catalog metadata to start seeing the Knowledge Graph. Follow 
 
 Refer to the detailed steps updated by Sanjit 2/17/2025 in the ticket TS018466973.
 
+**4.Apply the wxO hotfix**
+https://www.ibm.com/support/pages/node/7249508
+https://www.ibm.com/support/pages/node/7247038
+
 ## Summarize and close out the upgrade
 
 1)Schedule a wrap-up meeting and review the upgrade procedure and lessons learned from it.
