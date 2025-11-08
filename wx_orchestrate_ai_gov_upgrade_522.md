@@ -59,42 +59,29 @@ Reference:
 
 ```
 Part 1: Pre-upgrade
-1.1 Collect information and review upgrade runbook
-1.1.1 Review the upgrade runbook
-1.1.2 Backup before upgrade
-1.1.3 Uninstall all hotfixes and apply preventative measures
-1.1.4 Uninstall the old RSI pathch
-1.2 Set up client workstation 
-1.2.1 Prepare a client workstation
-1.2.2 Update cpd_vars.sh for the upgrade to Version 5.1.1
-1.2.3 Obtain the olm-utils-v3 available
-1.2.4 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
-1.2.5 Ensure the images were mirrored to the private container registry
-1.2.6 Creating a profile for upgrading the service instances
-1.3 Health check OCP & CPD
+1.1 Set up client workstation 
+1.1.1 Prepare a client workstation
+1.1.2 Update environment variables
+1.1.3 Obtain the olm-utils-v3 available
+1.1.4 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
+1.1.5 Creating a profile for upgrading the service instances
+1.2 Health check OCP & CPD
 
 Part 2: Upgrade
-2.1 Upgrade CPD to 5.1.1
+2.1 Upgrade CPD to 5.2.2
 2.1.1 Upgrading shared cluster components
 2.1.2 Preparing to upgrade the CPD instance to IBM Software Hub
 2.1.3 Upgrading to IBM Software Hub
 2.1.4 Upgrading the operators for the services
-2.1.5 Applying the RSI patches
-2.2 Upgrade CPD services
-2.2.1 Upgrading IBM Knowledge Catalog service and apply hot fixes
-2.2.2 Upgrading MANTA service
-2.2.3 Upgrading Analytics Engine service
-2.2.4 Upgrading Watson Studio, Watson Studio Runtimes, Watson Machine Learning and OpenScale
-2.2.5 Upgrading Db2 Warehouse
-
-Part 3: Post-upgrade
-3.1 Validate the external vault connection setting 
-3.2 CCS post-upgrade tasks
-3.3 WKC post-upgrade tasks
-
-Part 4: Maintenance
-4.1 Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage
-
+2.2 Upgrade watsonx Orchestrate
+2.2.1 Specify the parameters in the `install-options.yml` file
+2.2.2 Upgrade the watsonx Orchestrate service
+2.2.3 Apply the hot fix
+2.2 Upgrade watsonx.ai services
+2.3 Upgrade watsonx.governance services
+2.4 Upgrade watson Speech
+2.5 Upgrade Voice Gateway
+2.6 Upgade CPD BR service
 
 Summarize and close out the upgrade
 
@@ -194,7 +181,7 @@ oc version
 
 If the version doesn't match the OpenShift cluster version, update it accordingly.
 
-#### 1.1.2 Update environment variables for the upgrade to Version 5.2.2
+#### 1.1.2 Update environment variables
 
 ```
 vi cpd_vars_522.sh
@@ -519,7 +506,7 @@ oc get csv,sub -n ${PROJECT_CPD_INST_OPERATORS}
 [Patches](https://ibm-analytics.slack.com/archives/C09NV8BQJCV/p1762527063209059?thread_ts=1762434453.089799&cid=C09NV8BQJCV)
 
 ### 2.2 Upgrade watsonx Orchestrate
-#### Specify the parameters in the `install-options.yml` file
+#### 2.2.1 Specify the parameters in the `install-options.yml` file
 <br>
 Specify the following options in the `install-options.yml` file in the `work` directory. Create the `install-options.yml` file if it doesn't exist in the `work` directory.
 
@@ -547,7 +534,7 @@ Identify the location of the `work` folder using below command.
 podman inspect olm-utils-play-v3 | jq -r '.[0].Mounts' |jq -r '.[] | select(.Destination == "/tmp/work") | .Source'
 ```
 
-#### Upgrade the watsonx Orchestrate service.
+#### 2.2.2 Upgrade the watsonx Orchestrate service.
 - Log in to the cluster
 
 ```
@@ -573,11 +560,11 @@ cpd-cli manage get-cr-status \
 --components=watsonx_orchestrate
 ```
 
-#### Apply the hot fix
+#### 2.2.3 Apply the hot fix
 [Hot fix documentation](https://www.ibm.com/support/pages/node/7249508)
 
 
-### Upgrade the watsonx.ai services.
+### 2.3 Upgrade the watsonx.ai services.
 - Log in to the cluster
 
 ```
@@ -602,7 +589,7 @@ cpd-cli manage get-cr-status \
 --components=watsonx_ai
 ```
 
-#### Upgrade the watsonx.governance services
+#### 2.4 Upgrade the watsonx.governance services
 - Log in to the cluster
 
 ```
@@ -642,7 +629,7 @@ cpd-cli service-instance list \
 --profile=${CPD_PROFILE_NAME} \
 ```
 
-#### Upgrade the watson Speech services
+#### 2.5 Upgrade the watson Speech services
 - Log in to the cluster
 
 ```
@@ -684,7 +671,7 @@ cpd-cli service-instance list \
 
 [Cleaning up resources](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=u-upgrading-from-version-52-8#cli-upgrade__clean__title__1)
 
-#### Upgrade the Voice Gateway
+#### 2.6 Upgrade the Voice Gateway
 
 The Voice Gateway custom resource does not include a version entry, so the Voice Gateway service is automatically upgraded when you install a newer version of the Voice Gateway operator on the cluster.
 
@@ -696,7 +683,7 @@ cpd-cli manage get-cr-status \
 --components=voice_gateway
 ```
 
-#### Upgrade the cpdbr service
+#### 2.7 Upgrade the cpdbr service
 1.Set the `OADP_OPERATOR_NS` environment variable to the project where the OADP operator is installed:
 ```
 export OADP_OPERATOR_NS=<oadp-operator-project>
