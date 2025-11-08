@@ -302,7 +302,6 @@ Run this command and make sure all pods healthy.
 oc get po --no-headers --all-namespaces -o wide | grep -Ev '([[:digit:]])/\1.*R' | grep -v 'Completed'
 ```
 
-
 ## Part 2: Upgrade
 
 ### 2.1 Upgrade CPD to 5.2.2
@@ -515,131 +514,61 @@ oc get csv,sub -n ${PROJECT_CPD_INST_OPERATORS}
 
 [Operator and operand versions](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=planning-operator-operand-versions)
 
-#### 2.1.5 Applying the RSI patches
+#### 2.1.5 Applying the patches
 
-1).Log the cpd-cli in to the Red Hat OpenShift Container Platform cluster.
+[Patches](https://ibm-analytics.slack.com/archives/C09NV8BQJCV/p1762527063209059?thread_ts=1762434453.089799&cid=C09NV8BQJCV)
 
-```
-${CPDM_OC_LOGIN}
-```
-
-2)Enable the zen-rsi-evictor-cron-job CronJob:
-
-```
-oc patch CronJob zen-rsi-evictor-cron-job \
---namespace=${PROJECT_CPD_INST_OPERANDS} \
---type=merge \
---patch='{"spec":{"suspend": false}}'
-```
-
-3).Run the following command to re-apply your existing custom patches.
-
-```
-cpd-cli manage apply-rsi-patches \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
-```
-
-4).Creat new patches required for migrating profiling results
+### 2.2 Upgrade watsonx Orchestrate
+#### Specify the parameters in the `install-options.yml` file
 <br>
-a).Identify the location of the `work` directory and create the `rsi` folder under it.
-
-```
-podman inspect olm-utils-play-v3 | grep -i -A5  mounts
-```
-
-The `Source` property value in the output is the location of the `work` directory.
-
-```
-  "Mounts": [
-       {
-            "Type": "bind",
-            "Source": "/ibm/cpd/511/work",
-            "Destination": "/tmp/work",
-            "Driver": "",
-```
-
-For example, `/ibm/cpd/511/work` is the location of the `work` directory.
-
-<br>
-
-Create the `rsi` folder. **Note: Change the value for the environment variable `CPD_CLI_WORK_DIR` based on the location of the `work` directory.**
-
-```
-export CPD_CLI_WORK_DIR=/ibm/cpd/511/work
-mkdir -p $CPD_CLI_WORK_DIR/rsi
-```
-
-b).Create a json patch file named `annotation-spec.json` under the `rsi` directory with the following content:
-
-```
-[{"op":"add","path":"/metadata/annotations/io.kubernetes.cri-o.TrySkipVolumeSELinuxLabel","value":"true"}]
-```
-
-c).Create a json patch file named `specpatch.json` under the `rsi` directory with the following content:
-
-```
-[{"op":"add","path":"/spec/runtimeClassName","value":"selinux"}]
-```
-
-d).Create the annotation patch for wdp profiling postgres migration pods.
-
-```
-cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --patch_type=rsi_pod_annotation --patch_name=prof-pg-migration-annotation-selinux --description="This is annotation patch is for selinux relabeling disabling on CSI based storages for wdp profiling postgres migration pods" --include_labels=job-name:wdp-profiling-postgres-migration --state=active --spec_format=json --patch_spec=/tmp/work/rsi/annotation-spec.json
-```
-
-e).Create the spec patch for wdp profiling postgres migration pods.
-
-```
-cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --patch_type=rsi_pod_spec --patch_name=prof-pg-migration-runtimes-pod-spec-selinux --description="This is spec patch is for selinux relabeling disabling on CSI based storages for wdp profiling postgres migration pods" --include_labels=job-name:wdp-profiling-postgres-migration --state=active --spec_format=json --patch_spec=/tmp/work/rsi/specpatch.json
-```
-
-4).Check the RSI patches status again:
-
-```
-cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --all
-
-cat $CPD_CLI_WORK_DIR/get_rsi_patch_info.log
-```
-
-### 2.2 Upgrade CPD services to 5.1.1
-
-#### 2.2.1 Upgrading IBM Knowledge Catalog service and apply customizations
-
-Check if the IBM Knowledge Catalog service was installed with the custom install options.
-
-##### 1. For custom installation, check the previous install-options.yaml or wkc-cr yaml, make sure to keep original custom settings
-
 Specify the following options in the `install-options.yml` file in the `work` directory. Create the `install-options.yml` file if it doesn't exist in the `work` directory.
 
 ```
 ################################################################################
-# IBM Knowledge Catalog parameters
-################################################################################
-custom_spec:
-  wkc:
-    enableKnowledgeGraph: True
-    enableDataQuality: False
-    useFDB: True
+# watsonx Orchestrate parameters
+################################################################################ 
+watson_orchestrate_install_mode: agentic_skills_assistant
+watson_orchestrate_watsonx_ai_type: true
+watson_orchestrate_ootb_models:
+  - llama-3-2-90b-vision-instruct
+  - ibm-slate-30m-english-rtrvr
 ```
 
 **Note:**
+
 <br>
-1)Make sure you edit or create the `install-options.yml` file in the right `work` folder.
+Make sure you edit or create the `install-options.yml` file in the right `work` folder.
 
 <br>
 
 Identify the location of the `work` folder using below command.
 
 ```
-podman inspect olm-utils-play-v3 | grep -i -A5  mounts
+podman inspect olm-utils-play-v3 | jq -r '.[0].Mounts' |jq -r '.[] | select(.Destination == "/tmp/work") | .Source'
 ```
 
-The `Source` property value in the output is the location of the `work` folder.
+#### Upgrade the watsonx Orchestrate service.
+- Log in to the cluster
 
-<br>
+```
+${CPDM_OC_LOGIN}
+```
 
-2)Make sure the `useFDB` is set to be `True` in the install-options.yml file.
-<br>
+- Run the upgrade command
+
+```
+cpd-cli manage apply-cr \
+--components=watsonx_orchestrate \
+--release=${VERSION} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--param-file=/tmp/work/install-options.yml \
+--license_acceptance=true \
+--upgrade=true
+```
+
+#### Apply the hot fix
+[Hot fix documentation](https://www.ibm.com/support/pages/node/7249508)
+
 
 ##### 2.Upgrade WKC with custom installation
 
