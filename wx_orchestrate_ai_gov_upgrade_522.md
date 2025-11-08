@@ -566,9 +566,123 @@ cpd-cli manage apply-cr \
 --upgrade=true
 ```
 
+- Validate the upgrade
+```
+cpd-cli manage get-cr-status \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--components=watsonx_orchestrate
+```
+
 #### Apply the hot fix
 [Hot fix documentation](https://www.ibm.com/support/pages/node/7249508)
 
+
+### Upgrade the watsonx.ai services.
+- Log in to the cluster
+
+```
+${CPDM_OC_LOGIN}
+```
+
+- Run the upgrade command
+
+```
+cpd-cli manage apply-cr \
+--components=watsonx_ai \
+--release=${VERSION} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--license_acceptance=true \
+--upgrade=true
+```
+
+- Validate the upgrade
+```
+cpd-cli manage get-cr-status \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--components=watsonx_ai
+```
+
+#### Upgrade the watsonx.governance services
+- Log in to the cluster
+
+```
+${CPDM_OC_LOGIN}
+```
+
+- Run the upgrade command
+
+```
+cpd-cli manage apply-cr \
+--components=watsonx_governance \
+--release=${VERSION} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--license_acceptance=true \
+--upgrade=true
+```
+
+- Validate the upgrade
+```
+cpd-cli manage get-cr-status \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--components=watsonx_governance
+```
+
+- Upgrade the service instances
+```
+cpd-cli service-instance upgrade \
+--service-type=openpages \
+--profile=${CPD_PROFILE_NAME} \
+--all
+```
+
+Validate the service instance upgrade.
+```
+cpd-cli service-instance list \
+--service-type=openpages \
+--profile=${CPD_PROFILE_NAME} \
+```
+
+#### Upgrade the watson Speech services
+- Log in to the cluster
+
+```
+${CPDM_OC_LOGIN}
+```
+
+- Run the upgrade command
+
+```
+cpd-cli manage apply-cr \
+--components=watson_speech \
+--release=${VERSION} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--license_acceptance=true \
+--upgrade=true
+```
+
+- Validate the upgrade
+```
+cpd-cli manage get-cr-status \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--components=watson_speech
+```
+
+- Upgrade the service instances
+```
+cpd-cli service-instance upgrade \
+--service-type=openpages \
+--profile=${CPD_PROFILE_NAME} \
+--all
+```
+
+Validate the service instance upgrade.
+```
+cpd-cli service-instance list \
+--service-type=openpages \
+--profile=${CPD_PROFILE_NAME} \
+```
+
+[Cleaning up resources](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=u-upgrading-from-version-52-8#cli-upgrade__clean__title__1)
 
 ##### 2.Upgrade WKC with custom installation
 
