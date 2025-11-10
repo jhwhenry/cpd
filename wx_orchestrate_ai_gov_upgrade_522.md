@@ -586,8 +586,10 @@ cpd-cli manage apply-cr \
 ```
 cpd-cli manage get-cr-status \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---components=watsonx_ai
+--components=watsonx_ai,ws,wml,ws_runtimes,ccs
 ```
+
+Check the version of each custom resource by following the [Operator and operand versions](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=versions-522-october-2025)
 
 #### 2.4 Upgrade the watsonx.governance services
 - Log in to the cluster
