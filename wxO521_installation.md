@@ -388,7 +388,7 @@ Create a file named `install-options.yml` in the work directory and specify inst
 ################################################################################
 # watsonx Orchestrate parameters
 ################################################################################
-#watson_orchestrate_syom_models: []
+watson_orchestrate_watsonx_ai_type: true
 watson_orchestrate_ootb_models:
   - ibm-slate-30m-english-rtrvr
 ```
