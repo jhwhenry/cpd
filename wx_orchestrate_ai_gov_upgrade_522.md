@@ -505,9 +505,11 @@ oc get csv,sub -n ${PROJECT_CPD_INST_OPERATORS}
 
 [Operator and operand versions](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=planning-operator-operand-versions)
 
-#### 2.1.5 Applying the patches
+#### 2.1.5 Backup the TemporaryPatch
 
-[Patches](https://ibm-analytics.slack.com/archives/C09NV8BQJCV/p1762527063209059?thread_ts=1762434453.089799&cid=C09NV8BQJCV)
+```
+oc get TemporaryPatch -n ${PROJECT_CPD_INST_OPERANDS} -o yaml > TemporaryPatch_Bak.yaml
+```
 
 ### 2.2 Upgrade watsonx Orchestrate
 #### 2.2.1 Specify the parameters in the `install-options.yml` file
@@ -709,10 +711,11 @@ cpd-cli oadp install \
 ```
 
 ## Summarize and close out the upgrade
+1)Prepare for applying the TemporaryPatch if needed as a post-upgrade task.
 
-1)Schedule a wrap-up meeting and review the upgrade procedure and lessons learned from it.
+2)Schedule a wrap-up meeting and review the upgrade procedure and lessons learned from it.
 
-2)Evaluate the outcome of upgrade with pre-defined goals.
+3)Evaluate the outcome of upgrade with pre-defined goals.
 
 ---
 
