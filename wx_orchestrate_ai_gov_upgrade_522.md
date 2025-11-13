@@ -263,7 +263,11 @@ Click this link and follow these steps for getting it done.
 
 Check and make sure the cluster operators, nodes, and machine configure pool are in healthy status.
 <br>
-Log onto bastion node, in the termial log into OCP and run this command.
+Log onto bastion node and then log into OCP.
+```
+${OC_LOGIN}
+```
+Check the status of nodes, cluster operators and machine config pool.
 
 ```
 oc get nodes,co,mcp
@@ -276,7 +280,7 @@ Log onto bastion node, and make sure IBM Cloud Pak for Data command-line interfa
 Run this command in terminal and make sure the Lite and all the services' status are in Ready status.
 
 ```
-{CPDM_OC_LOGIN}
+${CPDM_OC_LOGIN}
 ```
 
 ```
