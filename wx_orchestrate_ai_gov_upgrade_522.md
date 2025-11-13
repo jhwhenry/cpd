@@ -514,6 +514,7 @@ oc get TemporaryPatch -n ${PROJECT_CPD_INST_OPERANDS} -o yaml > TemporaryPatch_B
 ### 2.2 Upgrade watsonx Orchestrate
 #### 2.2.1 Specify the parameters in the `install-options.yml` file
 <br>
+
 Specify the following options in the `install-options.yml` file in the `work` directory. Create the `install-options.yml` file if it doesn't exist in the `work` directory.
 
 ```
