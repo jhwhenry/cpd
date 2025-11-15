@@ -652,6 +652,7 @@ cpd-cli manage apply-cr \
 --components=watson_speech \
 --release=${VERSION} \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--param-file=/tmp/work/install-options.yml \
 --license_acceptance=true \
 --upgrade=true
 ```
