@@ -664,21 +664,6 @@ cpd-cli manage get-cr-status \
 --components=watson_speech
 ```
 
-- Upgrade the service instances
-```
-cpd-cli service-instance upgrade \
---service-type=openpages \
---profile=${CPD_PROFILE_NAME} \
---all
-```
-
-Validate the service instance upgrade.
-```
-cpd-cli service-instance list \
---service-type=openpages \
---profile=${CPD_PROFILE_NAME} \
-```
-
 [Cleaning up resources](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=u-upgrading-from-version-52-8#cli-upgrade__clean__title__1)
 
 #### 2.6 Upgrade the Voice Gateway
