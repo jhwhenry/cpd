@@ -207,7 +207,6 @@ The minimum recommended timeout is:
 
 ```
 #Shared cluster components
-oc new-project ${PROJECT_CERT_MANAGER}
 oc new-project ${PROJECT_LICENSE_SERVICE}
 
 #Instance operators and operands
@@ -216,6 +215,15 @@ oc new-project ${PROJECT_CPD_INST_OPERANDS}
 ```
 
 ## Installing shared cluster components
+Log the cpd-cli into the OpenShift cluster: 
+
+```
+${CPDM_OC_LOGIN}
+```
+
+Install the [Certificate manager](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=cluster-installing-cert-manager-operator)
+
+<br>
 
 Install the Certificate manager and the License Service:
 ```
