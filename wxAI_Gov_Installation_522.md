@@ -135,6 +135,10 @@ sourc cpd_vars.sh
 ```
 
 ## Change cluster settings 
+Log the cpd-cli into the OpenShift cluster:
+```
+${CPDM_OC_LOGIN}
+```
 
 ### Updating the global image pull secret
 This step may take minutes to complete.
