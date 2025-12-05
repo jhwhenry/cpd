@@ -34,7 +34,7 @@ tar -xvf cpd-cli-linux-EE-14.2.2.tgz
 #### 1.2.3 Make the cpd-cli executable from any directory.
 
 ```
-export PATH=$WXO_INSTALL_DIR/cpd-cli-linux-EE-14.2.2-2542:$PATH
+export PATH=$WXO_INSTALL_DIR/cpd-cli-linux-EE-14.2.2-2727:$PATH
 ```
 
 Validate with the following command
