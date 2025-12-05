@@ -76,9 +76,9 @@ export OC_LOGIN="oc login ${OCP_URL} ${LOGIN_ARGUMENTS}"
 # Projects
 # ------------------------------------------------------------------------------
 
-export PROJECT_CERT_MANAGER=ibm-cert-manager
+# export PROJECT_CERT_MANAGER=ibm-cert-manager
 export PROJECT_LICENSE_SERVICE=ibm-licensing
-export PROJECT_SCHEDULING_SERVICE=ibm-cpd-scheduler
+# export PROJECT_SCHEDULING_SERVICE=ibm-cpd-scheduler
 export PROJECT_IBM_EVENTS=ibm-knative-events
 # export PROJECT_PRIVILEGED_MONITORING_SERVICE=<enter your privileged monitoring service project>
 export PROJECT_CPD_INST_OPERATORS=cpd-operators
@@ -100,17 +100,17 @@ export IBM_ENTITLEMENT_KEY=<Your IBM Entitlement Key>
 #
 # To export these variables, you must uncomment each command in this section.
 
-export PRIVATE_REGISTRY_LOCATION=<enter the location of your private container registry>
-export PRIVATE_REGISTRY_PUSH_USER=<enter the username of a user that can push to the registry>
-export PRIVATE_REGISTRY_PUSH_PASSWORD=<enter the password of the user that can push to the registry>
-export PRIVATE_REGISTRY_PULL_USER=<enter the username of a user that can pull from the registry>
-export PRIVATE_REGISTRY_PULL_PASSWORD=<enter the password of the user that can pull from the registry>
+#export PRIVATE_REGISTRY_LOCATION=<enter the location of your private container registry>
+#export PRIVATE_REGISTRY_PUSH_USER=<enter the username of a user that can push to the registry>
+#export PRIVATE_REGISTRY_PUSH_PASSWORD=<enter the password of the user that can push to the registry>
+#export PRIVATE_REGISTRY_PULL_USER=<enter the username of a user that can pull from the registry>
+#export PRIVATE_REGISTRY_PULL_PASSWORD=<enter the password of the user that can pull from the registry>
 
 # ------------------------------------------------------------------------------
 # IBM Software Hub version
 # ------------------------------------------------------------------------------
 
-export VERSION=5.2.1
+export VERSION=5.2.2
 
 # ------------------------------------------------------------------------------
 
