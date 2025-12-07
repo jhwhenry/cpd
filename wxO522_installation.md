@@ -461,7 +461,7 @@ Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster:
 ${CPDM_OC_LOGIN}
 ```
 
-[Setting up Watson Assistant for Voice Interaction] (https://www.ibm.com/docs/en/software-hub/5.2.x?topic=interaction-setting-up)
+[Setting up Watson Assistant for Voice Interaction](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=interaction-setting-up)
 
 <br>
 
