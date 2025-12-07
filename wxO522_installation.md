@@ -415,47 +415,24 @@ Validate the installation
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-## 10 Install Watson Speech services
-
-Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster: 
-
-```
-${CPDM_OC_LOGIN}
-```
-
-Create Watson Speech services operator
-
-```
-cpd-cli manage apply-olm \
---release=${VERSION} \
---cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
---components=watson_speech
-```
-
-Apply the custom resource
-
-```
-cpd-cli manage apply-cr \
---components=watson_speech \
---release=${VERSION} \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---block_storage_class=${STG_CLASS_BLOCK} \
---file_storage_class=${STG_CLASS_FILE} \
---license_acceptance=true
-```
-
-Validate the installation
-
-```
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
-```
-
 ## 11 Install Watson Speech services
 
 Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster: 
 
 ```
 ${CPDM_OC_LOGIN}
+```
+
+Create secrets for Watson Speech services
+```
+export NOOBAA_ACCOUNT_CREDENTIALS_SECRET=noobaa-admin
+export NOOBAA_ACCOUNT_CERTIFICATE_SECRET=noobaa-s3-serving-cert
+
+cpd-cli manage setup-mcg \
+--components=watson_speech \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--noobaa_account_secret=${NOOBAA_ACCOUNT_CREDENTIALS_SECRET} \
+--noobaa_cert_secret=${NOOBAA_ACCOUNT_CERTIFICATE_SECRET}
 ```
 
 Apply the custom resource
