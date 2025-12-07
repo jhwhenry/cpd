@@ -415,6 +415,95 @@ Validate the installation
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
+## 10 Install Watson Speech services
+
+Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster: 
+
+```
+${CPDM_OC_LOGIN}
+```
+
+Create Watson Speech services operator
+
+```
+cpd-cli manage apply-olm \
+--release=${VERSION} \
+--cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--components=watson_speech
+```
+
+Apply the custom resource
+
+```
+cpd-cli manage apply-cr \
+--components=watson_speech \
+--release=${VERSION} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--block_storage_class=${STG_CLASS_BLOCK} \
+--file_storage_class=${STG_CLASS_FILE} \
+--license_acceptance=true
+```
+
+Validate the installation
+
+```
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+```
+
+## 11 Install Watson Speech services
+
+Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster: 
+
+```
+${CPDM_OC_LOGIN}
+```
+
+Apply the custom resource
+
+```
+cpd-cli manage apply-cr \
+--components=watson_speech \
+--release=${VERSION} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--block_storage_class=${STG_CLASS_BLOCK} \
+--file_storage_class=${STG_CLASS_FILE} \
+--license_acceptance=true
+```
+
+Validate the installation
+
+```
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+```
+
+## 12 Install Voice Gateway service
+
+Log the cpd-cli in to the Red Hat® OpenShift® Container Platform cluster: 
+
+```
+${CPDM_OC_LOGIN}
+```
+
+[Setting up Watson Assistant for Voice Interaction] (https://www.ibm.com/docs/en/software-hub/5.2.x?topic=interaction-setting-up)
+
+<br>
+
+Apply the custom resource
+
+```
+cpd-cli manage apply-cr \
+--components=voice_gateway \
+--release=${VERSION} \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--license_acceptance=true
+```
+
+Validate the installation
+
+```
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+```
+
 ---
 
 End of document
