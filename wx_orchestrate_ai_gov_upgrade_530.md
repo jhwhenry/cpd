@@ -4,7 +4,7 @@
 
 ## Upgrade documentation
 
-[Upgrading from IBM Cloud Pak for Data Version 5.2.1 to Version 5.2.2](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=upgrading-from-version-52)
+[Upgrading from IBM Cloud Pak for Data Version 5.2.2 to Version 5.3.0](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=upgrading-from-version-52)
 
 ## Upgrade context
 
@@ -12,7 +12,7 @@ From
 
 ```
 OCP: OpenShift Dedicated 4.17.26 on Google Cloud
-CPD: 5.2.1
+CPD: 5.2.2
 Storage: Google Cloud Netapp Volumes and Persistent Disk on Google Cloud
 Componenets: cpd_platform,watsonx_orchestrate,watsonx_ai,watsonx_governance,watson_speech,voice_gateway
 ```
@@ -21,7 +21,7 @@ To
 
 ```
 OCP: OpenShift Dedicated 4.17.26 on Google Cloud 
-CPD: 5.2.2
+CPD: 5.3.0
 Storage: Google Cloud Netapp Volumes and Persistent Disk on Google Cloud
 Componenets: cpd_platform,watsonx_orchestrate,watsonx_ai,watsonx_governance,watson_speech,voice_gateway
 ```
