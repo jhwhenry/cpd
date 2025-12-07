@@ -4,7 +4,7 @@
 
 ## Upgrade documentation
 
-[Upgrading from IBM Cloud Pak for Data Version 5.2.2 to Version 5.3.0](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=upgrading-from-version-52)
+[Upgrading from IBM Cloud Pak for Data Version 5.2.2 to Version 5.3.0](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=upgrading-from-version-52)
 
 ## Upgrade context
 
@@ -31,7 +31,7 @@ Componenets: cpd_platform,watsonx_orchestrate,watsonx_ai,watsonx_governance,wats
 #### 1. Backup of the cluster is done.
 
 Backup your Cloud Pak for Data cluster before the upgrade.
-For details, see [Backing up and restoring Cloud Pak for Data](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=administering-backing-up-restoring-software-hub).
+For details, see [Backing up and restoring Cloud Pak for Data](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=administering-backing-up-restoring-software-hub).
 
 **Note:**
 Some services don't support the offline OADP backup. Review the backup documentation and take the dedicate approach when necessary.
@@ -41,7 +41,7 @@ Some services don't support the offline OADP backup. Review the backup documenta
 If a private container registry is in-use to host the IBM Cloud Pak for Data software images, you must mirror the updated images from the IBM® Entitled Registry to the private container registry. 
 <br>
 Reference: 
-[Mirroring images to private image registry](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=registry-mirroring-images-private-container)
+[Mirroring images to private image registry](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=registry-mirroring-images-private-container)
 
 
 #### 3. The permissions required for the upgrade is ready
@@ -62,13 +62,13 @@ Part 1: Pre-upgrade
 1.1 Set up client workstation 
 1.1.1 Prepare a client workstation
 1.1.2 Update environment variables
-1.1.3 Obtain the olm-utils-v3 available
+1.1.3 Obtain the olm-utils-v4 available
 1.1.4 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
 1.1.5 Creating a profile for upgrading the service instances
 1.2 Health check OCP & CPD
 
 Part 2: Upgrade
-2.1 Upgrade CPD to 5.2.2
+2.1 Upgrade CPD to 5.3.0
 2.1.1 Upgrading shared cluster components
 2.1.2 Preparing to upgrade the CPD instance to IBM Software Hub
 2.1.3 Upgrading to IBM Software Hub
@@ -98,15 +98,15 @@ Summarize and close out the upgrade
 Create a directory for the cpd-cli utility.
 
 ```
-export CPD_WORKSPACE=/ibm/cpd/522
+export CPD_WORKSPACE=/ibm/cpd/530
 mkdir -p ${CPD_WORKSPACE}
 cd ${CPD_WORKSPACE}
 ```
 
-Download the cpd-cli for 5.2.2
+Download the cpd-cli for 5.3.0
 
 ```
-wget https://github.com/IBM/cpd-cli/releases/download/v14.2.2/cpd-cli-linux-EE-14.2.2.tgz
+wget https://github.com/IBM/cpd-cli/releases/download/v14.3.0/cpd-cli-linux-EE-14.3.0.tgz
 ```
 
 2. Install tools.
@@ -118,28 +118,28 @@ yum install openssl httpd-tools podman skopeo wget -y
 The version in below commands may need to be updated accordingly.
 
 ```
-tar xvf cpd-cli-linux-EE-14.2.2.tgz
-mv cpd-cli-linux-EE-14.2.2-2727/* .
-rm -rf cpd-cli-linux-EE-14.2.2-2727
+tar xvf cpd-cli-linux-EE-14.3.0.tgz
+mv cpd-cli-linux-EE-14.3.0-2727/* .
+rm -rf cpd-cli-linux-EE-14.3.0-2727
 ```
 
 3. Copy the cpd_vars.sh file used by the CPD 5.2.2 to the folder ${CPD_WORKSPACE}.
 
 ```
 cd ${CPD_WORKSPACE}
-cp <the file path of the cpd_vars.sh file used by the CPD 5.2.1 > cpd_vars_522.sh
+cp <the file path of the cpd_vars.sh file used by the CPD 5.2.2 > cpd_vars_530.sh
 ```
 
 4. Make cpd-cli executable anywhere
 
 ```
-vi cpd_vars_522.sh
+vi cpd_vars_530.sh
 ```
 
-Add below two lines into the head of cpd_vars_522.sh
+Add below two lines into the head of cpd_vars_530.sh
 
 ```
-export CPD_WORKSPACE=/ibm/cpd/522
+export CPD_WORKSPACE=/ibm/cpd/530
 export PATH=${CPD_WORKSPACE}:$PATH
 ```
 
@@ -149,10 +149,10 @@ Update the CPD_CLI_MANAGE_WORKSPACE variable
 export CPD_CLI_MANAGE_WORKSPACE=${CPD_WORKSPACE}
 ```
 
-Run this command to apply cpd_vars_522.sh
+Run this command to apply cpd_vars_530.sh
 
 ```
-source cpd_vars_522.sh
+source cpd_vars_530.sh
 ```
 
 Check out with this commands
@@ -165,10 +165,10 @@ Output like this
 
 ```
 cpd-cli
-	Version: 14.2.2
+	Version: 14.3.0
 	Build Date: 2025-10-25T13:04:21
 	Build Number: 2727
-	SWH Release Version: 5.2.2
+	SWH Release Version: 5.3.0
 ```
 
 5.Update the OpenShift CLI
@@ -184,13 +184,13 @@ If the version doesn't match the OpenShift cluster version, update it accordingl
 #### 1.1.2 Update environment variables
 
 ```
-vi cpd_vars_522.sh
+vi cpd_vars_530.sh
 ```
 
 1.Locate the VERSION entry and update the environment variable for VERSION.
 
 ```
-export VERSION=5.2.2
+export VERSION=5.3.0
 ```
 
 2.Locate the COMPONENTS entry and confirm the COMPONENTS entry is accurate.
@@ -204,34 +204,34 @@ Save the changes. <br>
 Confirm that the script does not contain any errors.
 
 ```
-bash ./cpd_vars_522.sh
+bash ./cpd_vars_530.sh
 ```
 
-Run this command to apply cpd_vars_522.sh
+Run this command to apply cpd_vars_530.sh
 
 ```
-source cpd_vars_522.sh
+source cpd_vars_530.sh
 ```
 
-#### 1.1.3 Obtaining the olm-utils-v3 image
+#### 1.1.3 Obtaining the olm-utils-v4 image
 
 **Note:** If the bastion node is internet connected, then you can ignore below steps in this section.
 
 ```
-podman pull icr.io/cpopen/cpd/olm-utils-v3:latest --tls-verify=false
+podman pull icr.io/cpopen/cpd/olm-utils-v4:latest --tls-verify=false
 
 podman login ${PRIVATE_REGISTRY_LOCATION} -u ${PRIVATE_REGISTRY_PULL_USER} -p ${PRIVATE_REGISTRY_PULL_PASSWORD}
 
-podman tag icr.io/cpopen/cpd/olm-utils-v3:latest ${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v3:latest
+podman tag icr.io/cpopen/cpd/olm-utils-v4:latest ${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v4:latest
 
-podman push ${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v3:latest --remove-signatures 
+podman push ${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v4:latest --remove-signatures 
 
-export OLM_UTILS_IMAGE=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v3:latest
+export OLM_UTILS_IMAGE=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v4:latest
 export OLM_UTILS_LAUNCH_ARGS=" --network=host"
 
 ```
 
-For details please refer to IBM documentation [Obtaining the olm-utils-v3 image](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=pruirn-obtaining-olm-utils-v3-image)
+For details please refer to IBM documentation [Obtaining the olm-utils-v4 image](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=pruirn-obtaining-olm-utils-v4-image)
 
 #### 1.1.4 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
 
@@ -240,10 +240,10 @@ cpd-cli manage restart-container
 ```
 
 **Note:**
-<br>Check and confirm the olm-utils-v3 container is up and running.
+<br>Check and confirm the olm-utils-v4 container is up and running.
 
 ```
-podman ps | grep olm-utils-v3
+podman ps | grep olm-utils-v4
 ```
 
 #### 1.1.5 Creating a profile for upgrading the service instances
@@ -295,7 +295,7 @@ oc get po --no-headers --all-namespaces -o wide | grep -Ev '([[:digit:]])/\1.*R'
 
 ## Part 2: Upgrade
 
-### 2.1 Upgrade CPD to 5.2.2
+### 2.1 Upgrade CPD to 5.3.0
 
 #### 2.1.1 Upgrading shared cluster components
 
@@ -346,18 +346,6 @@ Confirm that the License Service pods are Running or Completed::
 ```
 oc get pods --namespace=${PROJECT_LICENSE_SERVICE}
 ```
-
-3.Upgrade the scheduling service
-<br>
-Confirm whether the scheduling service is installed on the cluster.
-
-```
-oc get scheduling -A
-```
-
-If the scheduling service is installed, the command returns information about the project where the scheduling service is installed and the version that is installed. Ensure that the COMPONENTS variable in your environment variables script includes the scheduler component.
-<br>
-If the scheduling service is not installed, the command returns an empty response.
 
 #### 2.1.2 Preparing to upgrade the CPD instance to IBM Software Hub
 
@@ -430,7 +418,7 @@ cpd-cli manage apply-entitlement \
 Reference: 
 <br>
 
-[Applying your entitlements](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=aye-applying-your-entitlements-without-node-pinning-3)
+[Applying your entitlements](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=aye-applying-your-entitlements-without-node-pinning-3)
 
 #### 2.1.3 Upgrading to IBM Software Hub
 
@@ -503,7 +491,7 @@ Check the version for both CSV and Subscription and ensure the CPD Operators hav
 oc get csv,sub -n ${PROJECT_CPD_INST_OPERATORS}
 ```
 
-[Operator and operand versions](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=planning-operator-operand-versions)
+[Operator and operand versions](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=planning-operator-operand-versions)
 
 #### 2.1.5 Backup the TemporaryPatch
 
@@ -596,7 +584,7 @@ cpd-cli manage get-cr-status \
 --components=watsonx_ai,ws,wml,ws_runtimes,ccs
 ```
 
-Check the version of each custom resource by following the [Operator and operand versions](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=versions-522-october-2025)
+Check the version of each custom resource by following the [Operator and operand versions](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=versions-522-october-2025)
 
 #### 2.4 Upgrade the watsonx.governance services
 - Log in to the cluster
@@ -664,7 +652,7 @@ cpd-cli manage get-cr-status \
 --components=watson_speech
 ```
 
-[Cleaning up resources](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=u-upgrading-from-version-52-8#cli-upgrade__clean__title__1)
+[Cleaning up resources](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-52-8#cli-upgrade__clean__title__1)
 
 #### 2.6 Upgrade the Voice Gateway
 
