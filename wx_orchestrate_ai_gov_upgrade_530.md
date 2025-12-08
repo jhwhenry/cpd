@@ -110,8 +110,8 @@ Output like this
 ```
 cpd-cli
 	Version: 14.3.0
-	Build Date: 2025-10-25T13:04:21
-	Build Number: 2727
+	Build Date: 2025-12-05T14:54:42
+	Build Number: 2792
 	SWH Release Version: 5.3.0
 ```
 
