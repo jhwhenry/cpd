@@ -148,6 +148,18 @@ export VERSION=5.3.0
 ```
 export COMPONENTS=ibm-licensing,cpfs,cpd_platform,watsonx_orchestrate,watsonx_ai,watsonx_governance,watson_speech,voice_gateway
 ```
+3.Add a new section called Image pull configuration to your script and add the following environment variables
+```
+export IMAGE_PULL_SECRET=private-registry-key
+export IMAGE_PULL_CREDENTIALS=$(echo -n "$PRIVATE_REGISTRY_PULL_USER:$PRIVATE_REGISTRY_PULL_PASSWORD" base64 -w 0)
+export IMAGE_PULL_PREFIX=${PRIVATE_REGISTRY_LOCATION}
+```
+
+Or
+```
+export IMAGE_PULL_CREDENTIALS=$(echo -n "cp:$IBM_ENTITLEMENT_KEY" base64 -w 0)
+export IMAGE_PULL_PREFIX=icr.io
+```
 
 Save the changes. <br>
 
