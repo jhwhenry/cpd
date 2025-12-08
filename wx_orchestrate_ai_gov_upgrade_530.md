@@ -361,7 +361,37 @@ oc get pods --namespace=${PROJECT_LICENSE_SERVICE}
 ${CPDM_OC_LOGIN}
 ```
 
-2.Applying your entitlements to monitor and report use against license terms
+2.Updating the cluster-scoped resources for the platform and services
+
+```
+cpd-cli manage case-download \
+--components=${COMPONENTS} \
+--release=${VERSION} \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--cluster_resources=true
+```
+
+Change to the work directory. The default location of the work directory is `cpd-cli-workspace/olm-utils-workspace/work`.
+
+<br>
+
+Log in to Red Hat® OpenShift® Container Platform as a cluster administrator.
+
+```
+${OC_LOGIN}
+```
+
+Apply the cluster-scoped resources for the from the `cluster_scoped_resources.yaml` file.
+```
+oc apply -f cluster_scoped_resources.yaml
+```
+
+Have a record of the resources that you generated.
+```
+mv cluster_scoped_resources.yaml ${VERSION}-${PROJECT_CPD_INST_OPERATORS}-cluster_scoped_resources.yaml
+```
+
+3.Applying your entitlements to monitor and report use against license terms
 <br>
 **Non-Production enironment**
 <br>
