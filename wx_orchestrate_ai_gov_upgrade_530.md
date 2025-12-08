@@ -157,6 +157,7 @@ export IMAGE_PULL_PREFIX=${PRIVATE_REGISTRY_LOCATION}
 
 Or
 ```
+export IMAGE_PULL_SECRET=ibm-entitlement-key
 export IMAGE_PULL_CREDENTIALS=$(echo -n "cp:$IBM_ENTITLEMENT_KEY" base64 -w 0)
 export IMAGE_PULL_PREFIX=icr.io
 ```
