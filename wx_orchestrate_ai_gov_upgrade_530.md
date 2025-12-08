@@ -59,12 +59,10 @@ Reference:
 
 ```
 Part 1: Pre-upgrade
-1.1 Set up client workstation 
-1.1.1 Prepare a client workstation
+1.1 Update client workstation
+1.1.1 Set up the utilities
 1.1.2 Update environment variables
-1.1.3 Obtain the olm-utils-v4 available
-1.1.4 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
-1.1.5 Creating a profile for upgrading the service instances
+1.1.3 Creating a profile for upgrading the service instances
 1.2 Health check OCP & CPD
 
 Part 2: Upgrade
@@ -89,73 +87,18 @@ Summarize and close out the upgrade
 
 ## Part 1: Pre-upgrade
 
-### 1.1 Set up client workstation
+### 1.1 Update client workstation
+#### 1.1.1 Set up the utilities
 
-#### 1.1.1 Prepare a client workstation
+- 1.Update the cpd-cli utility 
 
-1. Prepare a RHEL 9 machine with internet
+<br>
 
-Create a directory for the cpd-cli utility.
+Update the cpd-cli utility following the steps in [Updating client workstations](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=52-updating-client-workstations)
 
-```
-export CPD_WORKSPACE=/ibm/cpd/530
-mkdir -p ${CPD_WORKSPACE}
-cd ${CPD_WORKSPACE}
-```
+<br>
 
-Download the cpd-cli for 5.3.0
-
-```
-wget https://github.com/IBM/cpd-cli/releases/download/v14.3.0/cpd-cli-linux-EE-14.3.0.tgz
-```
-
-2. Install tools.
-
-```
-yum install openssl httpd-tools podman skopeo wget -y
-```
-
-The version in below commands may need to be updated accordingly.
-
-```
-tar xvf cpd-cli-linux-EE-14.3.0.tgz
-mv cpd-cli-linux-EE-14.3.0-2727/* .
-rm -rf cpd-cli-linux-EE-14.3.0-2727
-```
-
-3. Copy the cpd_vars.sh file used by the CPD 5.2.2 to the folder ${CPD_WORKSPACE}.
-
-```
-cd ${CPD_WORKSPACE}
-cp <the file path of the cpd_vars.sh file used by the CPD 5.2.2 > cpd_vars_530.sh
-```
-
-4. Make cpd-cli executable anywhere
-
-```
-vi cpd_vars_530.sh
-```
-
-Add below two lines into the head of cpd_vars_530.sh
-
-```
-export CPD_WORKSPACE=/ibm/cpd/530
-export PATH=${CPD_WORKSPACE}:$PATH
-```
-
-Update the CPD_CLI_MANAGE_WORKSPACE variable
-
-```
-export CPD_CLI_MANAGE_WORKSPACE=${CPD_WORKSPACE}
-```
-
-Run this command to apply cpd_vars_530.sh
-
-```
-source cpd_vars_530.sh
-```
-
-Check out with this commands
+After the update is done, run below commands for the confirmation:
 
 ```
 cpd-cli version
@@ -171,7 +114,7 @@ cpd-cli
 	SWH Release Version: 5.3.0
 ```
 
-5.Update the OpenShift CLI
+- 2.Update the OpenShift CLI
 <br>
 Check the OpenShift CLI version.
 
@@ -180,6 +123,9 @@ oc version
 ```
 
 If the version doesn't match the OpenShift cluster version, update it accordingly.
+
+- 3.Install the Helm CLI
+Install Helm by following the [Helm documentation](https://www.ibm.com/links?url=https%3A%2F%2Fhelm.sh%2Fdocs%2Fintro%2Finstall%2F)
 
 #### 1.1.2 Update environment variables
 
