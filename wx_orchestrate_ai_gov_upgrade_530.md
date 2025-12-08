@@ -62,7 +62,8 @@ Part 1: Pre-upgrade
 1.1 Update client workstation
 1.1.1 Set up the utilities
 1.1.2 Update environment variables
-1.1.3 Creating a profile for upgrading the service instances
+1.1.3 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
+1.1.4 Creating a profile for upgrading the service instances
 1.2 Health check OCP & CPD
 
 Part 2: Upgrade
@@ -128,6 +129,9 @@ If the version doesn't match the OpenShift cluster version, update it accordingl
 Install Helm by following the [Helm documentation](https://www.ibm.com/links?url=https%3A%2F%2Fhelm.sh%2Fdocs%2Fintro%2Finstall%2F)
 
 #### 1.1.2 Update environment variables
+Make a copy of the environment variables script used by the existing 5.2.2 instance with the name like `cpd_vars_530.sh`. 
+<br>
+Update the environment variables script `cpd_vars_530.sh` as follows.
 
 ```
 vi cpd_vars_530.sh
@@ -159,27 +163,7 @@ Run this command to apply cpd_vars_530.sh
 source cpd_vars_530.sh
 ```
 
-#### 1.1.3 Obtaining the olm-utils-v4 image
-
-**Note:** If the bastion node is internet connected, then you can ignore below steps in this section.
-
-```
-podman pull icr.io/cpopen/cpd/olm-utils-v4:latest --tls-verify=false
-
-podman login ${PRIVATE_REGISTRY_LOCATION} -u ${PRIVATE_REGISTRY_PULL_USER} -p ${PRIVATE_REGISTRY_PULL_PASSWORD}
-
-podman tag icr.io/cpopen/cpd/olm-utils-v4:latest ${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v4:latest
-
-podman push ${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v4:latest --remove-signatures 
-
-export OLM_UTILS_IMAGE=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v4:latest
-export OLM_UTILS_LAUNCH_ARGS=" --network=host"
-
-```
-
-For details please refer to IBM documentation [Obtaining the olm-utils-v4 image](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=pruirn-obtaining-olm-utils-v4-image)
-
-#### 1.1.4 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
+#### 1.1.3 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
 
 ```
 cpd-cli manage restart-container
@@ -192,7 +176,7 @@ cpd-cli manage restart-container
 podman ps | grep olm-utils-v4
 ```
 
-#### 1.1.5 Creating a profile for upgrading the service instances
+#### 1.1.4 Creating a profile for upgrading the service instances
 
 Create a profile on the workstation from which you will upgrade the service instances. 
 
