@@ -63,7 +63,8 @@ Part 1: Pre-upgrade
 1.1.1 Set up the utilities
 1.1.2 Update environment variables
 1.1.3 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
-1.1.4 Creating a profile for upgrading the service instances
+1.1.4 Downloading CASE packages before running IBM Software Hub upgrade commands
+1.1.5 Creating a profile for upgrading the service instances
 1.2 Health check OCP & CPD
 
 Part 2: Upgrade
@@ -189,7 +190,14 @@ cpd-cli manage restart-container
 podman ps | grep olm-utils-v4
 ```
 
-#### 1.1.4 Creating a profile for upgrading the service instances
+#### 1.1.4 Downloading CASE packages before running IBM Software Hub upgrade commands
+**Note:**
+<br>
+If the CASE packages have already been downloaded when mirroring the images, this step can be skipped.
+<br>
+[Downloading CASE packages](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=pruirn-downloading-case-packages-3)
+
+#### 1.1.5 Creating a profile for upgrading the service instances
 
 Create a profile on the workstation from which you will upgrade the service instances. 
 
