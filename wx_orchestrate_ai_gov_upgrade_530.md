@@ -561,7 +561,7 @@ cpd-cli manage get-cr-status \
 ```
 
 #### 2.2.3 Apply the hot fix
-[Hot fix documentation](https://www.ibm.com/support/pages/node/7249508)
+[Hot fix documentation]()
 
 
 ### 2.3 Upgrade the watsonx.ai services.
@@ -574,11 +574,14 @@ ${CPDM_OC_LOGIN}
 - Run the upgrade command
 
 ```
-cpd-cli manage apply-cr \
+cpd-cli manage install-components \
+--license_acceptance=true \
 --components=watsonx_ai \
 --release=${VERSION} \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---license_acceptance=true \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--image_pull_prefix=${IMAGE_PULL_PREFIX} \
+--image_pull_secret=${IMAGE_PULL_SECRET} \
 --upgrade=true
 ```
 
@@ -601,11 +604,15 @@ ${CPDM_OC_LOGIN}
 - Run the upgrade command
 
 ```
-cpd-cli manage apply-cr \
+cpd-cli manage install-components \
+--license_acceptance=true \
 --components=watsonx_governance \
 --release=${VERSION} \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---license_acceptance=true \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--image_pull_prefix=${IMAGE_PULL_PREFIX} \
+--image_pull_secret=${IMAGE_PULL_SECRET} \
+--param-file=/tmp/work/install-options.yml \
 --upgrade=true
 ```
 
@@ -626,9 +633,10 @@ cpd-cli service-instance upgrade \
 
 Validate the service instance upgrade.
 ```
-cpd-cli service-instance list \
+cpd-cli service-instance upgrade \
 --service-type=openpages \
 --profile=${CPD_PROFILE_NAME} \
+--all
 ```
 
 #### 2.5 Upgrade the watson Speech services
@@ -641,12 +649,15 @@ ${CPDM_OC_LOGIN}
 - Run the upgrade command
 
 ```
-cpd-cli manage apply-cr \
+cpd-cli manage install-components \
+--license_acceptance=true \
 --components=watson_speech \
 --release=${VERSION} \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--image_pull_prefix=${IMAGE_PULL_PREFIX} \
+--image_pull_secret=${IMAGE_PULL_SECRET} \
 --param-file=/tmp/work/install-options.yml \
---license_acceptance=true \
 --upgrade=true
 ```
 
@@ -661,7 +672,26 @@ cpd-cli manage get-cr-status \
 
 #### 2.6 Upgrade the Voice Gateway
 
-The Voice Gateway custom resource does not include a version entry, so the Voice Gateway service is automatically upgraded when you install a newer version of the Voice Gateway operator on the cluster.
+- Log in to the cluster
+
+```
+${CPDM_OC_LOGIN}
+```
+
+- Run the upgrade command
+
+```
+cpd-cli manage install-components \
+--license_acceptance=true \
+--components=voice_gateway \
+--release=${VERSION} \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--image_pull_prefix=${IMAGE_PULL_PREFIX} \
+--image_pull_secret=${IMAGE_PULL_SECRET} \
+--param-file=/tmp/work/install-options.yml \
+--upgrade=true
+```
 
 - Validate the upgrade
 
@@ -684,6 +714,7 @@ cpd-cli oadp install \
 --cpfs-image-prefix=${PRIVATE_REGISTRY_LOCATION} \
 --namespace=${OADP_OPERATOR_NS} \
 --tenant-operator-namespace=${PROJECT_CPD_INST_OPERATORS} \
+--cpd-scheduler-namespace=${PROJECT_SCHEDULING_SERVICE} \
 --skip-recipes=true \
 --upgrade=true \
 --log-level=debug \
