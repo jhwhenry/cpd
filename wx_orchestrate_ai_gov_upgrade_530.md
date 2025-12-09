@@ -63,16 +63,16 @@ Part 1: Pre-upgrade
 1.1.1 Set up the utilities
 1.1.2 Update environment variables
 1.1.3 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
-1.1.4 Downloading CASE packages before running IBM Software Hub upgrade commands
-1.1.5 Create install-options.yml in the cpd-cli work directory
-1.1.6 Creating a profile for upgrading the service instances
+1.1.4 Download CASE packages
+1.1.5 Create install-options.yml for services upgrade
+1.1.6 Create a profile for upgrading the service instances
 1.2 Health check OCP & CPD
 
 Part 2: Upgrade
 2.1 Upgrade CPD to 5.3.0
 2.1.1 Upgrading shared cluster components
-2.1.2 Preparing to upgrade the CPD instance to IBM Software Hub
-2.1.3 Upgrading to IBM Software Hub
+2.1.2 Preparing to upgrade IBM Software Hub
+2.1.3 Upgrading IBM Software Hub
 2.1.4 Upgrading the operators for the services
 2.2 Upgrade watsonx Orchestrate
 2.2.1 Specify the parameters in the `install-options.yml` file
@@ -155,7 +155,7 @@ export COMPONENTS=ibm-licensing,cpfs,cpd_platform,watsonx_orchestrate,watsonx_ai
 3.Add a new section called Image pull configuration to your script and add the following environment variables
 
 ```
-export IMAGE_PULL_SECRET=private-registry-key
+export IMAGE_PULL_SECRET=ibm-entitlement-key
 export IMAGE_PULL_CREDENTIALS=$(echo -n "$PRIVATE_REGISTRY_PULL_USER:$PRIVATE_REGISTRY_PULL_PASSWORD" base64 -w 0)
 export IMAGE_PULL_PREFIX=${PRIVATE_REGISTRY_LOCATION}
 ```
@@ -209,7 +209,7 @@ If the CASE packages have already been downloaded when mirroring the images, thi
 [Downloading CASE packages](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=pruirn-downloading-case-packages-3)
 
 
-#### 1.1.5 Create install-options.yml in the cpd-cli work directory
+#### 1.1.5 Create install-options.yml for services upgrade
 
 [Specifying installation options for services](https://ibmdocs-test.dcs.ibm.com/docs/en/SSNFH6_5.3_test?topic=services-specifying-installation-options)
 
