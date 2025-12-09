@@ -159,8 +159,8 @@ export IMAGE_PULL_PREFIX=${PRIVATE_REGISTRY_LOCATION}
 Or
 ```
 export IMAGE_PULL_SECRET=ibm-entitlement-key
-export IMAGE_PULL_CREDENTIALS=$(echo -n "cp:$IBM_ENTITLEMENT_KEY" base64 -w 0)
-export IMAGE_PULL_PREFIX=icr.io
+export IMAGE_PULL_CREDENTIALS=$(echo -n "iamapikey:Ku8QJp9zsBure-OXodXc12GgIioKeeQ0bxYM1DRyE8A1" base64 -w 0)
+export IMAGE_PULL_PREFIX=cp.stg.icr.io
 ```
 
 Save the changes. <br>
@@ -461,7 +461,7 @@ Create the image pull secret in the `operands` project for the instance.
 oc create secret docker-registry ${IMAGE_PULL_SECRET} --from-file ".dockerconfigjson=dockerconfig.json" --namespace=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-#### 2.1.4 Upgrading to IBM Software Hub
+#### 2.1.4 Upgrading IBM Software Hub
 
 1.Run the cpd-cli manage login-to-ocp command to log in to the cluster.
 
@@ -472,11 +472,16 @@ ${CPDM_OC_LOGIN}
 2.Upgrade the required operators and custom resources for the instance.
 
 ```
-cpd-cli manage setup-instance \
---release=${VERSION} \
+cpd-cli manage install-components \
 --license_acceptance=true \
---cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+--components=cpd_platform \
+--release=${VERSION} \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--image_pull_prefix=${IMAGE_PULL_PREFIX} \
+--image_pull_secret=${IMAGE_PULL_SECRET} \
+--run_storage_tests=true \
+--upgrade=true
 ```
 
 In another terminal, keep running below command and monitoring "InstallPlan" to find which one need manual approval.
