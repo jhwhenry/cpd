@@ -92,7 +92,7 @@ Summarize and close out the upgrade
 ### 1.1 Update client workstation
 #### 1.1.1 Set up the utilities
 
-- 1.Update the cpd-cli utility 
+- 1. Update the cpd-cli utility 
 
 <br>
 
@@ -116,7 +116,7 @@ cpd-cli
 	SWH Release Version: 5.3.0
 ```
 
-- 2.Update the OpenShift CLI
+- 2. Update the OpenShift CLI
 <br>
 Check the OpenShift CLI version.
 
@@ -126,7 +126,8 @@ oc version
 
 If the version doesn't match the OpenShift cluster version, update it accordingly.
 
-- 3.Install the Helm CLI
+- 3. Install the Helm CLI
+<br>
 Install Helm by following the [Helm documentation](https://www.ibm.com/links?url=https%3A%2F%2Fhelm.sh%2Fdocs%2Fintro%2Finstall%2F)
 
 #### 1.1.2 Update environment variables
@@ -197,7 +198,19 @@ If the CASE packages have already been downloaded when mirroring the images, thi
 <br>
 [Downloading CASE packages](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=pruirn-downloading-case-packages-3)
 
-#### 1.1.5 Creating a profile for upgrading the service instances
+
+#### 1.1.5 Create install-options.yml in the cpd-cli work directory
+
+[Specifying installation options for services](https://ibmdocs-test.dcs.ibm.com/docs/en/SSNFH6_5.3_test?topic=services-specifying-installation-options)
+
+<br>
+**Note:**
+<br>
+The `install-options.yml` of 5.3.x is different from that of 5.2.2 in format. There are 3 sections in the `install-options.yml` of 5.3.x including `override_components_meta`, `non_olm` and `custom_spec`. Review the documentation carefully and place the parameters for the services in the corresponding section properly.
+<br>
+The `install-options.yml` should be placed in the cpd-cli work directory.
+
+#### 1.1.6 Creating a profile for upgrading the service instances
 
 Create a profile on the workstation from which you will upgrade the service instances. 
 
