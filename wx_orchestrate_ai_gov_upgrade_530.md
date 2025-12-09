@@ -484,19 +484,7 @@ cpd-cli manage install-components \
 --upgrade=true
 ```
 
-In another terminal, keep running below command and monitoring "InstallPlan" to find which one need manual approval.
-
-```
-watch "oc get ip -n ${PROJECT_CPD_INST_OPERATORS} -o=jsonpath='{.items[?(@.spec.approved==false)].metadata.name}'"
-```
-
-Approve the upgrade request and run below command as soon as we find it.
-
-```
-oc patch installplan $(oc get ip -n ${PROJECT_CPD_INST_OPERATORS} -o=jsonpath='{.items[?(@.spec.approved==false)].metadata.name}') -n ${PROJECT_CPD_INST_OPERATORS} --type merge --patch '{"spec":{"approved":true}}'
-```
-
-Once the above command `cpd-cli manage setup-instance` complete, make sure the status of the IBM Software Hub is in 'Completed' status.
+Once the above command `cpd-cli manage install-components` complete, make sure the status of the IBM Software Hub is in 'Completed' status.
 
 ```
 cpd-cli manage get-cr-status \
