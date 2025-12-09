@@ -383,7 +383,7 @@ ${OC_LOGIN}
 
 Apply the cluster-scoped resources for the from the `cluster_scoped_resources.yaml` file.
 ```
-oc apply -f cluster_scoped_resources.yaml
+oc apply --server-side --force-conflicts -f cluster_scoped_resources.yaml
 ```
 
 Have a record of the resources that you generated.
