@@ -480,7 +480,7 @@ cpd-cli manage install-components \
 --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --image_pull_prefix=${IMAGE_PULL_PREFIX} \
 --image_pull_secret=${IMAGE_PULL_SECRET} \
---run_storage_tests=true \
+--run_storage_tests=false \
 --upgrade=true
 ```
 
