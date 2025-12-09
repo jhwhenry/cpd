@@ -64,7 +64,8 @@ Part 1: Pre-upgrade
 1.1.2 Update environment variables
 1.1.3 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
 1.1.4 Downloading CASE packages before running IBM Software Hub upgrade commands
-1.1.5 Creating a profile for upgrading the service instances
+1.1.5 Create install-options.yml in the cpd-cli work directory
+1.1.6 Creating a profile for upgrading the service instances
 1.2 Health check OCP & CPD
 
 Part 2: Upgrade
@@ -92,7 +93,7 @@ Summarize and close out the upgrade
 ### 1.1 Update client workstation
 #### 1.1.1 Set up the utilities
 
-- 1. Update the cpd-cli utility 
+**1. Update the cpd-cli utility**
 
 <br>
 
@@ -116,7 +117,7 @@ cpd-cli
 	SWH Release Version: 5.3.0
 ```
 
-- 2. Update the OpenShift CLI
+**2. Update the OpenShift CLI**
 <br>
 Check the OpenShift CLI version.
 
@@ -126,7 +127,7 @@ oc version
 
 If the version doesn't match the OpenShift cluster version, update it accordingly.
 
-- 3. Install the Helm CLI
+**3. Install the Helm CLI**
 <br>
 Install Helm by following the [Helm documentation](https://www.ibm.com/links?url=https%3A%2F%2Fhelm.sh%2Fdocs%2Fintro%2Finstall%2F)
 
@@ -150,7 +151,9 @@ export VERSION=5.3.0
 ```
 export COMPONENTS=ibm-licensing,cpfs,cpd_platform,watsonx_orchestrate,watsonx_ai,watsonx_governance,watson_speech,voice_gateway
 ```
+
 3.Add a new section called Image pull configuration to your script and add the following environment variables
+
 ```
 export IMAGE_PULL_SECRET=private-registry-key
 export IMAGE_PULL_CREDENTIALS=$(echo -n "$PRIVATE_REGISTRY_PULL_USER:$PRIVATE_REGISTRY_PULL_PASSWORD" base64 -w 0)
@@ -191,11 +194,18 @@ cpd-cli manage restart-container
 podman ps | grep olm-utils-v4
 ```
 
-#### 1.1.4 Downloading CASE packages before running IBM Software Hub upgrade commands
+#### 1.1.4 Downloading CASE packages
+Downloading CASE packages before running IBM Software Hub upgrade commands.
+<br>
+
 **Note:**
+
 <br>
+
 If the CASE packages have already been downloaded when mirroring the images, this step can be skipped.
+
 <br>
+
 [Downloading CASE packages](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=pruirn-downloading-case-packages-3)
 
 
@@ -204,11 +214,20 @@ If the CASE packages have already been downloaded when mirroring the images, thi
 [Specifying installation options for services](https://ibmdocs-test.dcs.ibm.com/docs/en/SSNFH6_5.3_test?topic=services-specifying-installation-options)
 
 <br>
+
 **Note:**
+
 <br>
+
 The `install-options.yml` of 5.3.x is different from that of 5.2.2 in format. There are 3 sections in the `install-options.yml` of 5.3.x including `override_components_meta`, `non_olm` and `custom_spec`. Review the documentation carefully and place the parameters for the services in the corresponding section properly.
+
 <br>
-The `install-options.yml` should be placed in the cpd-cli work directory.
+
+The `install-options.yml` should be placed in the cpd-cli work directory. Identify the location of the `work` folder using below command.
+
+```
+podman inspect olm-utils-play-v3 | jq -r '.[0].Mounts' |jq -r '.[] | select(.Destination == "/tmp/work") | .Source'
+```
 
 #### 1.1.6 Creating a profile for upgrading the service instances
 
@@ -289,29 +308,13 @@ cpd-cli manage apply-cluster-components \
 --licensing_ns=${PROJECT_LICENSE_SERVICE}
 ```
 
-**Note**:
-<br>
-Monitor the install plan and approved them as needed.
-<br>
-In another terminal, keep running below command and monitoring "InstallPlan" to find which one need manual approval.
-
-```
-watch "oc get ip -n ${PROJECT_CPD_INST_OPERATORS} -o=jsonpath='{.items[?(@.spec.approved==false)].metadata.name}'"
-```
-
-Approve the upgrade request and run below command as soon as we find it.
-
-```
-oc patch installplan $(oc get ip -n ${PROJECT_CPD_INST_OPERATORS} -o=jsonpath='{.items[?(@.spec.approved==false)].metadata.name}') -n ${PROJECT_CPD_INST_OPERATORS} --type merge --patch '{"spec":{"approved":true}}'
-```
-
-Confirm that the License Service pods are Running or Completed::
+Confirm that the License Service pods are Running or Completed:
 
 ```
 oc get pods --namespace=${PROJECT_LICENSE_SERVICE}
 ```
 
-#### 2.1.2 Preparing to upgrade the CPD instance to IBM Software Hub
+#### 2.1.2 Preparing to upgrade IBM Software Hub
 
 1.Run the cpd-cli manage login-to-ocp command to log in to the cluster
 
@@ -340,6 +343,7 @@ ${OC_LOGIN}
 ```
 
 Apply the cluster-scoped resources for the from the `cluster_scoped_resources.yaml` file.
+
 ```
 oc apply --server-side --force-conflicts -f cluster_scoped_resources.yaml
 ```
@@ -439,6 +443,7 @@ cat <<EOF > dockerconfig.json
 }
 EOF
 ```
+
 #############(To be deleted)###########
 #generate pullSecret for each of the following registries
 ```
@@ -531,7 +536,7 @@ watson_orchestrate_ootb_models:
 **Note:**
 
 <br>
-The parameter `watson_orchestrate_install_mode: agentic_skills_assistant` needs to be confirmed.
+The parameter `watson_orchestrate_install_mode: agentic_skills_assistant` needs to be confirmed. Where should it be placed in the `install-options.yml`?
 
 <br>
 Make sure you edit or create the `install-options.yml` file in the right `work` folder.
@@ -566,6 +571,25 @@ cpd-cli manage install-components \
 --upgrade=true
 ```
 
+**Note:**
+<br>
+During the watsonx Orchestrate reconcilation, check if the UAB enabled in the custom resource (seems like a defect).
+```
+oc get wo wo --namespace="${PROJECT_CPD_INST_OPERANDS}" -o yaml | grep uab -A5 -B5
+```
+
+If UAB enabled, then disable it using below command.
+
+```
+oc patch wo wo \
+  --namespace="${PROJECT_CPD_INST_OPERANDS}" \
+  --type=merge \
+  --patch='{"spec": {"wxolite": {"enabled": false}, "uab": {"enabled": false}}}'
+```
+
+Double confirmation for ensuring the UAB disabled.
+<br>
+
 - Validate the upgrade
 ```
 cpd-cli manage get-cr-status \
@@ -573,8 +597,7 @@ cpd-cli manage get-cr-status \
 --components=watsonx_orchestrate
 ```
 
-#### 2.2.3 Apply the hot fix
-[Hot fix documentation]()
+#### 2.2.3 Apply the hot fix if any
 
 
 ### 2.3 Upgrade the watsonx.ai services.
