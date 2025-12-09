@@ -492,42 +492,7 @@ cpd-cli manage get-cr-status \
 --components=cpd_platform
 ```
 
-#### 2.1.5 Upgrade the operators for the services
-
-```
-cpd-cli manage apply-olm \
---release=${VERSION} \
---cpd_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
---upgrade=true
-```
-
-In another terminal, keep running below command and monitoring "InstallPlan" to find which one need manual approval.
-
-```
-watch "oc get ip -n ${PROJECT_CPD_INST_OPERATORS} -o=jsonpath='{.items[?(@.spec.approved==false)].metadata.name}'"
-```
-
-Approve the upgrade request and run below command as soon as we find it.
-
-```
-oc patch installplan $(oc get ip -n ${PROJECT_CPD_INST_OPERATORS} -o=jsonpath='{.items[?(@.spec.approved==false)].metadata.name}') -n ${PROJECT_CPD_INST_OPERATORS} --type merge --patch '{"spec":{"approved":true}}'
-```
-
-Confirm that the operator pods are Running or Copmleted:
-
-```
-oc get pods --namespace=${PROJECT_CPD_INST_OPERATORS}
-```
-
-Check the version for both CSV and Subscription and ensure the CPD Operators have been upgraded successfully.
-
-```
-oc get csv,sub -n ${PROJECT_CPD_INST_OPERATORS}
-```
-
-[Operator and operand versions](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=planning-operator-operand-versions)
-
-#### 2.1.6 Backup the TemporaryPatch
+#### 2.1.5 Backup the TemporaryPatch
 
 ```
 oc get TemporaryPatch -n ${PROJECT_CPD_INST_OPERANDS} -o yaml > TemporaryPatch_Bak.yaml
@@ -553,6 +518,9 @@ watson_orchestrate_ootb_models:
 **Note:**
 
 <br>
+The parameter `watson_orchestrate_install_mode: agentic_skills_assistant` needs to be confirmed.
+
+<br>
 Make sure you edit or create the `install-options.yml` file in the right `work` folder.
 
 <br>
@@ -573,12 +541,15 @@ ${CPDM_OC_LOGIN}
 - Run the upgrade command
 
 ```
-cpd-cli manage apply-cr \
+cpd-cli manage install-components \
+--license_acceptance=true \
 --components=watsonx_orchestrate \
 --release=${VERSION} \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--image_pull_prefix=${IMAGE_PULL_PREFIX} \
+--image_pull_secret=${IMAGE_PULL_SECRET} \
 --param-file=/tmp/work/install-options.yml \
---license_acceptance=true \
 --upgrade=true
 ```
 
