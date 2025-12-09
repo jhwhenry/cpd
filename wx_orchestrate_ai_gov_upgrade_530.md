@@ -248,62 +248,7 @@ oc get po --no-headers --all-namespaces -o wide | grep -Ev '([[:digit:]])/\1.*R'
 
 ### 2.1 Upgrade CPD to 5.3.0
 
-#### 2.1.1 Creating image pull secrets for IBM Software Hub instance
-Log in to OpenShift cluster.
-```
-${OC_LOGIN}
-```
-
-Create a file named dockerconfig.json based on where your cluster pulls images from:
-
-```
-cat <<EOF > dockerconfig.json 
-{
-  "auths": {
-    "PRIVATE_REGISTRY_LOCATION": {
-      "auth": "${IMAGE_PULL_CREDENTIALS}"
-    }
-  }
-}
-EOF
-```
-#############(To be deleted)###########
-#generate pullSecret for each of the following registries
-```
-pull_secret=$(echo -n "$username:$password" | base64 -w 0)
-
-cat <<EOF > dockerconfig.json 
-{
-  "auths": {
-    "cp.stg.icr.io": {
-      "auth": "<pullsecret>"
-    },
-    "cp.icr.io": {
-      "auth": "<pullsecret>"
-    },
-    "docker-na.artifactory.swg-devops.com": {
-      "auth": "<pullsecret>"
-    },
-    "docker-na-public.artifactory.swg-devops.com": {
-      "auth": "<pullsecret>"
-    }
-  }
-}
-EOF
-```
-
-Create the image pull secret in the `operators` project for the instance.
-```
-oc create secret docker-registry ${IMAGE_PULL_SECRET} --from-file ".dockerconfigjson=dockerconfig.json" --namespace=${PROJECT_CPD_INST_OPERATORS}
-```
-
-Create the image pull secret in the `operands` project for the instance.
-```
-oc create secret docker-registry ${IMAGE_PULL_SECRET} --from-file ".dockerconfigjson=dockerconfig.json" --namespace=${PROJECT_CPD_INST_OPERANDS}
-```
-
-
-#### 2.1.2 Upgrading shared cluster components
+#### 2.1.1 Upgrading shared cluster components
 
 1.Run the cpd-cli manage login-to-ocp command to log in to the cluster
 
@@ -353,7 +298,7 @@ Confirm that the License Service pods are Running or Completed::
 oc get pods --namespace=${PROJECT_LICENSE_SERVICE}
 ```
 
-#### 2.1.3 Preparing to upgrade the CPD instance to IBM Software Hub
+#### 2.1.2 Preparing to upgrade the CPD instance to IBM Software Hub
 
 1.Run the cpd-cli manage login-to-ocp command to log in to the cluster
 
@@ -455,6 +400,66 @@ Reference:
 <br>
 
 [Applying your entitlements](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=aye-applying-your-entitlements-without-node-pinning-3)
+
+#### 2.1.3 Creating image pull secrets for IBM Software Hub instance
+Log in to OpenShift cluster.
+```
+${OC_LOGIN}
+```
+
+Generate the image pull credentials:
+
+```
+export IMAGE_PULL_CREDENTIALS=$(echo -n "$PRIVATE_REGISTRY_PULL_USER:$PRIVATE_REGISTRY_PULL_PASSWORD" | base64 -w 0)
+```
+
+Create a file named dockerconfig.json based on where your cluster pulls images from:
+
+```
+cat <<EOF > dockerconfig.json 
+{
+  "auths": {
+    "${PRIVATE_REGISTRY_LOCATION}": {
+      "auth": "${IMAGE_PULL_CREDENTIALS}"
+    }
+  }
+}
+EOF
+```
+#############(To be deleted)###########
+#generate pullSecret for each of the following registries
+```
+pull_secret=$(echo -n "$username:$password" | base64 -w 0)
+
+cat <<EOF > dockerconfig.json 
+{
+  "auths": {
+    "cp.stg.icr.io": {
+      "auth": "<pullsecret>"
+    },
+    "cp.icr.io": {
+      "auth": "<pullsecret>"
+    },
+    "docker-na.artifactory.swg-devops.com": {
+      "auth": "<pullsecret>"
+    },
+    "docker-na-public.artifactory.swg-devops.com": {
+      "auth": "<pullsecret>"
+    }
+  }
+}
+EOF
+```
+
+Create the image pull secret in the `operators` project for the instance.
+```
+oc create secret docker-registry ${IMAGE_PULL_SECRET} --from-file ".dockerconfigjson=dockerconfig.json" --namespace=${PROJECT_CPD_INST_OPERATORS}
+```
+
+Create the image pull secret in the `operands` project for the instance.
+```
+oc create secret docker-registry ${IMAGE_PULL_SECRET} --from-file ".dockerconfigjson=dockerconfig.json" --namespace=${PROJECT_CPD_INST_OPERANDS}
+```
 
 #### 2.1.4 Upgrading to IBM Software Hub
 
