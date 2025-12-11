@@ -55,6 +55,18 @@ Reference:
 
 - The OpenShift cluster, persistent storage and Cloud Pak for Data platform and services are in healthy status.
 
+#### 5. Backup the Routes
+
+```
+oc get Routes -n ${PROJECT_CPD_INST_OPERANDS} -o yaml > Routes_Bak.yaml
+```
+
+#### 6. Backup the TemporaryPatch
+
+```
+oc get TemporaryPatch -n ${PROJECT_CPD_INST_OPERANDS} -o yaml > TemporaryPatch_Bak.yaml
+```
+
 ## Table of Content
 
 ```
@@ -64,16 +76,15 @@ Part 1: Pre-upgrade
 1.1.2 Update environment variables
 1.1.3 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
 1.1.4 Download CASE packages
-1.1.5 Create install-options.yml for services upgrade
-1.1.6 Create a profile for upgrading the service instances
+1.1.5 Create a profile for upgrading the service instances
 1.2 Health check OCP & CPD
 
 Part 2: Upgrade
 2.1 Upgrade CPD to 5.3.0
-2.1.1 Upgrading shared cluster components
-2.1.2 Preparing to upgrade IBM Software Hub
-2.1.3 Upgrading IBM Software Hub
-2.1.4 Upgrading the operators for the services
+2.1.1 Upgrade shared cluster components
+2.1.2 Prepare to upgrade IBM Software Hub
+2.1.3 Create image pull secrets for IBM Software Hub instance
+2.1.4 Upgrade IBM Software Hub
 2.2 Upgrade watsonx Orchestrate
 2.2.1 Specify the parameters in the `install-options.yml` file
 2.2.2 Upgrade the watsonx Orchestrate service
@@ -160,13 +171,6 @@ export IMAGE_PULL_CREDENTIALS=$(echo -n "$PRIVATE_REGISTRY_PULL_USER:$PRIVATE_RE
 export IMAGE_PULL_PREFIX=${PRIVATE_REGISTRY_LOCATION}
 ```
 
-Or
-```
-export IMAGE_PULL_SECRET=ibm-entitlement-key
-export IMAGE_PULL_CREDENTIALS=$(echo -n "iamapikey:Ku8QJp9zsBure-OXodXc12GgIioKeeQ0bxYM1DRyE8A1" base64 -w 0)
-export IMAGE_PULL_PREFIX=cp.stg.icr.io
-```
-
 Save the changes. <br>
 
 Confirm that the script does not contain any errors.
@@ -181,7 +185,7 @@ Run this command to apply cpd_vars_530.sh
 source cpd_vars_530.sh
 ```
 
-#### 1.1.3 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
+#### 1.1.3 Ensure the cpd-cli manage plug-in has the latest olm-utils image
 
 ```
 cpd-cli manage restart-container
@@ -209,27 +213,7 @@ If the CASE packages have already been downloaded when mirroring the images, thi
 [Downloading CASE packages](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=pruirn-downloading-case-packages-3)
 
 
-#### 1.1.5 Create install-options.yml for services upgrade
-
-[Specifying installation options for services](https://ibmdocs-test.dcs.ibm.com/docs/en/SSNFH6_5.3_test?topic=services-specifying-installation-options)
-
-<br>
-
-**Note:**
-
-<br>
-
-The `install-options.yml` of 5.3.x is different from that of 5.2.2 in format. There are 3 sections in the `install-options.yml` of 5.3.x including `override_components_meta`, `non_olm` and `custom_spec`. Review the documentation carefully and place the parameters for the services in the corresponding section properly.
-
-<br>
-
-The `install-options.yml` should be placed in the cpd-cli work directory. Identify the location of the `work` folder using below command.
-
-```
-podman inspect olm-utils-play-v3 | jq -r '.[0].Mounts' |jq -r '.[] | select(.Destination == "/tmp/work") | .Source'
-```
-
-#### 1.1.6 Creating a profile for upgrading the service instances
+#### 1.1.5 Creating a profile for upgrading the service instances
 
 Create a profile on the workstation from which you will upgrade the service instances. 
 
@@ -280,7 +264,7 @@ oc get po --no-headers --all-namespaces -o wide | grep -Ev '([[:digit:]])/\1.*R'
 
 ### 2.1 Upgrade CPD to 5.3.0
 
-#### 2.1.1 Upgrading shared cluster components
+#### 2.1.1 Upgrade shared cluster components
 
 1.Run the cpd-cli manage login-to-ocp command to log in to the cluster
 
@@ -314,7 +298,7 @@ Confirm that the License Service pods are Running or Completed:
 oc get pods --namespace=${PROJECT_LICENSE_SERVICE}
 ```
 
-#### 2.1.2 Preparing to upgrade IBM Software Hub
+#### 2.1.2 Prepare to upgrade IBM Software Hub
 
 1.Run the cpd-cli manage login-to-ocp command to log in to the cluster
 
@@ -418,7 +402,7 @@ Reference:
 
 [Applying your entitlements](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=aye-applying-your-entitlements-without-node-pinning-3)
 
-#### 2.1.3 Creating image pull secrets for IBM Software Hub instance
+#### 2.1.3 Create image pull secrets for IBM Software Hub instance
 Log in to OpenShift cluster.
 ```
 ${OC_LOGIN}
@@ -444,31 +428,6 @@ cat <<EOF > dockerconfig.json
 EOF
 ```
 
-#############(To be deleted)###########
-#generate pullSecret for each of the following registries
-```
-pull_secret=$(echo -n "$username:$password" | base64 -w 0)
-
-cat <<EOF > dockerconfig.json 
-{
-  "auths": {
-    "cp.stg.icr.io": {
-      "auth": "<pullsecret>"
-    },
-    "cp.icr.io": {
-      "auth": "<pullsecret>"
-    },
-    "docker-na.artifactory.swg-devops.com": {
-      "auth": "<pullsecret>"
-    },
-    "docker-na-public.artifactory.swg-devops.com": {
-      "auth": "<pullsecret>"
-    }
-  }
-}
-EOF
-```
-
 Create the image pull secret in the `operators` project for the instance.
 ```
 oc create secret docker-registry ${IMAGE_PULL_SECRET} --from-file ".dockerconfigjson=dockerconfig.json" --namespace=${PROJECT_CPD_INST_OPERATORS}
@@ -479,7 +438,7 @@ Create the image pull secret in the `operands` project for the instance.
 oc create secret docker-registry ${IMAGE_PULL_SECRET} --from-file ".dockerconfigjson=dockerconfig.json" --namespace=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-#### 2.1.4 Upgrading IBM Software Hub
+#### 2.1.4 Upgrade IBM Software Hub
 
 1.Run the cpd-cli manage login-to-ocp command to log in to the cluster.
 
@@ -510,16 +469,9 @@ cpd-cli manage get-cr-status \
 --components=cpd_platform
 ```
 
-#### 2.1.5 Backup the TemporaryPatch
-
-```
-oc get TemporaryPatch -n ${PROJECT_CPD_INST_OPERANDS} -o yaml > TemporaryPatch_Bak.yaml
-```
-
 ### 2.2 Upgrade watsonx Orchestrate
 #### 2.2.1 Specify the parameters in the `install-options.yml` file
 <br>
-
 Specify the following options in the `install-options.yml` file in the `work` directory. Create the `install-options.yml` file if it doesn't exist in the `work` directory.
 
 ```
@@ -539,11 +491,7 @@ watson_orchestrate_ootb_models:
 The parameter `watson_orchestrate_install_mode: agentic_skills_assistant` needs to be confirmed. Where should it be placed in the `install-options.yml`?
 
 <br>
-Make sure you edit or create the `install-options.yml` file in the right `work` folder.
-
-<br>
-
-Identify the location of the `work` folder using below command.
+Make sure you edit or create the `install-options.yml` file in the right `work` folder. You can identify the location of the `work` folder using below command.
 
 ```
 podman inspect olm-utils-play-v3 | jq -r '.[0].Mounts' |jq -r '.[] | select(.Destination == "/tmp/work") | .Source'
@@ -573,7 +521,7 @@ cpd-cli manage install-components \
 
 **Note:**
 <br>
-During the watsonx Orchestrate reconcilation, check if the UAB enabled in the custom resource (seems like a defect).
+During the watsonx Orchestrate reconcilation, check if the UAB enabled in the custom resource.
 ```
 oc get wo wo --namespace="${PROJECT_CPD_INST_OPERANDS}" -o yaml | grep uab -A5 -B5
 ```
@@ -587,7 +535,8 @@ oc patch wo wo \
   --patch='{"spec": {"wxolite": {"enabled": false}, "uab": {"enabled": false}}}'
 ```
 
-Double confirmation for ensuring the UAB disabled.
+Double confirmation to ensure the UAB disabled.
+
 <br>
 
 - Validate the upgrade
@@ -598,9 +547,9 @@ cpd-cli manage get-cr-status \
 ```
 
 #### 2.2.3 Apply the hot fix if any
+This is a place holder.
 
-
-### 2.3 Upgrade the watsonx.ai services.
+### 2.3 Upgrade the watsonx.ai services
 - Log in to the cluster
 
 ```
@@ -648,7 +597,6 @@ cpd-cli manage install-components \
 --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --image_pull_prefix=${IMAGE_PULL_PREFIX} \
 --image_pull_secret=${IMAGE_PULL_SECRET} \
---param-file=/tmp/work/install-options.yml \
 --upgrade=true
 ```
 
@@ -693,7 +641,6 @@ cpd-cli manage install-components \
 --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --image_pull_prefix=${IMAGE_PULL_PREFIX} \
 --image_pull_secret=${IMAGE_PULL_SECRET} \
---param-file=/tmp/work/install-options.yml \
 --upgrade=true
 ```
 
@@ -725,7 +672,6 @@ cpd-cli manage install-components \
 --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --image_pull_prefix=${IMAGE_PULL_PREFIX} \
 --image_pull_secret=${IMAGE_PULL_SECRET} \
---param-file=/tmp/work/install-options.yml \
 --upgrade=true
 ```
 
