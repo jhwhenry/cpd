@@ -489,7 +489,7 @@ watsonxOrchestrate:
 **Note:**
 
 <br>
-The parameter `watson_orchestrate_install_mode: agentic_skills_assistant` needs to be confirmed. Where should it be placed in the `install-options.yml`?
+Where should it be placed in the `install-options.yml`? Or should we use the override.yaml instead?
 
 <br>
 Make sure you edit or create the `install-options.yml` file in the right `work` folder. You can identify the location of the `work` folder using below command.
