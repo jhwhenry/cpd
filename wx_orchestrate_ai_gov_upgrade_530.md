@@ -478,11 +478,12 @@ Specify the following options in the `install-options.yml` file in the `work` di
 ################################################################################
 # watsonx Orchestrate parameters
 ################################################################################ 
-watson_orchestrate_install_mode: agentic_skills_assistant
-watson_orchestrate_watsonx_ai_type: true
-watson_orchestrate_ootb_models:
-  - llama-3-2-90b-vision-instruct
-  - ibm-slate-30m-english-rtrvr
+watsonxOrchestrate:
+  installMode: agentic_skills_assistant
+  uab:
+    enabled: false
+  watsonxAI:
+    watsonxaiifm: true
 ```
 
 **Note:**
