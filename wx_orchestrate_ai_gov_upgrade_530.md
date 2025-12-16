@@ -38,11 +38,10 @@ Some services don't support the offline OADP backup. Review the backup documenta
 
 #### 2. The image mirroring completed successfully
 
-If a private container registry is in-use to host the IBM Cloud Pak for Data software images, you must mirror the updated images from the IBM® Entitled Registry to the private container registry. 
-<br>
-Reference: 
-[Mirroring images to private image registry](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=registry-mirroring-images-private-container)
-
+If a private container registry is in-use to host the IBM Cloud Pak for Data software images, you must mirror the updated images from the IBM® Entitled Registry to the private container registry.
+`<br>`
+Reference:
+[Mirroring images to private image registry](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=mipcr-mirroring-images-directly-private-container-registry-1)
 
 #### 3. The permissions required for the upgrade is ready
 
@@ -102,6 +101,7 @@ Summarize and close out the upgrade
 ## Part 1: Pre-upgrade
 
 ### 1.1 Update client workstation
+
 #### 1.1.1 Set up the utilities
 
 **1. Update the cpd-cli utility**
@@ -129,7 +129,7 @@ cpd-cli
 ```
 
 **2. Update the OpenShift CLI**
-<br>
+`<br>`
 Check the OpenShift CLI version.
 
 ```
@@ -139,12 +139,13 @@ oc version
 If the version doesn't match the OpenShift cluster version, update it accordingly.
 
 **3. Install the Helm CLI**
-<br>
+`<br>`
 Install Helm by following the [Helm documentation](https://www.ibm.com/links?url=https%3A%2F%2Fhelm.sh%2Fdocs%2Fintro%2Finstall%2F)
 
 #### 1.1.2 Update environment variables
-Make a copy of the environment variables script used by the existing 5.2.2 instance with the name like `cpd_vars_530.sh`. 
-<br>
+
+Make a copy of the environment variables script used by the existing 5.2.2 instance with the name like `cpd_vars_530.sh`.
+`<br>`
 Update the environment variables script `cpd_vars_530.sh` as follows.
 
 ```
@@ -171,7 +172,7 @@ export IMAGE_PULL_CREDENTIALS=$(echo -n "$PRIVATE_REGISTRY_PULL_USER:$PRIVATE_RE
 export IMAGE_PULL_PREFIX=${PRIVATE_REGISTRY_LOCATION}
 ```
 
-Save the changes. <br>
+Save the changes. `<br>`
 
 Confirm that the script does not contain any errors.
 
@@ -192,15 +193,16 @@ cpd-cli manage restart-container
 ```
 
 **Note:**
-<br>Check and confirm the olm-utils-v4 container is up and running.
+`<br>`Check and confirm the olm-utils-v4 container is up and running.
 
 ```
 podman ps | grep olm-utils-v4
 ```
 
 #### 1.1.4 Downloading CASE packages
+
 Downloading CASE packages before running IBM Software Hub upgrade commands.
-<br>
+`<br>`
 
 **Note:**
 
@@ -210,12 +212,11 @@ If the CASE packages have already been downloaded when mirroring the images, thi
 
 <br>
 
-[Downloading CASE packages](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=pruirn-downloading-case-packages-3)
-
+[Downloading CASE packages](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=pruirn-downloading-case-packages-1)
 
 #### 1.1.5 Creating a profile for upgrading the service instances
 
-Create a profile on the workstation from which you will upgrade the service instances. 
+Create a profile on the workstation from which you will upgrade the service instances.
 
 The profile must be associated with a Cloud Pak for Data user who has either the following permissions:
 
@@ -229,11 +230,13 @@ Click this link and follow these steps for getting it done.
 ### 1.2 Health check OCP & CPD
 
 Check and make sure the cluster operators, nodes, and machine configure pool are in healthy status.
-<br>
+`<br>`
 Log onto bastion node and then log into OCP.
+
 ```
 ${OC_LOGIN}
 ```
+
 Check the status of nodes, cluster operators and machine config pool.
 
 ```
@@ -275,14 +278,14 @@ ${CPDM_OC_LOGIN}
 2.Upgrade the License Service.
 
 Confirm the project in which the License Service is running.
-<br>
+`<br>`
 
 ```
 oc get deployment -A |  grep ibm-licensing-operator
 ```
 
 Make sure the project returned by the command matches the environment variable PROJECT_LICENSE_SERVICE in your environment variables script `cpd_vars_522.sh`.
-<br>
+`<br>`
 Upgrade the License Service.
 
 ```
@@ -333,14 +336,15 @@ oc apply --server-side --force-conflicts -f cluster_scoped_resources.yaml
 ```
 
 Have a record of the resources that you generated.
+
 ```
 mv cluster_scoped_resources.yaml ${VERSION}-${PROJECT_CPD_INST_OPERATORS}-cluster_scoped_resources.yaml
 ```
 
 3.Applying your entitlements to monitor and report use against license terms
-<br>
+`<br>`
 **Non-Production enironment**
-<br>
+`<br>`
 Apply the IBM Cloud Pak for Data Enterprise Edition for the non-production environment.
 
 ```
@@ -376,6 +380,7 @@ cpd-cli manage apply-entitlement \
 ```
 
 Apply the watsonx Orchestrate license for the non-production environment.
+
 ```
 cpd-cli manage apply-entitlement \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
@@ -397,13 +402,15 @@ cpd-cli manage apply-entitlement \
 --entitlement=text-to-speech
 ```
 
-Reference: 
-<br>
+Reference:
+`<br>`
 
 [Applying your entitlements](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=aye-applying-your-entitlements-without-node-pinning-3)
 
 #### 2.1.3 Create image pull secrets for IBM Software Hub instance
+
 Log in to OpenShift cluster.
+
 ```
 ${OC_LOGIN}
 ```
@@ -429,11 +436,13 @@ EOF
 ```
 
 Create the image pull secret in the `operators` project for the instance.
+
 ```
 oc create secret docker-registry ${IMAGE_PULL_SECRET} --from-file ".dockerconfigjson=dockerconfig.json" --namespace=${PROJECT_CPD_INST_OPERATORS}
 ```
 
 Create the image pull secret in the `operands` project for the instance.
+
 ```
 oc create secret docker-registry ${IMAGE_PULL_SECRET} --from-file ".dockerconfigjson=dockerconfig.json" --namespace=${PROJECT_CPD_INST_OPERANDS}
 ```
@@ -469,10 +478,12 @@ cpd-cli manage get-cr-status \
 --components=cpd_platform
 ```
 
-### 2.2 Upgrade watsonx Orchestrate
-#### 2.2.1 Specify the parameters in the `install-options.yml` file
+### 2.2 Upgrade watsonx Orchestrate 
+
+#### 2.2.1 Specify the parameters in the `override.yaml` file (Pending Manu's confirmation)
+
 <br>
-Specify the following options in the `install-options.yml` file in the `work` directory. Create the `install-options.yml` file if it doesn't exist in the `work` directory.
+Specify the following options in the `override.yaml` file in the `work` directory. Create the `override.yaml` file if it doesn't exist in the `work` directory.
 
 ```
 ################################################################################
@@ -499,6 +510,7 @@ podman inspect olm-utils-play-v3 | jq -r '.[0].Mounts' |jq -r '.[] | select(.Des
 ```
 
 #### 2.2.2 Upgrade the watsonx Orchestrate service.
+
 - Log in to the cluster
 
 ```
@@ -521,8 +533,9 @@ cpd-cli manage install-components \
 ```
 
 **Note:**
-<br>
+`<br>`
 During the watsonx Orchestrate reconcilation, check if the UAB enabled in the custom resource.
+
 ```
 oc get wo wo --namespace="${PROJECT_CPD_INST_OPERANDS}" -o yaml | grep uab -A5 -B5
 ```
@@ -541,6 +554,7 @@ Double confirmation to ensure the UAB disabled.
 <br>
 
 - Validate the upgrade
+
 ```
 cpd-cli manage get-cr-status \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
@@ -548,9 +562,11 @@ cpd-cli manage get-cr-status \
 ```
 
 #### 2.2.3 Apply the hot fix if any
+
 This is a place holder.
 
 ### 2.3 Upgrade the watsonx.ai services
+
 - Log in to the cluster
 
 ```
@@ -572,6 +588,7 @@ cpd-cli manage install-components \
 ```
 
 - Validate the upgrade
+
 ```
 cpd-cli manage get-cr-status \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
@@ -581,6 +598,7 @@ cpd-cli manage get-cr-status \
 Check the version of each custom resource by following the [Operator and operand versions](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=versions-522-october-2025)
 
 #### 2.4 Upgrade the watsonx.governance services
+
 - Log in to the cluster
 
 ```
@@ -602,6 +620,7 @@ cpd-cli manage install-components \
 ```
 
 - Validate the upgrade
+
 ```
 cpd-cli manage get-cr-status \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
@@ -609,6 +628,7 @@ cpd-cli manage get-cr-status \
 ```
 
 - Upgrade the service instances
+
 ```
 cpd-cli service-instance upgrade \
 --service-type=openpages \
@@ -617,6 +637,7 @@ cpd-cli service-instance upgrade \
 ```
 
 Validate the service instance upgrade.
+
 ```
 cpd-cli service-instance upgrade \
 --service-type=openpages \
@@ -625,6 +646,7 @@ cpd-cli service-instance upgrade \
 ```
 
 #### 2.5 Upgrade the watson Speech services
+
 - Log in to the cluster
 
 ```
@@ -646,6 +668,7 @@ cpd-cli manage install-components \
 ```
 
 - Validate the upgrade
+
 ```
 cpd-cli manage get-cr-status \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
@@ -685,11 +708,15 @@ cpd-cli manage get-cr-status \
 ```
 
 #### 2.7 Upgrade the cpdbr service
+
 1.Set the `OADP_OPERATOR_NS` environment variable to the project where the OADP operator is installed:
+
 ```
 export OADP_OPERATOR_NS=<oadp-operator-project>
 ```
+
 2.Upgrade the cpdbr-tenant component for the instance.
+
 ```
 cpd-cli oadp install \
 --component=cpdbr-tenant \
@@ -705,6 +732,7 @@ cpd-cli oadp install \
 ```
 
 ## Summarize and close out the upgrade
+
 1)Prepare for applying the TemporaryPatch if needed as a post-upgrade task.
 
 2)Schedule a wrap-up meeting and review the upgrade procedure and lessons learned from it.
