@@ -561,9 +561,14 @@ cpd-cli manage get-cr-status \
 --components=watsonx_orchestrate
 ```
 
-#### 2.2.3 Apply the hot fix if any
+#### 2.2.3 Apply the hot fix for HPA to scale asssitant
 
-This is a place holder.
+1. https://github.ibm.com/WatsonOrchestrate/wo-tracker/issues/50298
+2. Additional blocker: TS021044182
+
+Possible fixes needed:
+
+[TS020907695](https://ibmsf.lightning.force.com/lightning/r/500gJ0000070UA9QAM/view) and [TS021044376](https://ibmsf.lightning.force.com/lightning/r/500gJ000007U1tvQAC/view)
 
 ### 2.3 Upgrade the watsonx.ai services
 
