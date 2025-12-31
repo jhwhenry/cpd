@@ -478,9 +478,9 @@ cpd-cli manage get-cr-status \
 --components=cpd_platform
 ```
 
-### 2.2 Upgrade watsonx Orchestrate 
+### 2.2 Upgrade watsonx Orchestrate
 
-#### 2.2.1 Specify the parameters in the `override.yaml` file (Pending Manu's confirmation)
+#### 2.2.1 Specify the parameters in the `override.yaml` file (Pending Babu's confirmation, the below is not valid)
 
 <br>
 Specify the following options in the `override.yaml` file in the `work` directory. Create the `override.yaml` file if it doesn't exist in the `work` directory.
@@ -506,7 +506,7 @@ Where should it be placed in the `install-options.yml`? Or should we use the ove
 Make sure you edit or create the `install-options.yml` file in the right `work` folder. You can identify the location of the `work` folder using below command.
 
 ```
-podman inspect olm-utils-play-v3 | jq -r '.[0].Mounts' |jq -r '.[] | select(.Destination == "/tmp/work") | .Source'
+podman inspect olm-utils-play-v4 | jq -r '.[0].Mounts' |jq -r '.[] | select(.Destination == "/tmp/work") | .Source'
 ```
 
 #### 2.2.2 Upgrade the watsonx Orchestrate service.
@@ -528,7 +528,7 @@ cpd-cli manage install-components \
 --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --image_pull_prefix=${IMAGE_PULL_PREFIX} \
 --image_pull_secret=${IMAGE_PULL_SECRET} \
---param-file=/tmp/work/install-options.yml \
+--param-file=/tmp/work/override.yml \
 --upgrade=true
 ```
 
