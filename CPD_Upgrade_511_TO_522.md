@@ -13,7 +13,7 @@ From
 ```
 OCP: 4.16
 CPD: 5.1.1
-Storage: Storage Fusion 2.7.2 (Check Version)
+Storage: Storage Fusion 2.7.2 
 Componenets: cpd_platform,wkc,analyticsengine,datalineage,ws,ws_runtimes,wml,openscale,db2wh,match360
 ```
 
@@ -22,7 +22,7 @@ To
 ```
 OCP: 4.16
 CPD: 5.2.2
-Storage: Storage Fusion 2.7.2 (Check Version)
+Storage: Storage Fusion 2.7.2 
 Componenets: cpd_platform,wkc,analyticsengine,datalineage,ws,ws_runtimes,wml,openscale,db2wh,match360
 ```
 
@@ -40,7 +40,7 @@ Make sure there are no scheduled backups conflicting with the scheduled upgrade.
 
 If a private container registry is in-use to host the IBM Cloud Pak for Data software images, you must mirror the updated images from the IBM® Entitled Registry to the private container registry. `<br>`
 Reference: `<br>`
-[Mirroring images to private image registry](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=prufpcr-mirroring-images-private-container-registry)
+[Mirroring images to private image registry](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=prufpcr-mirroring-images-private-container-registry)
 `<br>`
 
 #### 3. The permissions required for the upgrade is ready
@@ -53,7 +53,7 @@ Reference: `<br>`
 
 However, if you want to enable users with fewer permissions to complete some of the installation tasks, follow the steps in this documentation and get the roles with required permission prepared.
 
-[Reauthorizing the instance administrator](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=hub-reauthorizing-instance-administrator)
+[Reauthorizing the instance administrator](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=hub-reauthorizing-instance-administrator)
 
 <br>
 
@@ -69,7 +69,7 @@ The Cloud Pak for Data administrator role or permissions is required for upgradi
 
 The Watson Studio Runtime 22.2 and Runtime 23.1 are not included in IBM® Software Hub. If you want to continue using environments that are based on Runtime 22.2 or Runtime 23.1, you must migrate them.
 `<br>`
-[Migrating environments based on Runtime 22.2 and Runtime 23.1 from IBM Cloud Pak® for Data 4.8](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=u-migrating-environments-based-runtime-222-runtime-231-from-cloud-pak-data-48-50)
+[Migrating environments based on Runtime 22.2 and Runtime 23.1 from IBM Cloud Pak® for Data 4.8](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=u-migrating-environments-based-runtime-222-runtime-231-from-cloud-pak-data-48-50)
 
 #### 5. A pre-upgrade health check is made to ensure the cluster's readiness for upgrade.
 
@@ -150,7 +150,6 @@ Capture data for the CPD 5.1.1 instance. No sensitive information is collected. 
 cpd-cli manage collect-state \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
-
 
 Collect  the number of catalog-api instances
 
@@ -241,7 +240,6 @@ check_upgrade_case(){
 check_upgrade_case
 ```
 
-
 Backup the RSI patches.
 
 ```
@@ -269,7 +267,7 @@ oc get svc finley-public -o yaml -n ${PROJECT_CPD_INST_OPERANDS} > finley-public
 Remove the hotfixes by removing the images or configurations from the CRs. (Note: Hot fixes should already be removed)
 `<br>`
 
-1. Double check WKC maintenance mode and usefdb configuration. (WKC hanldes Hotfix removal on its own)
+1. Double check WKC maintenance mode and usefdb configuration. (WKC handles Hotfix removal on its own)
 
 ```
 useFDB: false
@@ -300,24 +298,10 @@ oc get AnalyticsEngine analyticsengine-sample -o yaml
 - 3.Patch the CCS and uninstall the CCS hot fixes.
   `<br>`
 
-1)Edit the CCS cr with below command. 
+1)Edit the CCS cr with below command. Hotfix auto removal is enabled
 
-```
-oc edit CCS ccs-cr
-```
+2)Apply preventative measures for OpenSearch pvc customization problem
 
-2)Remove the hot fix images from the CCS custom resource
-
-```
-  image_digests:
-    asset_files_api_image: sha256:bfa820ffebcf55b87f7827037daee7ec074d0435139e57acbb494df19aee0e98
-    catalog_api_image: sha256:d64c61cbc010d7535b33457439b5cb65c276346d4533963a9a5165471840beb4
-    portal_catalog_image: sha256:33e51a0c7eb16ac4b5dbbcd57b2ebe62313435bab2c0c789a1801a1c2c00c77d
-    portal_projects_image: sha256:93c38bf9870a5e8f9399b1e90e09f32e5f556d5f6e03b4a447a400eddb08dc4e
-    wkc_search_image: sha256:64e59002617d48428cd59a55bbad5ebf0ccf68644fd627fd1e33f6558dbc8b68
-```
-
-3)Apply preventative measures for OpenSearch pvc customization problem
 `<br>`
 This step is for applying the preventative measures for OpenSearch problem. Applying the preventative measures in this timing can also help to minimize the number of CCS operator reconcilations.
 `<br>`
@@ -348,7 +332,6 @@ elasticsearch_backups_persistence_size: "608Gi"
 This will make sure that the Opensearch operator will properly reconcile, - as provided values will match the state of the cluster.
 
 4) (Search has already been Migrated)
-
 
 6)Remove the `ignoreForMaintenance: true` from the CCS custom resource
 
@@ -555,7 +538,7 @@ export OLM_UTILS_LAUNCH_ARGS=" --network=host"
 
 ```
 
-For details please refer to IBM documentation [Obtaining the olm-utils-v3 image](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=pruirn-obtaining-olm-utils-v3-image)
+For details please refer to IBM documentation [Obtaining the olm-utils-v3 image](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=pruirn-obtaining-olm-utils-v3-image)
 
 #### 1.2.4 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
 
@@ -618,7 +601,7 @@ The profile must be associated with a Cloud Pak for Data user who has either the
 
 Click this link and follow these steps for getting it done.
 
-[Creating a profile to use the cpd-cli management commands](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=cli-creating-cpd-profile)
+[Creating a profile to use the cpd-cli management commands](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=cli-creating-cpd-profile)
 
 ### 1.3 Health check OCP & CPD
 
@@ -764,7 +747,7 @@ cpd-cli manage apply-entitlement \
 
 Reference: `<br>`
 
-[Applying your entitlements](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=puish-applying-your-entitlements)
+[Applying your entitlements](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=puish-applying-your-entitlements)
 
 #### 2.1.3 Upgrading to IBM Software Hub
 
@@ -856,7 +839,7 @@ Check the version for both CSV and Subscription and ensure the CPD Operators hav
 oc get csv,sub -n ${PROJECT_CPD_INST_OPERATORS}
 ```
 
-[Operator and operand versions](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=planning-operator-operand-versions)
+[Operator and operand versions](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=planning-operator-operand-versions)
 
 <br>
 
@@ -1227,7 +1210,7 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --co
 
 <br>
 
-[Customizing the branding of the web client](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=users-customizing-branding-web-client)
+[Customizing the branding of the web client](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=users-customizing-branding-web-client)
 
 <br>
 
@@ -1235,7 +1218,7 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --co
 
 <br>
 
-[Create a custom route using cpd-cli](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=platform-modifying-route)
+[Create a custom route using cpd-cli](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=platform-modifying-route)
 
 **Note**
 `<br>`
@@ -1244,14 +1227,11 @@ Refer to the backup file `routes.yaml` created in the Step **1.1.2**.
 
 ### 3.2 CCS post-upgrade tasks (Need to check with Steven)
 
-
 https://www.ibm.com/docs/en/software-hub/5.2.x?topic=services-completing-catalog-api-migration
 
 https://www.ibm.com/docs/en/software-hub/5.2.x?topic=upgrading-post-upgrade-setup-knowledge-catalog
 
-
 ### 3.3 WKC post-upgrade tasks (Need to check with Steven)
-
 
 ## Part 4: Maintenance (Migrated to leverage Sanjit's Runbook)
 
