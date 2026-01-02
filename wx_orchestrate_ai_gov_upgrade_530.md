@@ -480,7 +480,7 @@ cpd-cli manage get-cr-status \
 
 ### 2.2 Upgrade watsonx Orchestrate
 
-#### 2.2.1 Specify the parameters in the `override.yaml` file (Pending Babu's confirmation, the below is not valid)
+#### 2.2.1 Specify the parameters in the `override.yaml` file (Pending Babu's confirmation, the below is not valid + Models)
 
 <br>
 Specify the following options in the `override.yaml` file in the `work` directory. Create the `override.yaml` file if it doesn't exist in the `work` directory.
@@ -537,17 +537,38 @@ cpd-cli manage install-components \
 During the watsonx Orchestrate reconcilation, check if the UAB enabled in the custom resource.
 
 ```
-oc get wo wo --namespace="${PROJECT_CPD_INST_OPERANDS}" -o yaml | grep uab -A5 -B5
+oc get wo wo --namespace="${PROJECT_CPD_INST_OPERANDS}" -o yaml 
 ```
 
 If UAB enabled, then disable it using below command.
 
 ```
 oc patch wo wo \
-  --namespace="${PROJECT_CPD_INST_OPERANDS}" \
-  --type=merge \
-  --patch='{"spec": {"wxolite": {"enabled": false}, "uab": {"enabled": false}}}'
+ --namespace="${PROJECT_CPD_INST_OPERANDS}" \
+ --type='merge' \
+ -p '{"spec":{"uab":{"enabled":false}}}'
 ```
+
+If the abInstance is not showing "wo-wa-assistantbuilder".
+
+```
+oc patch wo wo \
+ --namespace="${PROJECT_CPD_INST_OPERANDS}" \
+ --type='merge' \
+ -p '{"spec":{"watsonAssistants":{"abInstance":{"config":{"name":"wo-wa-assistantbuilder"}}}}}'
+```
+
+If the Models are incorrect and if IFM is disabled.
+
+```
+oc patch wo wo \
+ --namespace="${PROJECT_CPD_INST_OPERANDS}" \
+ --type='merge' \
+  -p '{"spec":{"watsonAssistants":{"config":{"configOverrides":{"enabled_components":{"store":{"ifm":true}},"ifm":{"model_config":{"ootb":{"ibm-slate-30m-english-rtrvr":{},"llama-4-maverick-17b-128e-instruct-int4":{},"llama-4-maverick-17b-128e-instruct-fp8":{},"granite-3-2-8b-instruct":{}}}}},"watsonx_enabled":true}}}}'
+
+```
+
+
 
 Double confirmation to ensure the UAB disabled.
 
