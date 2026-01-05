@@ -733,7 +733,69 @@ cpd-cli manage get-cr-status \
 --components=voice_gateway
 ```
 
-#### 2.7 Upgrade the cpdbr service
+#### 2.7 Upgrade the DB2
+
+- Log in to the cluster
+
+```
+${CPDM_OC_LOGIN}
+```
+
+- Run the upgrade command
+
+```
+cpd-cli manage install-components \
+--license_acceptance=true \
+--components=db2oltp \
+--release=${VERSION} \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--image_pull_prefix=${IMAGE_PULL_PREFIX} \
+--image_pull_secret=${IMAGE_PULL_SECRET} \
+--upgrade=true
+```
+
+- Validate the upgrade
+
+```
+cpd-cli manage get-cr-status \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--components=db2oltp
+```
+
+
+#### 2.8 Upgrade the Cognos Analytics
+
+- Log in to the cluster
+
+```
+${CPDM_OC_LOGIN}
+```
+
+- Run the upgrade command
+
+```
+cpd-cli manage install-components \
+--license_acceptance=true \
+--components=cognos_analytics \
+--release=${VERSION} \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--image_pull_prefix=${IMAGE_PULL_PREFIX} \
+--image_pull_secret=${IMAGE_PULL_SECRET} \
+--upgrade=true
+```
+
+- Validate the upgrade
+
+```
+cpd-cli manage get-cr-status \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--components=cognos_analytics
+```
+
+
+#### 2.9 Upgrade the cpdbr service
 
 1.Set the `OADP_OPERATOR_NS` environment variable to the project where the OADP operator is installed:
 
