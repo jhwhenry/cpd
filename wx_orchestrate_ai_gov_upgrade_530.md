@@ -659,17 +659,15 @@ cpd-cli manage get-cr-status \
 
 Check the version of each custom resource by following the [Operator and operand versions](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=versions-522-october-2025)
 
-##### Adding Models (Can be done Post-upgrade, generally safer)
+##### Adding Models (May be performed post-upgrade)
 
 Patch the IFM CR with updated models (Note: This will remove **llama-3-2-90b-vision-instruct** model)
-
-- Replace with desired model **llama-4-maverick-17b-128e-instruct-int4** or**llama-4-maverick-17b-128e-instruct-fp8**
 
 ```
 oc patch watsonxaiifm watsonxaiifm-cr \
 --namespace=${PROJECT_CPD_INST_OPERANDS} \
 --type=merge \
---patch='{"spec":{"install_model_list": ["<UPDATE WITH NEW MODEL>","ibm-slate-30m-english-rtrvr","granite-3-2-8b-instruct"]}}'
+--patch='{"spec":{"install_model_list": ["llama-4-maverick-17b-128e-instruct-fp8","ibm-slate-30m-english-rtrvr","granite-3-2-8b-instruct"]}}'
 
 ```
 
