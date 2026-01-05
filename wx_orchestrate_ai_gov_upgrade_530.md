@@ -14,7 +14,7 @@ From
 OCP: OpenShift Dedicated 4.17.26 on Google Cloud
 CPD: 5.2.2
 Storage: Google Cloud Netapp Volumes and Persistent Disk on Google Cloud
-Componenets: cpd_platform,watsonx_orchestrate,watsonx_ai,watsonx_governance,watson_speech,voice_gateway
+Componenets: cpd_platform,watsonx_orchestrate,watsonx_ai,watsonx_governance,watson_speech,voice_gateway,db2oltp,cognos_analytics
 ```
 
 To
@@ -23,7 +23,7 @@ To
 OCP: OpenShift Dedicated 4.17.26 on Google Cloud 
 CPD: 5.3.0
 Storage: Google Cloud Netapp Volumes and Persistent Disk on Google Cloud
-Componenets: cpd_platform,watsonx_orchestrate,watsonx_ai,watsonx_governance,watson_speech,voice_gateway
+Componenets: cpd_platform,watsonx_orchestrate,watsonx_ai,watsonx_governance,watson_speech,voice_gateway,db2oltp,cognos_analytics
 ```
 
 ## Pre-requisites
@@ -508,6 +508,45 @@ Make sure you edit or create the `install-options.yml` file in the right `work` 
 ```
 podman inspect olm-utils-play-v4 | jq -r '.[0].Mounts' |jq -r '.[] | select(.Destination == "/tmp/work") | .Source'
 ```
+
+##### Backup the Orechestrate Assistant Postgres
+
+Identify the backup cronjob:
+
+```
+export STORE_CRONJOB_POD=$(oc get pods -l component=store-cronjob --no-headers | awk 'NR==1{print $1}')
+echo $STORE_CRONJOB_POD
+```
+
+Create a Debug pod and check for the latest "store.dump" file.
+
+```
+oc debug ${STORE_CRONJOB_POD}
+
+
+ls -l /store-backups/
+```
+
+Copy the name of the lastest backup file. 
+
+Open up a dulpicate terminal while the debug pod is still live and copy the backup out onto your bastion.
+
+```
+export STORE_CRONJOB_DEBUG_POD=$(oc get pods | grep debug | awk '{print $1}')
+echo ${STORE_CRONJOB_DEBUG_POD}
+
+export STORE_DUMP_FILE=store.dump_<REPLACE WITH LATEST FILE TIME>
+echo ${STORE_DUMP_FILE}
+
+oc cp ${STORE_CRONJOB_DEBUG_POD}:/store-backups/${STORE_DUMP_FILE} ${STORE_DUMP_FILE}
+```
+
+Back up the secret for this database.
+
+```
+oc get secret wo-wa-auth-encryption -n ${PROJECT_CPD_INST_OPERANDS} -o yaml > wo-wa-auth-encryption-backup.yaml
+```
+
 
 #### 2.2.2 Upgrade the watsonx Orchestrate service.
 
