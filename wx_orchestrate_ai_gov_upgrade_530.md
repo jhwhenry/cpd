@@ -482,7 +482,6 @@ cpd-cli manage get-cr-status \
 
 #### 2.2.1 Specify the parameters in the `override.yaml` file (Pending Babu's confirmation, the below is not valid)
 
-<br>
 Specify the following options in the `override.yaml` file in the `work` directory. Create the `override.yaml` file if it doesn't exist in the `work` directory.
 
 ```
@@ -491,6 +490,8 @@ Specify the following options in the `override.yaml` file in the `work` director
 ################################################################################ 
 watsonxOrchestrate:
   installMode: agentic_skills_assistant
+  wxolite:
+    enabled: false
   uab:
     enabled: false
   watsonxAI:
