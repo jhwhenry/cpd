@@ -585,24 +585,6 @@ oc patch wo wo \
  -p '{"spec":{"uab":{"enabled":false}}}'
 ```
 
-If the abInstance is not showing "wo-wa-assistantbuilder".
-
-```
-oc patch wo wo \
- --namespace="${PROJECT_CPD_INST_OPERANDS}" \
- --type='merge' \
- -p '{"spec":{"watsonAssistants":{"abInstance":{"config":{"name":"wo-wa-assistantbuilder"}}}}}'
-```
-
-If the if IFM is disabled.
-
-```
-oc patch wo wo --namespace="${PROJECT_CPD_INST_OPERANDS}" --type='merge' -p '{"spec":{"watsonAssistants":{"config":{"configOverrides":{"enabled_components":{"store":{"ifm":true}},"ifm":{}},"watsonx_enabled":true}}}}'
-
-```
-
-
-
 Double confirmation to ensure the UAB disabled.
 
 <br>
@@ -617,7 +599,11 @@ cpd-cli manage get-cr-status \
 
 #### 2.2.3 Apply the hot fix
 
-1.[watsonx Orchestrate 5.3.0 hot fix](https://www.ibm.com/support/pages/applying-watsonx-orchestrate-530-hotfix-hotfix-0)
+1.Apply the watsonx Orchestrate 5.3.0 hot fix
+
+<br>
+
+[watsonx Orchestrate 5.3.0 hot fix](https://www.ibm.com/support/pages/applying-watsonx-orchestrate-530-hotfix-hotfix-0)
 
 2. Possible fixes needed:
 
