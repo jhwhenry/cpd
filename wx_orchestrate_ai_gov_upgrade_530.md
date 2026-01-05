@@ -480,7 +480,7 @@ cpd-cli manage get-cr-status \
 
 ### 2.2 Upgrade watsonx Orchestrate
 
-#### 2.2.1 Specify the parameters in the `override.yaml` file (Pending Babu's confirmation, the below is not valid + Models)
+#### 2.2.1 Specify the parameters in the `override.yaml` file (Pending Babu's confirmation, the below is not valid)
 
 <br>
 Specify the following options in the `override.yaml` file in the `work` directory. Create the `override.yaml` file if it doesn't exist in the `work` directory.
@@ -597,13 +597,10 @@ oc patch wo wo \
  -p '{"spec":{"watsonAssistants":{"abInstance":{"config":{"name":"wo-wa-assistantbuilder"}}}}}'
 ```
 
-If the Models are incorrect and if IFM is disabled.
+If the if IFM is disabled.
 
 ```
-oc patch wo wo \
- --namespace="${PROJECT_CPD_INST_OPERANDS}" \
- --type='merge' \
-  -p '{"spec":{"watsonAssistants":{"config":{"configOverrides":{"enabled_components":{"store":{"ifm":true}},"ifm":{"model_config":{"ootb":{"ibm-slate-30m-english-rtrvr":{},"llama-4-maverick-17b-128e-instruct-int4":{},"llama-4-maverick-17b-128e-instruct-fp8":{},"granite-3-2-8b-instruct":{}}}}},"watsonx_enabled":true}}}}'
+oc patch wo wo --namespace="${PROJECT_CPD_INST_OPERANDS}" --type='merge' -p '{"spec":{"watsonAssistants":{"config":{"configOverrides":{"enabled_components":{"store":{"ifm":true}},"ifm":{}},"watsonx_enabled":true}}}}'
 
 ```
 
@@ -661,6 +658,20 @@ cpd-cli manage get-cr-status \
 ```
 
 Check the version of each custom resource by following the [Operator and operand versions](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=versions-522-october-2025)
+
+##### Adding Models (Can be done Post-upgrade, generally safer)
+
+Patch the IFM CR with updated models (Note: This will remove **llama-3-2-90b-vision-instruct** model)
+
+- Replace with desired model **llama-4-maverick-17b-128e-instruct-int4** or**llama-4-maverick-17b-128e-instruct-fp8**
+
+```
+oc patch watsonxaiifm watsonxaiifm-cr \
+--namespace=${PROJECT_CPD_INST_OPERANDS} \
+--type=merge \
+--patch='{"spec":{"install_model_list": ["<UPDATE WITH NEW MODEL>","ibm-slate-30m-english-rtrvr","granite-3-2-8b-instruct"]}}'
+
+```
 
 #### 2.4 Upgrade the watsonx.governance services
 
