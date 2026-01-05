@@ -499,12 +499,8 @@ watsonxOrchestrate:
 ```
 
 **Note:**
-
 <br>
-Where should it be placed in the `install-options.yml`? Or should we use the override.yaml instead?
-
-<br>
-Make sure you edit or create the `install-options.yml` file in the right `work` folder. You can identify the location of the `work` folder using below command.
+Make sure you edit or create the `override.yaml` file in the right `work` folder. You can identify the location of the `work` folder using below command.
 
 ```
 podman inspect olm-utils-play-v4 | jq -r '.[0].Mounts' |jq -r '.[] | select(.Destination == "/tmp/work") | .Source'
@@ -573,7 +569,7 @@ cpd-cli manage install-components \
 ```
 
 **Note:**
-`<br>`
+<br>
 During the watsonx Orchestrate reconcilation, check if the UAB enabled in the custom resource.
 
 ```
@@ -619,12 +615,11 @@ cpd-cli manage get-cr-status \
 --components=watsonx_orchestrate
 ```
 
-#### 2.2.3 Apply the hot fix for HPA to scale asssitant
+#### 2.2.3 Apply the hot fix
 
-1. https://github.ibm.com/WatsonOrchestrate/wo-tracker/issues/50298
-2. Additional blocker: TS021044182
+1.[watsonx Orchestrate 5.3.0 hot fix](https://www.ibm.com/support/pages/applying-watsonx-orchestrate-530-hotfix-hotfix-0)
 
-Possible fixes needed:
+2. Possible fixes needed:
 
 [TS020907695](https://ibmsf.lightning.force.com/lightning/r/500gJ0000070UA9QAM/view) and [TS021044376](https://ibmsf.lightning.force.com/lightning/r/500gJ000007U1tvQAC/view)
 
