@@ -72,8 +72,10 @@ The Cloud Pak for Data administrator role or permissions is required for upgradi
 
 #### 4. Migrate environments based on Watson Studio Runtime 22.2 and Runtime 23.1 from IBM Cloud Pak® for Data 5.1 (optional)
 
-The Watson Studio Runtime 22.2 and Runtime 23.1 are not included in IBM® Software Hub. If you want to continue using environments that are based on Runtime 22.2 or Runtime 23.1, you must migrate them.
-`<br>`
+Runtime 22.2 and Runtime 23.1 are not included in IBM® Software Hub. To continue using notebooks, scripts, and jobs that use environments based on Runtime 22.2 or Runtime 23.1, you must review them and manually migrate them, if necessary.
+
+<br>
+
 [Migrating notebooks, scripts, and jobs that use outdated environments](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=upgrading-migrating-notebooks-scripts-jobs-that-use-outdated-environments)
 
 #### 5. A pre-upgrade health check is made to ensure the cluster's readiness for upgrade.
@@ -119,14 +121,6 @@ Part 3: Post-upgrade
 3.3 WKC post-upgrade tasks
 
 Part 4: Maintenance
-4.1 Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage
-4.2 Changing Db2 configuration settings
-4.3 Configure the idle session timeout
-4.4 Increase the number of nginx worker connections
-4.5 Increase ephemeral storage for zen-watchdog-serviceability-job
-4.6 Update wdp-lineage deployment for addressing the potential Db2 high CPU and Memory usage issue
-4.7 Apply the workaround for MDE Job
-4.8 Upgrade the Backup & Restore service and application
 
 Summarize and close out the upgrade
 
@@ -142,7 +136,7 @@ Review upgrade runbook
 
 #### 1.1.2 Backup before upgrade
 
-Note: Create a folder for 5.1.1 and maintain below created copies in that folder. `<br>`
+Note: Create a folder for 5.2.2 and maintain below created copies in that folder. `<br>`
 Login to the OCP cluster for cpd-cli utility.
 
 ```
