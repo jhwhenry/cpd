@@ -482,7 +482,6 @@ cpd-cli manage get-cr-status \
 
 #### 2.2.1 Specify the parameters in the `override.yaml` file (Pending Babu's confirmation, the below is not valid)
 
-<br>
 Specify the following options in the `override.yaml` file in the `work` directory. Create the `override.yaml` file if it doesn't exist in the `work` directory.
 
 ```
@@ -491,6 +490,8 @@ Specify the following options in the `override.yaml` file in the `work` director
 ################################################################################ 
 watsonxOrchestrate:
   installMode: agentic_skills_assistant
+  wxolite:
+    enabled: false
   uab:
     enabled: false
   watsonxAI:
@@ -498,12 +499,8 @@ watsonxOrchestrate:
 ```
 
 **Note:**
-
-<br>
-Where should it be placed in the `install-options.yml`? Or should we use the override.yaml instead?
-
-<br>
-Make sure you edit or create the `install-options.yml` file in the right `work` folder. You can identify the location of the `work` folder using below command.
+`<br>`
+Make sure you edit or create the `override.yaml` file in the right `work` folder. You can identify the location of the `work` folder using below command.
 
 ```
 podman inspect olm-utils-play-v4 | jq -r '.[0].Mounts' |jq -r '.[] | select(.Destination == "/tmp/work") | .Source'
@@ -591,6 +588,7 @@ oc patch wo wo \
  -p '{"spec":{"uab":{"enabled":false}}}'
 ```
 
+<<<<<<< HEAD
 If the abInstance is not showing "wo-wa-assistantbuilder".
 
 ```
@@ -607,7 +605,16 @@ oc patch wo wo --namespace="${PROJECT_CPD_INST_OPERANDS}" --type='merge' -p '{"s
 
 ```
 
-Double confirmation to ensure the UAB disabled.
+=======
+
+>>>>>>> 85324bb32bd59e6fb93e5874d2963664ab81001c
+>>>>>>> Double confirmation to ensure the UAB disabled.
+>>>>>>>
+>>>>>>
+>>>>>
+>>>>
+>>>
+>>
 
 <br>
 
@@ -619,13 +626,29 @@ cpd-cli manage get-cr-status \
 --components=watsonx_orchestrate
 ```
 
-#### 2.2.3 Apply the hot fix for HPA to scale asssitant
+#### 2.2.3 Apply the hot fix
+
+<<<<<<< HEAD
 
 1. HOTFIX NEEDED FOR wo-agentic-task-manager Secret for Babu + Premdas
 2. https://github.ibm.com/WatsonOrchestrate/wo-tracker/issues/50298
 3. Additional blocker: TS021044182
+   =======
+   1.Apply the watsonx Orchestrate 5.3.0 hot fix
 
-Possible fixes needed:
+>>>>>>> 85324bb32bd59e6fb93e5874d2963664ab81001c
+>>>>>>>
+>>>>>>
+>>>>>
+>>>>
+>>>
+>>
+
+<br>
+
+[watsonx Orchestrate 5.3.0 hot fix](https://www.ibm.com/support/pages/applying-watsonx-orchestrate-530-hotfix-hotfix-0)
+
+2. Possible fixes needed:
 
 [TS020907695](https://ibmsf.lightning.force.com/lightning/r/500gJ0000070UA9QAM/view) and [TS021044376](https://ibmsf.lightning.force.com/lightning/r/500gJ000007U1tvQAC/view)
 
@@ -823,7 +846,6 @@ spec:
 
 ......
 ```
-
 
 - Log in to the cluster
 
