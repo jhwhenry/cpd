@@ -134,23 +134,17 @@ Summarize and close out the upgrade
 
 Review upgrade runbook
 
-#### 1.1.2 Backup before upgrade
+#### 1.1.2 Pre-migration check
 
-Note: Create a folder for 5.2.2 and maintain below created copies in that folder. `<br>`
+Note: Create a folder for 5.2.2 and maintain below created copies in that folder. 
+<br>
 Login to the OCP cluster for cpd-cli utility.
 
 ```
-cpd-cli manage login-to-ocp --username=${OCP_USERNAME} --password=${OCP_PASSWORD} --server=${OCP_URL}
+${CPDM_OC_LOGIN}
 ```
 
-Capture data for the CPD 5.1.1 instance. No sensitive information is collected. Only the operational state of the Kubernetes artifacts is collected.The output of the command is stored in a file named collect-state.tar.gz in the cpd-cli-workspace/olm-utils-workspace/work directory.
-
-```
-cpd-cli manage collect-state \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
-```
-
-Collect  the number of catalog-api instances
+Collect the catalog-api migration relevant information.
 
 - Set  INSTANCE_URL to CPD route
 
@@ -247,24 +241,10 @@ cpd-cli manage get-rsi-patch-info \
 --all
 ```
 
-Backup the SSO configuration:
-
-```
-oc get configmap saml-configmap -o yaml > saml-configmap-cm.yaml
-```
-
-Backup deployments and svc that need to be modified after upgrade.
-
-```
-oc get deploy asset-files-api -o yaml -n ${PROJECT_CPD_INST_OPERANDS} > asset-files-api-deploy-510.yaml
-oc get deploy catalog-api -o yaml -n ${PROJECT_CPD_INST_OPERANDS} > catalog-api-deploy-510.yaml
-oc get svc finley-public -o yaml -n ${PROJECT_CPD_INST_OPERANDS} > finley-public-svc-510.yaml
-```
-
 #### 1.1.3 Uninstall all hotfixes and apply preventative measures
 
 Remove the hotfixes by removing the images or configurations from the CRs. (Note: Hot fixes should already be removed)
-`<br>`
+<br>
 
 1. Double check WKC maintenance mode and usefdb configuration. (WKC handles Hotfix removal on its own)
 
