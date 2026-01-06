@@ -652,6 +652,8 @@ cpd-cli manage get-cr-status \
 
 [TS020907695](https://ibmsf.lightning.force.com/lightning/r/500gJ0000070UA9QAM/view) and [TS021044376](https://ibmsf.lightning.force.com/lightning/r/500gJ000007U1tvQAC/view)
 
+HOTFIX from Babu and Premdas (to resolve creating archer conversation controller deployment)
+
 ### 2.3 Upgrade the watsonx.ai services
 
 - Log in to the cluster
@@ -907,7 +909,11 @@ cpd-cli manage get-cr-status \
 --components=voice_gateway
 ```
 
-#### 2.7 Upgrade the DB2
+#### 2.7 Upgrade the DB2 with no service instances
+
+DB2 is upgraded as a depdancy for WatsonxGoverance. However, just to be safe it is best to rerun the install component. 
+
+Note: [Additional steps are needed for upgrade the instances of DB2.](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-52-39#cli-upgrade__svc-inst__title__1) 
 
 - Log in to the cluster
 
@@ -937,7 +943,9 @@ cpd-cli manage get-cr-status \
 --components=db2oltp
 ```
 
-#### 2.8 Upgrade the Cognos Analytics
+#### 2.8 Upgrade the Cognos Analytics with no service instances
+
+Note: [Additional steps are needed for upgrade the instances of Cognos.](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-52-21#cli-upgrade__svc-inst__title__1)
 
 - Log in to the cluster
 
@@ -984,7 +992,6 @@ cpd-cli oadp install \
 --cpfs-image-prefix=${PRIVATE_REGISTRY_LOCATION} \
 --namespace=${OADP_OPERATOR_NS} \
 --tenant-operator-namespace=${PROJECT_CPD_INST_OPERATORS} \
---cpd-scheduler-namespace=${PROJECT_SCHEDULING_SERVICE} \
 --skip-recipes=true \
 --upgrade=true \
 --log-level=debug \
