@@ -168,7 +168,7 @@ export COMPONENTS=ibm-licensing,cpfs,cpd_platform,watsonx_orchestrate,watsonx_ai
 
 ```
 export IMAGE_PULL_SECRET=ibm-entitlement-key
-export IMAGE_PULL_CREDENTIALS=$(echo -n "$PRIVATE_REGISTRY_PULL_USER:$PRIVATE_REGISTRY_PULL_PASSWORD" base64 -w 0)
+export IMAGE_PULL_CREDENTIALS=$(echo -n "$PRIVATE_REGISTRY_PULL_USER:$PRIVATE_REGISTRY_PULL_PASSWORD" | base64 -w 0)
 export IMAGE_PULL_PREFIX=${PRIVATE_REGISTRY_LOCATION}
 ```
 
@@ -527,9 +527,9 @@ oc debug ${STORE_CRONJOB_POD}
 ls -l /store-backups/
 ```
 
-Copy the name of the lastest backup file. 
+Copy the name of the lastest backup file.
 
-Open up a dulpicate terminal while the debug pod is still live and copy the backup out onto your bastion.
+Open up a duplicate terminal while the debug pod is still live and copy the backup out onto your bastion.
 
 ```
 export STORE_CRONJOB_DEBUG_POD=$(oc get pods | grep debug | awk '{print $1}')
@@ -546,7 +546,6 @@ Back up the secret for this database.
 ```
 oc get secret wo-wa-auth-encryption -n ${PROJECT_CPD_INST_OPERANDS} -o yaml > wo-wa-auth-encryption-backup.yaml
 ```
-
 
 #### 2.2.2 Upgrade the watsonx Orchestrate service.
 
@@ -570,6 +569,10 @@ cpd-cli manage install-components \
 --param-file=/tmp/work/override.yml \
 --upgrade=true
 ```
+
+**After First failure need to run:**
+
+https://github.ibm.com/watson-engagement-advisor/wea-backlog/issues/70312#issuecomment-158683395
 
 **Note:**
 `<br>`
@@ -604,8 +607,6 @@ oc patch wo wo --namespace="${PROJECT_CPD_INST_OPERANDS}" --type='merge' -p '{"s
 
 ```
 
-
-
 Double confirmation to ensure the UAB disabled.
 
 <br>
@@ -620,8 +621,9 @@ cpd-cli manage get-cr-status \
 
 #### 2.2.3 Apply the hot fix for HPA to scale asssitant
 
-1. https://github.ibm.com/WatsonOrchestrate/wo-tracker/issues/50298
-2. Additional blocker: TS021044182
+1. HOTFIX NEEDED FOR wo-agentic-task-manager Secret for Babu + Premdas
+2. https://github.ibm.com/WatsonOrchestrate/wo-tracker/issues/50298
+3. Additional blocker: TS021044182
 
 Possible fixes needed:
 
@@ -721,6 +723,108 @@ cpd-cli service-instance upgrade \
 
 #### 2.5 Upgrade the watson Speech services
 
+##### Increase resources for MCG
+
+```
+oc patch -n openshift-storage storageclusters.ocs.openshift.io ocs-storagecluster --type merge --patch '{"spec": {"resources": {"noobaa-agent": {"limits": {"memory": "8Gi"},"requests": {"memory": "8Gi"}},"noobaa-core": {"limits": {"memory":"8Gi"},"requests": {"memory": "8Gi"}},"noobaa-db": {"limits": {"memory": "8Gi"},"requests": {"memory": "8Gi"}},"noobaa-endpoint": {"limits": {"memory": "8Gi"},"requests": {"memory": "8Gi"}}}}}'
+
+oc patch -n openshift-storage backingstore noobaa-default-backing-store --type=merge --patch='{"spec":{"pvPool":{"numVolumes": 1, "resources":{"limits":{"memory": "8Gi"}}}}}'
+```
+
+For StorageCluster ocs-storagecluster, add cpu: "3" for all resources as both requests and limits, add maxCount 8 and minCount 1 as multiCloudGateway.endpoints:
+
+```yaml
+apiVersion: ocs.openshift.io/v1
+kind: StorageCluster
+......
+spec:
+  ........
+  multiCloudGateway:
+    dbStorageClassName: ssd-csi
+    disableLoadBalancerService: true
+    endpoints:
+      maxCount: 8
+      minCount: 1
+    reconcileStrategy: standalone
+  resourceProfile: balanced
+  resources:
+    noobaa-agent:
+      limits:
+        cpu: "4"
+        memory: 8Gi
+      requests:
+        cpu: "4"
+        memory: 8Gi
+    noobaa-core:
+      limits:
+        cpu: "4"
+        memory: 8Gi
+      requests:
+        cpu: "4"
+        memory: 8Gi
+    noobaa-db:
+      limits:
+        cpu: "4"
+        memory: 8Gi
+      requests:
+        cpu: "4"
+        memory: 8Gi
+    noobaa-endpoint:
+      limits:
+        cpu: "4"
+        memory: 8Gi
+      requests:
+        cpu: "4"
+        memory: 8Gi
+
+......
+```
+
+For BackingStore noobaa-default-backing-store, set numVolumes to 4 and storage to 100Gi
+
+```yaml
+apiVersion: noobaa.io/v1alpha1
+kind: BackingStore
+......
+spec:
+  pvPool:
+    numVolumes: 4
+    resources:
+      limits:
+        memory: 8Gi
+      requests:
+        storage: 100Gi
+    secret: {}
+    storageClass: ssd-csi
+  type: pv-pool
+
+......
+```
+
+For NooBaa noobaa, add max_connections 2400 for dbConf
+
+```yaml
+apiVersion: noobaa.io/v1alpha1
+kind: NooBaa
+...
+spec:
+  ......
+  coreResources:
+    limits:
+      cpu: "4"
+      memory: 8Gi
+    requests:
+      cpu: "4"
+      memory: 8Gi
+  dbConf: |
+    max_connections 2400
+  dbImage: registry.redhat.io/rhel9/postgresql-15@sha256:4d707fc04f13c271b455f7b56c1fda9e232a62214ffc6213c02e41177dd4a13f
+  dbResources:
+
+......
+```
+
+
 - Log in to the cluster
 
 ```
@@ -753,7 +857,7 @@ cpd-cli manage get-cr-status \
 
 #### 2.6 Upgrade the Voice Gateway
 
-- Log in to the cluster
+Log in to the cluster
 
 ```
 ${CPDM_OC_LOGIN}
@@ -811,7 +915,6 @@ cpd-cli manage get-cr-status \
 --components=db2oltp
 ```
 
-
 #### 2.8 Upgrade the Cognos Analytics
 
 - Log in to the cluster
@@ -841,7 +944,6 @@ cpd-cli manage get-cr-status \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --components=cognos_analytics
 ```
-
 
 #### 2.9 Upgrade the cpdbr service
 
