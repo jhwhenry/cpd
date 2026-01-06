@@ -4,7 +4,7 @@
 
 ## Upgrade documentation
 
-[Upgrading from IBM Cloud Pak for Data Version 5.1 to Version 5.1](https://www.ibm.com/docs/en/software-hub/5.1.x?topic=upgrading-from-software-hub-version-51)
+[Upgrading from IBM Cloud Pak for Data Version 5.1 to Version 5.2](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=u-upgrading-from-version-51-29)
 
 ## Upgrade context
 
@@ -38,10 +38,15 @@ Make sure there are no scheduled backups conflicting with the scheduled upgrade.
 
 #### 2. The image mirroring completed successfully
 
-If a private container registry is in-use to host the IBM Cloud Pak for Data software images, you must mirror the updated images from the IBM® Entitled Registry to the private container registry. `<br>`
-Reference: `<br>`
+If a private container registry is in-use to host the IBM Cloud Pak for Data software images, you must mirror the updated images from the IBM® Entitled Registry to the private container registry. 
+
+<br>
+
+Reference: 
+
+<br>
+
 [Mirroring images to private image registry](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=prufpcr-mirroring-images-private-container-registry)
-`<br>`
 
 #### 3. The permissions required for the upgrade is ready
 
@@ -65,11 +70,11 @@ The Cloud Pak for Data administrator role or permissions is required for upgradi
 - Permission to access the private image registry for pushing or pull images
 - Access to the Bastion node for executing the upgrade commands
 
-#### 4. Migrate environments based on Watson Studio Runtime 22.2 and Runtime 23.1 from IBM Cloud Pak® for Data 4.8 (optional)
+#### 4. Migrate environments based on Watson Studio Runtime 22.2 and Runtime 23.1 from IBM Cloud Pak® for Data 5.1 (optional)
 
 The Watson Studio Runtime 22.2 and Runtime 23.1 are not included in IBM® Software Hub. If you want to continue using environments that are based on Runtime 22.2 or Runtime 23.1, you must migrate them.
 `<br>`
-[Migrating environments based on Runtime 22.2 and Runtime 23.1 from IBM Cloud Pak® for Data 4.8](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=u-migrating-environments-based-runtime-222-runtime-231-from-cloud-pak-data-48-50)
+[Migrating notebooks, scripts, and jobs that use outdated environments](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=upgrading-migrating-notebooks-scripts-jobs-that-use-outdated-environments)
 
 #### 5. A pre-upgrade health check is made to ensure the cluster's readiness for upgrade.
 
