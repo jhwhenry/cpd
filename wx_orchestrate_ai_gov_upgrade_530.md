@@ -652,7 +652,9 @@ cpd-cli manage get-cr-status \
 
 [TS020907695](https://ibmsf.lightning.force.com/lightning/r/500gJ0000070UA9QAM/view) and [TS021044376](https://ibmsf.lightning.force.com/lightning/r/500gJ000007U1tvQAC/view)
 
-HOTFIX from Babu and Premdas (to resolve creating archer conversation controller deployment)
+HOTFIX from Babu and Premdas (to resolve creating archer conversation controller deployment): 
+
+[https://github.ibm.com/watson-engagement-advisor/wo-cpd-support/blob/main/wxo-support-docs/hotfix/5.3.0/5.3.0-hotfix0-with-llama-fix.md]()
 
 ### 2.3 Upgrade the watsonx.ai services
 
@@ -694,7 +696,7 @@ Patch the IFM CR with updated models (Note: This will remove **llama-3-2-90b-vis
 oc patch watsonxaiifm watsonxaiifm-cr \
 --namespace=${PROJECT_CPD_INST_OPERANDS} \
 --type=merge \
---patch='{"spec":{"install_model_list": ["llama-4-maverick-17b-128e-instruct-fp8","ibm-slate-30m-english-rtrvr","granite-3-2-8b-instruct"]}}'
+--patch='{"spec":{"install_model_list": ["llama-4-maverick-17b-128e-instruct-fp8","ibm-slate-30m-english-rtrvr","granite-3-2-8b-instruct","mistral-medium-2508","granite-3-3-8b-instruct"]}}'
 
 ```
 
