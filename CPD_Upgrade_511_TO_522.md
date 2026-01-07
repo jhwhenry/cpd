@@ -250,7 +250,8 @@ cd ${CPD522_WORKSPACE}
 Download the cpd-cli for 5.2.2
 
 ```
-wget https://github.com/IBM/cpd-cli/releases/download/v14.1.1/cpd-cli-linux-EE-14.2.2.tgz
+wget https://github.com/IBM/cpd-cli/releases/download/v14.2.2/cpd-cli-linux-EE-14.2.2.tgz
+
 ```
 
 2. Install tools.
@@ -263,8 +264,8 @@ The version in below commands may need to be updated accordingly.
 
 ```
 tar xvf cpd-cli-linux-EE-14.2.2.tgz
-mv cpd-cli-linux-EE-14.1.1-1542/* .
-rm -rf cpd-cli-linux-EE-14.2.2-1542
+mv cpd-cli-linux-EE-14.2.2-2727/* .
+rm -rf cpd-cli-linux-EE-14.2.2-2727
 ```
 
 3. Copy the cpd_vars.sh file used by the CPD 5.1.1 to the folder ${CPD522_WORKSPACE}.
