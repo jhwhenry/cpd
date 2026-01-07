@@ -506,7 +506,7 @@ Make sure you edit or create the `override.yaml` file in the right `work` folder
 podman inspect olm-utils-play-v4 | jq -r '.[0].Mounts' |jq -r '.[] | select(.Destination == "/tmp/work") | .Source'
 ```
 
-##### Backup the Orechestrate Assistant Postgres
+##### Backup the Orchestrate Assistant Postgres
 
 Identify the backup cronjob:
 
@@ -571,9 +571,7 @@ cpd-cli manage install-components \
 
 [https://github.ibm.com/watson-engagement-advisor/wea-backlog/issues/70312#issuecomment-158683395](https://github.ibm.com/watson-engagement-advisor/wea-backlog/issues/70312#issuecomment-158683395)
 
-**Note:**
-`<br>`
-During the watsonx Orchestrate reconcilation, check if the UAB enabled in the custom resource.
+**Note:** During the watsonx Orchestrate reconcilation, check if the UAB enabled in the custom resource.
 
 ```
 oc get wo wo --namespace="${PROJECT_CPD_INST_OPERANDS}" -o yaml 
@@ -588,7 +586,8 @@ oc patch wo wo \
  -p '{"spec":{"uab":{"enabled":false}}}'
 ```
 
-<<<<<<< HEAD
+
+
 If the abInstance is not showing "wo-wa-assistantbuilder".
 
 ```
@@ -605,18 +604,6 @@ oc patch wo wo --namespace="${PROJECT_CPD_INST_OPERANDS}" --type='merge' -p '{"s
 
 ```
 
-=======
-
->>>>>>> 85324bb32bd59e6fb93e5874d2963664ab81001c
->>>>>>> Double confirmation to ensure the UAB disabled.
->>>>>>>
->>>>>>
->>>>>
->>>>
->>>
->>
-
-<br>
 
 - Remove duplicate Postgres:
 
@@ -642,48 +629,15 @@ oc delete subs cloud-native-postgresql-stable-v1.25-cloud-native-postgresql-cata
   oc apply -f postgres_530_helmdeploy.yaml
   ```
 
+Apply Day 0 Patch:
 
+- [watsonx Orchestrate 5.3.0 hot fix](https://www.ibm.com/support/pages/applying-watsonx-orchestrate-530-hotfix-hotfix-0)
 
-- Validate the upgrade
-
-```
-cpd-cli manage get-cr-status \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---components=watsonx_orchestrate
-```
-
-#### 2.2.3 Apply the hot fix
-
-<<<<<<< HEAD
-
-1. HOTFIX NEEDED FOR wo-agentic-task-manager Secret for Babu + Premdas
-2. https://github.ibm.com/WatsonOrchestrate/wo-tracker/issues/50298
-3. Additional blocker: TS021044182
-   =======
-   1.Apply the watsonx Orchestrate 5.3.0 hot fix
-
->>>>>>> 85324bb32bd59e6fb93e5874d2963664ab81001c
->>>>>>>
->>>>>>
->>>>>
->>>>
->>>
->>
-
-<br>
-
-[watsonx Orchestrate 5.3.0 hot fix](https://www.ibm.com/support/pages/applying-watsonx-orchestrate-530-hotfix-hotfix-0)
-
-2. Possible fixes needed:
-
-[TS020907695](https://ibmsf.lightning.force.com/lightning/r/500gJ0000070UA9QAM/view) and [TS021044376](https://ibmsf.lightning.force.com/lightning/r/500gJ000007U1tvQAC/view)
-
-HOTFIX from Babu and Premdas (to resolve creating archer conversation controller deployment): 
+Apply  HOTFIX from Babu and Premdas (to resolve creating archer conversation controller deployment):
 
 [https://github.ibm.com/watson-engagement-advisor/wo-cpd-support/blob/main/wxo-support-docs/hotfix/5.3.0/5.3.0-hotfix0-with-llama-fix.md]()
 
 - Additional RSI step to Hotfix above post application (This may be fixed in a larger rolled up hotfix):
-
 
 ```
 $ mkdir cpd-cli-workspace/olm-utils-workspace/work/rsi
@@ -698,6 +652,29 @@ $ cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 $ oc delete job wo-watson-orchestrate-bootstrap-job
 
 ```
+
+
+
+- Validate the upgrade
+
+```
+cpd-cli manage get-cr-status \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--components=watsonx_orchestrate
+```
+
+#### 2.2.3 Apply the hot fix
+
+
+
+https://github.ibm.com/WatsonOrchestrate/wo-tracker/issues/50298
+
+1. Additional blocker: TS021044182
+2. Apply the watsonx Orchestrate 5.3.0 hot fix
+3. Possible fixes needed: [TS020907695](https://ibmsf.lightning.force.com/lightning/r/500gJ0000070UA9QAM/view) and [TS021044376](https://ibmsf.lightning.force.com/lightning/r/500gJ000007U1tvQAC/view)
+
+
+
 
 
 ### 2.3 Upgrade the watsonx.ai services
