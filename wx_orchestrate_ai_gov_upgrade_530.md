@@ -402,6 +402,16 @@ cpd-cli manage apply-entitlement \
 --entitlement=text-to-speech
 ```
 
+
+
+Apply the Cognos Analytics license.
+
+```
+cpd-cli manage apply-entitlement
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+--entitlement=cognos-analytics
+```
+
 Reference:
 `<br>`
 
@@ -637,16 +647,16 @@ Apply  HOTFIX from Babu and Premdas (to resolve creating archer conversation con
 - Additional RSI step to Hotfix above post application (This may be fixed in a larger rolled up hotfix):
 
 ```
-$ mkdir cpd-cli-workspace/olm-utils-workspace/work/rsi
+mkdir cpd-cli-workspace/olm-utils-workspace/work/rsi
 
-$ Create a file skill-seq.json with the content below in the rsi directory.
+Create a file skill-seq.json with the content below in the rsi directory.
 
 [{"op":"replace","path":"/spec/containers/0/resources/limits/memory","value":"3Gi"}]
 
 
-$ cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --patch_name=skill-seq-resource-limit --patch_type=rsi_pod_spec --patch_spec=/tmp/work/rsi/skill-seq.json --spec_format=json --include_labels=wo.watsonx.ibm.com/component:wo-skill-sequencing --state=active
+cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --patch_name=skill-seq-resource-limit --patch_type=rsi_pod_spec --patch_spec=/tmp/work/rsi/skill-seq.json --spec_format=json --include_labels=wo.watsonx.ibm.com/component:wo-skill-sequencing --state=active
 
-$ oc delete job wo-watson-orchestrate-bootstrap-job
+oc delete job wo-watson-orchestrate-bootstrap-job
 
 ```
 
@@ -1000,7 +1010,7 @@ cpd-cli oadp install \
 
 ## Part 3 (Post-upgrade tasks)
 
-##### Swapping Models
+### Swapping Models
 
 Patch the IFM CR with updated models (Note: This will remove **llama-3-2-90b-vision-instruct** model)
 
@@ -1012,6 +1022,12 @@ oc patch watsonxaiifm watsonxaiifm-cr \
 
 ```
 
+
+### Update the CPD Route: 
+
+Label will be missing from the cpd route post upgrade.
+
+Edit the cpd route to add the label "**expose:external-region**" to your cpd-route
 
 ## Summarize and close out the upgrade
 
