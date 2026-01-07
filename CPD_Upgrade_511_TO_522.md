@@ -41,9 +41,7 @@ Make sure there are no scheduled backups conflicting with the scheduled upgrade.
 If a private container registry is in-use to host the IBM Cloud Pak for Data software images, you must mirror the updated images from the IBM® Entitled Registry to the private container registry. 
 
 <br>
-
 Reference: 
-
 <br>
 
 [Mirroring images to private image registry](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=prufpcr-mirroring-images-private-container-registry)
@@ -51,9 +49,8 @@ Reference:
 #### 3. The permissions required for the upgrade is ready
 
 - Openshift cluster permissions
-  `<br>`
+<br>
   An Openshift cluster administrator can complete all of the installation tasks.
-
 <br>
 
 However, if you want to enable users with fewer permissions to complete some of the installation tasks, follow the steps in this documentation and get the roles with required permission prepared.
@@ -72,8 +69,10 @@ The Cloud Pak for Data administrator role or permissions is required for upgradi
 
 #### 4. Migrate environments based on Watson Studio Runtime 22.2 and Runtime 23.1 from IBM Cloud Pak® for Data 5.1 (optional)
 
-The Watson Studio Runtime 22.2 and Runtime 23.1 are not included in IBM® Software Hub. If you want to continue using environments that are based on Runtime 22.2 or Runtime 23.1, you must migrate them.
-`<br>`
+Runtime 22.2 and Runtime 23.1 are not included in IBM® Software Hub. To continue using notebooks, scripts, and jobs that use environments based on Runtime 22.2 or Runtime 23.1, you must review them and manually migrate them, if necessary.
+
+<br>
+
 [Migrating notebooks, scripts, and jobs that use outdated environments](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=upgrading-migrating-notebooks-scripts-jobs-that-use-outdated-environments)
 
 #### 5. A pre-upgrade health check is made to ensure the cluster's readiness for upgrade.
@@ -87,8 +86,8 @@ Part 1: Pre-upgrade
 1.1 Collect information and review upgrade runbook
 1.1.1 Review the upgrade runbook
 1.1.2 Backup before upgrade
-1.1.3 Uninstall all hotfixes and apply preventative measures
-1.1.4 Uninstall the old RSI pathch
+1.1.3 Pre-check before upgrade
+1.1.4 Uninstall all hotfixes and apply preventative measures
 1.2 Set up client workstation 
 1.2.1 Prepare a client workstation
 1.2.2 Update cpd_vars.sh for the upgrade to Version 5.2.2
@@ -119,14 +118,6 @@ Part 3: Post-upgrade
 3.3 WKC post-upgrade tasks
 
 Part 4: Maintenance
-4.1 Migrating from MANTA Automated Data Lineage to IBM Manta Data Lineage
-4.2 Changing Db2 configuration settings
-4.3 Configure the idle session timeout
-4.4 Increase the number of nginx worker connections
-4.5 Increase ephemeral storage for zen-watchdog-serviceability-job
-4.6 Update wdp-lineage deployment for addressing the potential Db2 high CPU and Memory usage issue
-4.7 Apply the workaround for MDE Job
-4.8 Upgrade the Backup & Restore service and application
 
 Summarize and close out the upgrade
 
@@ -142,107 +133,11 @@ Review upgrade runbook
 
 #### 1.1.2 Backup before upgrade
 
-Note: Create a folder for 5.1.1 and maintain below created copies in that folder. `<br>`
+<br>
 Login to the OCP cluster for cpd-cli utility.
 
 ```
-cpd-cli manage login-to-ocp --username=${OCP_USERNAME} --password=${OCP_PASSWORD} --server=${OCP_URL}
-```
-
-Capture data for the CPD 5.1.1 instance. No sensitive information is collected. Only the operational state of the Kubernetes artifacts is collected.The output of the command is stored in a file named collect-state.tar.gz in the cpd-cli-workspace/olm-utils-workspace/work directory.
-
-```
-cpd-cli manage collect-state \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
-```
-
-Collect  the number of catalog-api instances
-
-- Set  INSTANCE_URL to CPD route
-
-```
-export INSTANCE_URL=<CPD route>
-```
-
-- Retrieve the token
-
-```
-TOKEN=$(oc get -n ${PROJECT_CPD_INST_OPERANDS} secrets wdp-service-id -o yaml | grep service-id-credentials | cut -d':' -f2- | sed -e 's/ //g' | base64 -d)
-```
-
-- Get the number of catalogs, projects and spaces:
-
-```
-curl -sk -X GET "https://${INSTANCE_URL}/v2/catalogs?limit=10001&skip=0&include=catalogs&bss_account_id=999" -H 'accept: application/json' -H "Authorization: Basic ${TOKEN}" | jq -r '.catalogs | length' > catalogcount.txt
-
-curl -sk -X GET "https://${INSTANCE_URL}/v2/catalogs?limit=10001&skip=0&include=projects&bss_account_id=999" -H 'accept: application/json' -H "Authorization: Basic ${TOKEN}" | jq -r '.catalogs | length' > projects.txt
-
-curl -sk -X GET "https://${INSTANCE_URL}/v2/catalogs?limit=10001&skip=0&include=spaces&bss_account_id=999" -H 'accept: application/json' -H "Authorization: Basic ${TOKEN}" | jq -r '.catalogs | length' > spaces.txt
-```
-
- Check if Postgres migration can be semi-auto or auto.
-
-- Create and run following script ./precheck_migration.sh
-
-```bash
-#!/bin/bash
-
-# Default ranges for couchdb size
-SMALL=30
-LARGE=200
-
-echo "Performing pre-migration checks"
-
-check_resources(){
-        scale_config=$1
-        pvc_size=$(oc get pvc -n ${PROJECT_CPD_INST_OPERANDS} database-storage-wdp-couchdb-0 --no-headers | awk '{print $4}')
-        size=$(awk '{print substr($0, 1, length($0)-2)}' <<< "$pvc_size")
-
-        if [[ "$size" -le "$SMALL" ]];then
-          echo "The system is ready for migration. Upgrade your cluster as usual."
-        elif [ "$size" -ge "$SMALL" ] && [ "$size" -le "$LARGE" ] && [[ $scale_config == "small" ]];then
-          echo -e "Run the following command to increase the CPU and memory:\n"
-          cat << EOF
-oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type merge --patch '{"spec": {
-  "catalog_api_postgres_migration_threads": 6,
-  "catalog_api_migration_job_resources": { 
-    "requests": {"cpu": "3", "ephemeral-storage": "10Mi", "memory": "4Gi"},
-    "limits": {"cpu": "8", "ephemeral-storage": "4Gi", "memory": "8Gi"}}
-}}'
-EOF
-          echo
-          echo "The system is ready for migration. Upgrade your cluster as usual."
-        elif [[ $scale_config == "medium" ]];then
-          echo -e "Run the following command to increase the CPU and memory:\n"
-          cat << EOF
-oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type merge --patch '{"spec": {
-  "catalog_api_postgres_migration_threads": 8,
-  "catalog_api_migration_job_resources": { 
-    "requests": {"cpu": "6", "ephemeral-storage": "10Mi", "memory": "6Gi"},
-    "limits": {"cpu": "10", "ephemeral-storage": "6Gi", "memory": "10Gi"}}
-}}'
-EOF
-          echo
-          echo "Before you can start the upgrade, you must prepare the system for migration."
-        fi
-}
-
-check_upgrade_case(){   
-        scale_config=$(oc get ccs -n ${PROJECT_CPD_INST_OPERANDS} ccs-cr -o json | jq -r '.spec.scaleConfig')
-
-        # Default case, scale config is set to small
-        if [[ -z "${scale_config}" ]];then
-          scale_config=small
-        fi
-
-        if [[ $scale_config == "large" ]];then
-          echo "Before you can start the upgrade, you must prepare the system for migration."
-        elif [[ $scale_config == "small" ]] || [[ $scale_config == "medium" ]];then
-          check_resources $scale_config
-        fi
-}
-
-check_upgrade_case
+${CPDM_OC_LOGIN}
 ```
 
 Backup the RSI patches.
@@ -253,142 +148,88 @@ cpd-cli manage get-rsi-patch-info \
 --all
 ```
 
-Backup the SSO configuration:
+#### 1.1.3 Pre-upgrade check
+
+[Pre-upgrade check steps](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=uish-upgrading-software-hub-1#taskupgrade-instance__prereq__1)
+
+#### 1.1.4 Uninstall all hotfixes and apply preventative measures
+
+Remove the hotfixes by removing the images or configurations from the CRs. (Keep this until the auto removal of tot fixes tested out)
+<br>
+
+1.Remove DataLineage from the maintenance mode and uninstall the hot fixes
 
 ```
-oc get configmap saml-configmap -o yaml > saml-configmap-cm.yaml
-```
-
-Backup deployments and svc that need to be modified after upgrade.
-
-```
-oc get deploy asset-files-api -o yaml -n ${PROJECT_CPD_INST_OPERANDS} > asset-files-api-deploy-510.yaml
-oc get deploy catalog-api -o yaml -n ${PROJECT_CPD_INST_OPERANDS} > catalog-api-deploy-510.yaml
-oc get svc finley-public -o yaml -n ${PROJECT_CPD_INST_OPERANDS} > finley-public-svc-510.yaml
-```
-
-#### 1.1.3 Uninstall all hotfixes and apply preventative measures
-
-Remove the hotfixes by removing the images or configurations from the CRs. (Note: Hot fixes should already be removed)
-`<br>`
-
-1. Double check WKC maintenance mode and usefdb configuration. (WKC handles Hotfix removal on its own)
-
-```
-useFDB: false
 ignoreForMaintenance: true
+datalineage_scanner_service_image_tag: 3a851c76cde46def29f2e489338a040d1e430034982fa6d6c87f5b95ae99b4e8
+datalineage_scanner_service_image_tag_metadata: 2.3.1
+datalineage_scanner_worker_image_tag: 1c731288ca446c22df24d4062a1ed15ac6a69305af0ecc5288d3d44fba92d2b1
+datalineage_scanner_worker_image_tag_metadata: 2.3.4
 ```
 
-4)Save and Exit. Wait until the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status.
+2. Remove WKC maintenance mode and the hot fixes
+
+```
+ignoreForMaintenance: true
+image_digests:
+  metadata_discovery_image: sha256:b89559cea54616a530557956dd806895b454bd5180cb7ce3656c440325f92591
+  wdp_kg_ingestion_service_image: sha256:0b77632e2406dff9b2bb6bbcdbf6a06f7748f5aa702a021fde1eeeebf44bda9b
+  wkc_bi_data_service_image: sha256:df96efc9d94cb6e335ce6ea1815b4c29867eee6fbd91f7ba78b11561dbfcb2ad
+  wkc_data_lineage_service_image: sha256:bc0a37a460f383f9a5fce0f7decd0a074db83b9df56d541f61835ea32a486c88
+  wkc_mde_service_manager_image: sha256:a7a3ea48d72baaae484c6dde0ff910a89164993795cf530054e2a39ee9bf90ce
+  wkc_metadata_imports_ui_image: sha256:1487c666890f13494a9d2fe14453cd0c46234bc0b799b354ca9526f090404506
+```
+
+Save and Exit. Wait until the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status.
 
 ```
 oc get WKC wkc-cr -o yaml
 ```
 
-2. Double check AnalyticsEngine SELinux config. Hotfix auto removal.
-
-Make change for skipping SELinux Relabeling
+3. Remove AnalyticsEngine from the maintenance mode
 
 ```
-  serviceConfig:
-    skipSELinuxRelabeling: true
+ignoreForMaintenance: true
 ```
 
-4)Save and Exit. Wait until the AnalyticsEngine Operator reconcilation completed and also the analyticsengine-sample in 'Completed' status.
+Save and Exit. Wait until the AnalyticsEngine Operator reconcilation completed and also the analyticsengine-sample in 'Completed' status.
 
 ```
 oc get AnalyticsEngine analyticsengine-sample -o yaml
 ```
 
-- 3.Patch the CCS and uninstall the CCS hot fixes.
-  `<br>`
+- 4.Uninstall the CCS hot fixes.
+<br>
 
-1)Edit the CCS cr with below command. Hotfix auto removal is enabled
-
-2)Apply preventative measures for OpenSearch pvc customization problem
-
-`<br>`
-This step is for applying the preventative measures for OpenSearch problem. Applying the preventative measures in this timing can also help to minimize the number of CCS operator reconcilations.
-`<br>`
-List OpenSearch PVC sizes, and make sure to preserve the type, and the size of the largest one (PVC names may be different depending on client environment):
-`<br>`
+Remove the hot fix from the CCS custom resource
 
 ```
-oc get pvc | grep elasticsea
-dev                        data-elasticsea-0ac3-ib-6fb9-es-server-esnodes-0           Bound    pvc-ac773a46-0110-48f6-be27-51b6db332945   150Gi      RWO  
-dev                        data-elasticsea-0ac3-ib-6fb9-es-server-esnodes-1           Bound    pvc-1e73b25c-c0ca-4bdd-b5ba-b4484e18ade9   150Gi      RWO
-dev                        data-elasticsea-0ac3-ib-6fb9-es-server-esnodes-2           Bound    pvc-1a5a6c47-4221-4ecf-96e4-ddef689fd527   150Gi      RWO
-dev                        elasticsea-0ac3-ib-6fb9-es-server-snap                     Bound    pvc-eba99ac7-0f9f-481e-883c-56dc8e9ca65c   608Gi      RWX
-dev                        elasticsearch-master-backups                               Bound    pvc-8ab9d47d-de90-449c-99b8-89fed818c727   608Gi      RWX
+image_digests:
+  catalog_api_image: sha256:6ac5cb00390d96a66540029b08e5abb47cf52e6142d7613757b1c252b6a6ecb0
+  catalog_api_jobs_image: sha256:29dbaa7d9b4e6c19424b05e35e31db7cee1d66c06a0d633e56f5ad96f5786dab
+  portal_catalog_image: sha256:1259d1d359bf04008ca2c6de56d5d0cdada36bcb4fe711170de29924e974c3ae
+  portal_projects_image: sha256:69b6555dc22d346fe7c6e0235633a77b920a8f507dbf7b2c1c96c0383a20b7de
+  wdp_connect_connection_image: sha256:02826fa27eed4813f62bce2eccd66ee8ab17c2ee56df811551746d683aa7ae0f
+  wdp_connect_connector_image: sha256:c85fcfadda98e2f7d193b12234dbec013105e50b9f59f157505c28f5e572edcc
+  wdp_connect_flight_image: sha256:cda30760185008c723a87bd251f60cb6402f4814ee1523c99a167ad979c5919b
 ```
 
-In the above example, `150Gi` is the OpenSearch pvc size, `608Gi` is backup/snapshot storage size.
-`<br>`
-**Note** if PVCs are of different sizes, we want to make sure to take the biggest one.
-`<br>`
-
-In CCS CR make sure to set the following properties, with above values used as example:
-
-```
-elasticsearch_persistence_size: "608Gi"
-elasticsearch_backups_persistence_size: "608Gi"
-```
-
-This will make sure that the Opensearch operator will properly reconcile, - as provided values will match the state of the cluster.
-
-4) (Search has already been Migrated)
-
-6)Remove the `ignoreForMaintenance: true` from the CCS custom resource
-
-7)Save and Exit. Wait until the CCS Operator reconcilation completed and also the ccs-cr in 'Completed' status.
+Save and Exit. Wait until the CCS Operator reconcilation completed and also the ccs-cr in 'Completed' status.
 
 ```
 oc get CCS ccs-cr -o yaml
 ```
 
-8)Wait until the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status.
+- 5.Remove DataRefinery from the maintenance mode
+
+```
+ignoreForMaintenance: true
+```
+
+Wait until the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status.
 
 ```
 oc get WKC wkc-cr -o yaml
-```
-
-- 4.Edit the ZenService custom resource.
-
-```
-oc edit ZenService lite-cr
-```
-
-1)Remove the hot fix images from the ZenService custom resource
-
-```
-  image_digests:
-    icp4data_nginx_repo: sha256:2ab2c0cfecdf46b072c9b3ec20de80a0c74767321c96409f3825a1f4e7efb788
-    icpd_requisite: sha256:5a7082482c1bcf0b23390d36b0800cc04cfaa32acf7e16413f92304c36a51f02
-    privatecloud_usermgmt: sha256:e7b0dda15fa3905e4f242b66b18bc9cf2d27ea46e267e5a8d6a3d7da011bddb1
-    zen_audit: sha256:ccf61039298186555fd18f568e715ca9e12f07805f42eb39008f851500c0f024
-    zen_core: sha256:67f4d92a6e1f39675856fe3b46b36b34e9f0ae25679f75a1628c9d7d44790bad
-    zen_core_api: sha256:b3ba3250a228d5f1ba3ea93ccf8b0f018e557f0f4828ed773b57075b842c30e9
-    zen_iam_config: sha256:5abf2bf3f29ca28c72c64ab23ee981e8ad122c0de94ca7702980e1d40841d91a
-    zen_minio: sha256:f66e6c17d1ed9d90a90e9a1280a18aacb9012bbdb604c5230d97db4cffcb4b48
-    zen_utils: sha256:6d906104a8bd8b15f3ebcb2c3ae6a5f93c8d88ce6cfcae4b3eed6657562dc9f3
-    zen_watchdog: sha256:4f73b382687bd4de6754292670f6281a7944b6b0903396ed78f1de2da54bc8c0
-```
-
-<br>
-Save and Exit. Wait until the ZenService Operator reconcilation completed and also the lite-cr in 'Completed' status. 
-<br>
-
-- 5.Remove stale secret of global search
-  Check if the elasticsearch-master-ibm-elasticsearch-cred-secret exists.
-
-```
-oc get secret -n ${PROJECT_CPD_INST_OPERANDS} | grep elasticsearch-master-ibm-elasticsearch-cred-secret
-```
-
-If yes, then delete this stale secret.
-
-```
-oc delete elasticsearch-master-ibm-elasticsearch-cred-secret -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
 ### 1.2 Set up client workstation
