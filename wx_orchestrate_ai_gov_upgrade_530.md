@@ -569,7 +569,7 @@ cpd-cli manage install-components \
 
 **After First failure need to run:**
 
-https://github.ibm.com/watson-engagement-advisor/wea-backlog/issues/70312#issuecomment-158683395
+[https://github.ibm.com/watson-engagement-advisor/wea-backlog/issues/70312#issuecomment-158683395](https://github.ibm.com/watson-engagement-advisor/wea-backlog/issues/70312#issuecomment-158683395)
 
 **Note:**
 `<br>`
@@ -618,6 +618,32 @@ oc patch wo wo --namespace="${PROJECT_CPD_INST_OPERANDS}" --type='merge' -p '{"s
 
 <br>
 
+- Remove duplicate Postgres:
+
+Note: 1.25.3 will not be removed during upgrade. There will be two Postgres operators (1.25.4 & 1.25.4). We need to remove and recreate some artifacts for the new Postgres operator.  This will also remove some secrets as well as service account for postgres. 
+
+*     Back up and Delete Subsctiption and CSV for Old Postgres operator
+
+```
+oc get csv cloud-native-postgresql.v1.25.3 -n ${PROJECT_CPD_INST_OPERATORS} -oyaml > cloudnative1253_csv_backup.yaml
+oc get subs cloud-native-postgresql-stable-v1.25-cloud-native-postgresql-catalog-cpd-operators   -n ${PROJECT_CPD_INST_OPERATORS} -oyaml > cloudnative_back.yaml
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+oc delete csv cloud-native-postgresql.v1.25.3 -n ${PROJECT_CPD_INST_OPERATORS} 
+oc delete subs cloud-native-postgresql-stable-v1.25-cloud-native-postgresql-catalog-cpd-operators   -n ${PROJECT_CPD_INST_OPERATORS} 
+```
+
+- Create the helm manifest yamls.
+
+  ```
+  helm get manifest postgresql -n ${PROJECT_CPD_INST_OPERANDS} > postgres_530_helmdeploy.yaml
+
+  oc apply -f postgres_530_helmdeploy.yaml
+  ```
+
+
+
 - Validate the upgrade
 
 ```
@@ -655,6 +681,24 @@ cpd-cli manage get-cr-status \
 HOTFIX from Babu and Premdas (to resolve creating archer conversation controller deployment): 
 
 [https://github.ibm.com/watson-engagement-advisor/wo-cpd-support/blob/main/wxo-support-docs/hotfix/5.3.0/5.3.0-hotfix0-with-llama-fix.md]()
+
+- Additional RSI step to Hotfix above post application (This may be fixed in a larger rolled up hotfix):
+
+
+```
+$ mkdir cpd-cli-workspace/olm-utils-workspace/work/rsi
+
+$ Create a file skill-seq.json with the content below in the rsi directory.
+
+[{"op":"replace","path":"/spec/containers/0/resources/limits/memory","value":"3Gi"}]
+
+
+$ cpd-cli manage create-rsi-patch --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --patch_name=skill-seq-resource-limit --patch_type=rsi_pod_spec --patch_spec=/tmp/work/rsi/skill-seq.json --spec_format=json --include_labels=wo.watsonx.ibm.com/component:wo-skill-sequencing --state=active
+
+$ oc delete job wo-watson-orchestrate-bootstrap-job
+
+```
+
 
 ### 2.3 Upgrade the watsonx.ai services
 
