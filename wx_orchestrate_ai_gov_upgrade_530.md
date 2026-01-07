@@ -586,8 +586,6 @@ oc patch wo wo \
  -p '{"spec":{"uab":{"enabled":false}}}'
 ```
 
-
-
 If the abInstance is not showing "wo-wa-assistantbuilder".
 
 ```
@@ -604,12 +602,11 @@ oc patch wo wo --namespace="${PROJECT_CPD_INST_OPERANDS}" --type='merge' -p '{"s
 
 ```
 
-
 - Remove duplicate Postgres:
 
-Note: 1.25.3 will not be removed during upgrade. There will be two Postgres operators (1.25.4 & 1.25.4). We need to remove and recreate some artifacts for the new Postgres operator.  This will also remove some secrets as well as service account for postgres. 
+Note: 1.25.3 will not be removed during upgrade. There will be two Postgres operators (1.25.4 & 1.25.4). We need to remove and recreate some artifacts for the new Postgres operator.  This will also remove some secrets as well as service account for postgres.
 
-*     Back up and Delete Subsctiption and CSV for Old Postgres operator
+* Back up and Delete Subsctiption and CSV for Old Postgres operator
 
 ```
 oc get csv cloud-native-postgresql.v1.25.3 -n ${PROJECT_CPD_INST_OPERATORS} -oyaml > cloudnative1253_csv_backup.yaml
@@ -653,8 +650,6 @@ $ oc delete job wo-watson-orchestrate-bootstrap-job
 
 ```
 
-
-
 - Validate the upgrade
 
 ```
@@ -665,17 +660,11 @@ cpd-cli manage get-cr-status \
 
 #### 2.2.3 Apply the hot fix
 
-
-
 https://github.ibm.com/WatsonOrchestrate/wo-tracker/issues/50298
 
 1. Additional blocker: TS021044182
 2. Apply the watsonx Orchestrate 5.3.0 hot fix
 3. Possible fixes needed: [TS020907695](https://ibmsf.lightning.force.com/lightning/r/500gJ0000070UA9QAM/view) and [TS021044376](https://ibmsf.lightning.force.com/lightning/r/500gJ000007U1tvQAC/view)
-
-
-
-
 
 ### 2.3 Upgrade the watsonx.ai services
 
@@ -708,18 +697,6 @@ cpd-cli manage get-cr-status \
 ```
 
 Check the version of each custom resource by following the [Operator and operand versions](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=versions-522-october-2025)
-
-##### Adding Models (May be performed post-upgrade)
-
-Patch the IFM CR with updated models (Note: This will remove **llama-3-2-90b-vision-instruct** model)
-
-```
-oc patch watsonxaiifm watsonxaiifm-cr \
---namespace=${PROJECT_CPD_INST_OPERANDS} \
---type=merge \
---patch='{"spec":{"install_model_list": ["llama-4-maverick-17b-128e-instruct-fp8","ibm-slate-30m-english-rtrvr","granite-3-2-8b-instruct","mistral-medium-2508","granite-3-3-8b-instruct"]}}'
-
-```
 
 #### 2.4 Upgrade the watsonx.governance services
 
@@ -934,9 +911,9 @@ cpd-cli manage get-cr-status \
 
 #### 2.7 Upgrade the DB2 with no service instances
 
-DB2 is upgraded as a depdancy for WatsonxGoverance. However, just to be safe it is best to rerun the install component. 
+DB2 is upgraded as a depdancy for WatsonxGoverance. However, just to be safe it is best to rerun the install component.
 
-Note: [Additional steps are needed for upgrade the instances of DB2.](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-52-39#cli-upgrade__svc-inst__title__1) 
+Note: [Additional steps are needed for upgrade the instances of DB2.](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-52-39#cli-upgrade__svc-inst__title__1)
 
 - Log in to the cluster
 
@@ -1020,6 +997,21 @@ cpd-cli oadp install \
 --log-level=debug \
 --verbose
 ```
+
+## Part 3 (Post-upgrade tasks)
+
+##### Swapping Models
+
+Patch the IFM CR with updated models (Note: This will remove **llama-3-2-90b-vision-instruct** model)
+
+```
+oc patch watsonxaiifm watsonxaiifm-cr \
+--namespace=${PROJECT_CPD_INST_OPERANDS} \
+--type=merge \
+--patch='{"spec":{"install_model_list": ["llama-4-maverick-17b-128e-instruct-fp8","ibm-slate-30m-english-rtrvr","granite-3-2-8b-instruct","mistral-medium-2508","granite-3-3-8b-instruct"]}}'
+
+```
+
 
 ## Summarize and close out the upgrade
 
