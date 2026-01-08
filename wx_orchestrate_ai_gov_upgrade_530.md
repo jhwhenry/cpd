@@ -562,24 +562,53 @@ oc get secret wo-wa-auth-encryption -n ${PROJECT_CPD_INST_OPERANDS} -o yaml > wo
 ${CPDM_OC_LOGIN}
 ```
 
+[https://github.ibm.com/watson-engagement-advisor/wea-backlog/issues/70312#issuecomment-158683395](https://github.ibm.com/watson-engagement-advisor/wea-backlog/issues/70312#issuecomment-158683395)
+
+- Preview the helm command
+
+  ```
+  cpd-cli manage install-components \
+  --license_acceptance=true \
+  --components=watsonx_orchestrate \
+  --release=${VERSION} \
+  --operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+  --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+  --image_pull_prefix=${IMAGE_PULL_PREFIX} \
+  --image_pull_secret=${IMAGE_PULL_SECRET} \
+  --param-file=/tmp/work/install-options.yml \
+  --upgrade=true \
+   --preview=true
+  ```
+- Grab the helm command from the preview above
+
+  ```
+  cat cpd-cli-workspace/olm-utils-workspace/work/preview.sh  | grep watsonx-orchestrate-migration
+  ```
+- Run the helm comand that is outputted
+
+  ```
+  #Example helm upgrade --install --namespace cpd watsonx-orchestrate /root/cpd-cli-workspace/olm-utils-workspace/work/offline/5.3.0/.ibm-pak/data/cases/ibm-watson-assistant/5.10.0/charts/watsonx-orchestrate-migration-0.0.0.tgz --take-ownership --debug -f /root/cpd-cli-workspace/olm-utils-workspace/work/olm-utils-ansible-log/override_file_1765899129.3742213.yaml 
+  ```
+- Verify that helm label is added
+
+  ```
+  oc get wo wo -o jsonpath='{.metadata.labels.app\.kubernetes\.io/managed-by}'
+  ```
 - Run the upgrade command
 
 ```
-cpd-cli manage install-components \
---license_acceptance=true \
---components=watsonx_orchestrate \
---release=${VERSION} \
---operator_ns=${PROJECT_CPD_INST_OPERATORS} \
---instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---image_pull_prefix=${IMAGE_PULL_PREFIX} \
---image_pull_secret=${IMAGE_PULL_SECRET} \
---param-file=/tmp/work/override.yml \
---upgrade=true
+  cpd-cli manage install-components \
+  --license_acceptance=true \
+  --components=watsonx_orchestrate \
+  --release=${VERSION} \
+  --operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+  --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+  --image_pull_prefix=${IMAGE_PULL_PREFIX} \
+  --image_pull_secret=${IMAGE_PULL_SECRET} \
+  --param-file=/tmp/work/override.yml \
+  --upgrade=true
 ```
 
-**After First failure need to run:**
-
-[https://github.ibm.com/watson-engagement-advisor/wea-backlog/issues/70312#issuecomment-158683395](https://github.ibm.com/watson-engagement-advisor/wea-backlog/issues/70312#issuecomment-158683395)
 
 **Note:** During the watsonx Orchestrate reconcilation, check if the UAB enabled in the custom resource.
 
