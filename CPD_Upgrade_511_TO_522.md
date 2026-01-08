@@ -481,10 +481,7 @@ Log onto bastion node, and make sure IBM Cloud Pak for Data command-line interfa
 Run this command in terminal and make sure the Lite and all the services' status are in Ready status.
 
 ```
-cpd-cli manage login-to-ocp \
---username=${OCP_USERNAME} \
---password=${OCP_PASSWORD} \
---server=${OCP_URL}
+${CPDM_OC_LOGIN}
 ```
 
 ```
@@ -524,7 +521,7 @@ curl -k -u ${PRIVATE_REGISTRY_PULL_USER}:${PRIVATE_REGISTRY_PULL_PASSWORD} https
 ${CPDM_OC_LOGIN}
 ```
 
-2.Confirm the project which the License Service is in.
+2.Confirm the project into which the License Service is installed.
 Run the following command:
 
 ```
@@ -532,9 +529,14 @@ oc get deployment -A |  grep ibm-licensing-operator
 ```
 
 Make sure the project returned by the command matches the environment variable PROJECT_LICENSE_SERVICE in your environment variables script `cpd_vars_522.sh`.
-`<br>`
+
+<br>
 
 3.Upgrade the Certificate manager and License Service.
+
+<br>
+
+Check whether the Certificate manager is IBM certificate manager. If yes, then run below command.
 
 ```
 cpd-cli manage apply-cluster-components \
@@ -545,8 +547,13 @@ cpd-cli manage apply-cluster-components \
 ```
 
 **Note**:
-`<br><br>`Monitor the install plan and approved them as needed.
-`<br>`
+
+<br>
+
+Monitor the install plan and approved them as needed.
+
+<br>
+
 In another terminal, keep running below command and monitoring "InstallPlan" to find which one need manual approval.
 
 ```
@@ -559,7 +566,7 @@ Approve the upgrade request and run below command as soon as we find it.
 oc patch installplan $(oc get ip -n ${PROJECT_CPD_INST_OPERATORS} -o=jsonpath='{.items[?(@.spec.approved==false)].metadata.name}') -n ${PROJECT_CPD_INST_OPERATORS} --type merge --patch '{"spec":{"approved":true}}'
 ```
 
-`<br>`Confirm that the Certificate manager pods in the ${PROJECT_CERT_MANAGER} project are Running:
+Confirm that the Certificate manager pods in the ${PROJECT_CERT_MANAGER} project are Running:
 
 ```
 oc get pod -n ${PROJECT_CERT_MANAGER}
@@ -573,16 +580,19 @@ oc get pods --namespace=${PROJECT_LICENSE_SERVICE}
 
 #### 2.1.2 Preparing to upgrade the CPD instance to IBM Software Hub
 
-1.Run the cpd-cli manage login-to-ocp command to log in to the cluster
+1.Log into the cluster
 
 ```
 ${CPDM_OC_LOGIN}
 ```
 
 2.Applying your entitlements to monitor and report use against license terms
-`<br>`
+
+<br>
+
 **Non-Production enironment**
-`<br>`
+
+<br>
 Apply the IBM Cloud Pak for Data Enterprise Edition for the non-production environment.
 
 ```
@@ -592,7 +602,8 @@ cpd-cli manage apply-entitlement \
 --production=false
 ```
 
-Reference: `<br>`
+Reference: 
+<br>
 
 [Applying your entitlements](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=puish-applying-your-entitlements)
 
@@ -605,7 +616,9 @@ ${CPDM_OC_LOGIN}
 ```
 
 2.Review the license terms for the software that is installed on this instance of IBM Software Hub.
-`<br>`
+
+<br>
+
 The licenses are available online. Run the appropriate commands based on the license that you purchased:
 
 ```
