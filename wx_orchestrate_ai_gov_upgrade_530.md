@@ -756,7 +756,7 @@ cpd-cli service-instance upgrade \
 --all
 ```
 
-#### 2.5 Upgrade the watson Speech services
+#### 2.5 Upgrade the Watson Speech services
 
 ##### Increase resources for MCG
 
@@ -1028,6 +1028,102 @@ oc patch watsonxaiifm watsonxaiifm-cr \
 Label will be missing from the cpd route post upgrade.
 
 Edit the cpd route to add the label "**expose:external-region**" to your cpd-route
+
+
+### Groups Missing: 
+
+User groups in access control are missing from UI, but not erased. 
+
+Check the zen-metastore-edb postgred DB values: 
+
+```
+oc rsh zen-metastore-edb-1
+
+
+sh-5.1$ psql -U postgres -d zen
+
+(Note: First 3 command should return the same consistent value. THe last should show only one cpadmin)
+zen=# select * from accounts;
+zen=# select account_id from user_groups;
+zen=# select account_id from platform_users;
+zen=# select * from platform_users where username='cpadmin';
+```
+
+If there is a difference  "1000" versus "999"
+
+In the same session, back up the table and then update the values to what is shown in accounts (generally 999)
+
+```
+CREATE TABLE user_groups_backup AS SELECT * FROM user_groups;
+
+UPDATE user_groups SET account_id = '999';
+```
+
+
+### WxO s3 storage routes
+
+[https://github.ibm.com/watson-engagement-advisor/wo-cpd-support/blob/main/wxo-support-docs/5.2/5.2.2_storage_s3_route_config_issue_for_nooba.md](https://github.ibm.com/watson-engagement-advisor/wo-cpd-support/blob/main/wxo-support-docs/5.2/5.2.2_storage_s3_route_config_issue_for_nooba.md)
+
+- Identify the s3 route
+
+  ```
+  oc get route s3 -n openshift-storage
+  ```
+- Create rsi patch "wo_custom_s3_route.json" in the "cpd-cli-workspace/olm-utils-workspace/work/rsi" directory
+
+  ```
+  [
+    { "name": "STORAGE_S3_ROUTE", "value": "<REPLACE WITH YOUR ROUTE>"}
+  ]
+  ```
+- Create and apply the RSI patch for runtime. conversation and archer components.
+
+  ```
+  #Create 
+  cpd-cli manage create-rsi-patch \
+  --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+  --patch_type=rsi_pod_env_var \
+  --patch_name=storage-s3-route-env-override-trm-patch \
+  --patch_spec=/tmp/work/rsi/wo_custom_s3_route.json \
+  --spec_format=set-env \
+  --include_labels=wo.watsonx.ibm.com/component:wo-tools-runtime-manager \
+  --state=active
+
+  #Apply
+  cpd-cli manage apply-rsi-patches --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --patch_name=storage-s3-route-env-override-trm-patch
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #Create 
+  cpd-cli manage create-rsi-patch \
+  --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+  --patch_type=rsi_pod_env_var \
+  --patch_name=storage-s3-route-env-override-cc-patch \
+  --patch_spec=/tmp/work/rsi/wo_custom_s3_route.json \
+  --spec_format=set-env \
+  --include_labels=wo.watsonx.ibm.com/component:wo-conversation-controller \
+  --state=active
+
+  # Apply
+  cpd-cli manage apply-rsi-patches --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --patch_name=storage-s3-route-env-override-cc-patch
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  #Create
+  cpd-cli manage create-rsi-patch \
+  --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+  --patch_type=rsi_pod_env_var \
+  --patch_name=storage-s3-route-env-override-archersvr-patch \
+  --patch_spec=/tmp/work/rsi/wo_custom_s3_route.json \
+  --spec_format=set-env \
+  --include_labels=wo.watsonx.ibm.com/component:wo-archer-server \
+  --state=active
+
+  #Apply
+  cpd-cli manage apply-rsi-patches --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --patch_name=storage-s3-route-env-override-archersvr-patch
+
+  ```
+- Verify the patch information is present
+
+  ```
+   cpd-cli manage get-rsi-patch-info   --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}   --all
+  ```
 
 ## Summarize and close out the upgrade
 
