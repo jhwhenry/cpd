@@ -100,7 +100,7 @@ Part 1: Pre-upgrade
 Part 2: Upgrade
 2.1 Upgrade CPD to 5.2.2
 2.1.1 Upgrading shared cluster components
-2.1.2 Preparing to upgrade the CPD instance to IBM Software Hub
+2.1.2 Preparing to upgrade an instance of IBM Software Hub
 2.1.3 Upgrading to IBM Software Hub
 2.1.4 Upgrading the operators for the services
 2.1.5 Applying the RSI patches
@@ -578,7 +578,7 @@ Confirm that the License Service pods are Running or Completed::
 oc get pods --namespace=${PROJECT_LICENSE_SERVICE}
 ```
 
-#### 2.1.2 Preparing to upgrade the CPD instance to IBM Software Hub
+#### 2.1.2 Preparing to upgrade an instance of IBM Software Hub
 
 1.Log into the cluster
 
@@ -635,7 +635,7 @@ oc get pods --namespace=${PROJECT_CPD_INST_OPERANDS} | grep elasticsea-0ac3
 oc get pods --namespace=${PROJECT_CPD_INST_OPERANDS} | grep catalog-api
 ```
 
-4.Upgrade the required operators and custom resources for the instance. (Storage test should be performed already)
+4.Upgrade the required operators and custom resources for the instance. 
 
 ```
 cpd-cli manage setup-instance \
@@ -710,13 +710,13 @@ Increase the resource limits of the CCS operator for avoiding potention problems
 Have a backup of the CCS CSV yaml file.
 
 ```
-oc get csv ibm-cpd-ccs.v10.1.1 -n ${PROJECT_CPD_INST_OPERATORS} -o yaml > ibm-cpd-ccs-csv-522.yaml
+oc get csv ibm-cpd-ccs.v11.2.0 -n ${PROJECT_CPD_INST_OPERATORS} -o yaml > ibm-cpd-ccs-csv-522.yaml
 ```
 
 Edit the CCS CSV:
 
 ```
-oc edit csv ibm-cpd-ccs.v10.1.1 -n ${PROJECT_CPD_INST_OPERATORS} 
+oc edit csv ibm-cpd-ccs.v11.2.0 -n ${PROJECT_CPD_INST_OPERATORS} 
 ```
 
 Make changes to the limits like below.
@@ -731,7 +731,7 @@ Make changes to the limits like below.
 
 This change can be reverted after the upgrade completed successfully.
 
-#### 2.1.5 Applying the RSI patches
+#### 2.1.5 Apply the RSI patches
 
 1).Log the cpd-cli in to the Red Hat OpenShift Container Platform cluster.
 
@@ -739,14 +739,22 @@ This change can be reverted after the upgrade completed successfully.
 ${CPDM_OC_LOGIN}
 ```
 
-2).Run the following command to re-apply your existing custom patches.
+2).Enable the zen-rsi-evictor-cron-job CronJob
+```
+oc patch CronJob zen-rsi-evictor-cron-job \
+--namespace=${PROJECT_CPD_INST_OPERANDS} \
+--type=merge \
+--patch='{"spec":{"suspend": false}}'
+```
+
+3).Run the following command to re-apply your existing custom patches.
 
 ```
 cpd-cli manage apply-rsi-patches \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-3).Check the RSI patches status again: (Note: Profiling RSI path from 4.8.5 to 5.1.1 should still be configured)
+4).Check the RSI patches status again: (Note: Profiling RSI path from 5.1.1 to 5.2.2 should still be configured)
 
 ```
 cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --all
