@@ -107,13 +107,13 @@ Part 2: Upgrade
 2.2 Upgrade CPD services
 2.2.1 Upgrading IBM Knowledge Catalog service and apply hot fixes
 2.2.2 Upgrading Datalineage service
-2.2.3 Upgrading Analytics Engine service
+2.2.3 Upgrading Analytics Engine service instance
 2.2.4 Upgrading Watson Studio, Watson Studio Runtimes, Watson Machine Learning and OpenScale
 2.2.5 Upgrading Db2 Warehouse
 2.2.6 Upgrading Match360
 
 Part 3: Post-upgrade
-3.1 Validate the external vault connection setting 
+3.1 Validate platform customization settings
 3.2 CCS post-upgrade tasks
 3.3 WKC post-upgrade tasks
 
@@ -778,13 +778,15 @@ Specify the following options in the `install-options.yml` file in the `work` di
 ################################################################################
 custom_spec:
   wkc:
-    enableKnowledgeGraph: True
-    enableDataQuality: True
-    useFDB: False
+    enableDataQuality: true
+    enableFactSheet: false
+    enableKnowledgeGraph: true
+    enableMANTA: true
+    useFDB: false
 ```
 
 **Note:**
-`<br>`
+<br>
 1)Make sure you edit or create the `install-options.yml` file in the right `work` folder.
 
 <br>
@@ -792,10 +794,8 @@ custom_spec:
 Identify the location of the `work` folder using below command.
 
 ```
-podman inspect olm-utils-play-v3 | grep -i -A5  mounts
+podman inspect olm-utils-play-v4 | jq -r '.[0].Mounts' |jq -r '.[] | select(.Destination == "/tmp/work") | .Source'
 ```
-
-The `Source` property value in the output is the location of the `work` folder.
 
 <br>
 
@@ -808,7 +808,7 @@ oc get fdbcluster -n ${PROJECT_CPD_INST_OPERANDS}
 oc delete fdbcluster wkc-foundationdb-cluster -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
-`<br>`
+<br>
 
 ##### 2.Upgrade WKC with custom installation
 
@@ -816,14 +816,6 @@ Run the cpd-cli manage login-to-ocp command to log in to the cluster.
 
 ```
 ${CPDM_OC_LOGIN}
-```
-
-Delete the FDB cluster for WKC if present.
-
-```
-oc get fdbcluster -n ${PROJECT_CPD_INST_OPERANDS} |grep wkc
-
-oc delete fdbcluster wkc-foundationdb-cluster -n  ${PROJECT_CPD_INST_OPERANDS}
 ```
 
 Update the custom resource for IBM Knowledge Catalog.
@@ -853,13 +845,13 @@ export COMPONENTS=datalineage
 
 ```
 
-- Run the cpd-cli manage login-to-ocp command to log in to the cluster.
+- Log in to the OpenShift cluster
 
 ```
 ${CPDM_OC_LOGIN}
 ```
 
-- Run the command for upgrading MANTA service.
+- Run the command for upgrading DataLineage service.
 
 ```
 cpd-cli manage apply-cr \
@@ -882,41 +874,10 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --co
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=datalineage
 ```
 
-#### 2.2.3 Upgrading Analytics Engine service
-
-##### 2.2.3.1 Upgrading the service
-
-Check the Analytics Engine service version and status.
-
-```
-export COMPONENTS=analyticsengine
-
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
-```
-
-The Analytics Engine service should have been upgraded as part of the WKC service upgrade. If the Analytics Engine service version is **not 5.2.2**, then run below commands for the upgrade. `<br>`
-
-Check if the Analytics Engine service was installed with the custom install options. `<br>`
-
-```
-cpd-cli manage apply-cr \
---components=analyticsengine \
---release=${VERSION} \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---license_acceptance=true \
---upgrade=true
-```
-
-Validate the service upgrade status.
-
-```
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=${COMPONENTS}
-```
-
-##### 2.2.3.2 Upgrading the service instances
+#### 2.2.3 Upgrading Analytics Engine service instance
 
 **Note:**  cpd profile api key may expire after upgrade. If we are not able to list the instances, should be attempted once the Custom route is created so that the Admin can login.
-`<br>`
+<br>
 Find the proper CPD user profile to use.
 
 ```
@@ -946,7 +907,7 @@ cpd-cli service-instance list \
 export COMPONENTS=ws,ws_runtimes,wml,openscale
 ```
 
-Run the cpd-cli manage login-to-ocp command to log in to the cluster.
+Log in to the OpenShift cluster.
 
 ```
 ${CPDM_OC_LOGIN}
@@ -975,7 +936,7 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --co
 export COMPONENTS=db2wh
 ```
 
-Run the cpd-cli manage login-to-ocp command to log in to the cluster.
+Log in to the OpenShift cluster
 
 ```
 ${CPDM_OC_LOGIN}
@@ -1072,7 +1033,7 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --co
 
 ## Part 3: Post-upgrade
 
-### 3.1 Validate the external vault connection setting
+### 3.1 Validate platform customization settings
 
 1)Add Verizon logo on CPD homepage
 
@@ -1088,22 +1049,20 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --co
 
 [Create a custom route using cpd-cli](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=platform-modifying-route)
 
-**Note**
-`<br>`
-
-Refer to the backup file `routes.yaml` created in the Step **1.1.2**.
 
 ### 3.2 CCS post-upgrade tasks (Need to check with Steven)
 
-https://www.ibm.com/docs/en/software-hub/5.2.x?topic=services-completing-catalog-api-migration
+TBD
 
-https://www.ibm.com/docs/en/software-hub/5.2.x?topic=upgrading-post-upgrade-setup-knowledge-catalog
+### 3.3 WKC post-upgrade tasks
 
-### 3.3 WKC post-upgrade tasks (Need to check with Steven)
+[1.Complete the catalog-api service migration to PostgreSQL](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/admin/post-install-services-catalog-api-migration.html)
 
-## Part 4: Maintenance (Migrated to leverage Sanjit's Runbook)
+[2.Post-upgrade setup for IBM Knowledge Catalog](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=upgrading-post-upgrade-setup-knowledge-catalog)
 
-This part is beyond the upgrade scope. And we are not commited to complete them in the two days time window.
+## Part 4: Maintenance 
+
+This part is beyond the upgrade scope. 
 
 ## Summarize and close out the upgrade
 
