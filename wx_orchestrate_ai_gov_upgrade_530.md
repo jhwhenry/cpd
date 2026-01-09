@@ -342,16 +342,16 @@ mv cluster_scoped_resources.yaml ${VERSION}-${PROJECT_CPD_INST_OPERATORS}-cluste
 ```
 
 3.Applying your entitlements to monitor and report use against license terms
-`<br>`
-**Non-Production enironment**
-`<br>`
+
+**Production enironment**
+
 Apply the IBM Cloud Pak for Data Enterprise Edition for the non-production environment.
 
 ```
 cpd-cli manage apply-entitlement \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --entitlement=cpd-enterprise \
---production=false
+--production=true
 ```
 
 Apply the watsonx.ai license for the non-production environment.
@@ -360,7 +360,7 @@ Apply the watsonx.ai license for the non-production environment.
 cpd-cli manage apply-entitlement \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --entitlement=watsonx-ai \
---production=false
+--production=true
 ```
 
 Apply the watsonx.governance license for the non-production environment.
@@ -369,14 +369,14 @@ Apply the watsonx.governance license for the non-production environment.
 cpd-cli manage apply-entitlement \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --entitlement=watsonx-gov-mm \
---production=false
+--production=true
 ```
 
 ```
 cpd-cli manage apply-entitlement \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --entitlement=watsonx-gov-rc \
---production=false
+--production=true
 ```
 
 Apply the watsonx Orchestrate license for the non-production environment.
@@ -385,7 +385,7 @@ Apply the watsonx Orchestrate license for the non-production environment.
 cpd-cli manage apply-entitlement \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --entitlement=watsonx-orchestrate \
---production=false
+--production=true
 ```
 
 Apply the watson Speech license.
@@ -402,8 +402,6 @@ cpd-cli manage apply-entitlement \
 --entitlement=text-to-speech
 ```
 
-
-
 Apply the Cognos Analytics license.
 
 ```
@@ -412,10 +410,7 @@ cpd-cli manage apply-entitlement
 --entitlement=cognos-analytics
 ```
 
-Reference:
-`<br>`
-
-[Applying your entitlements](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=aye-applying-your-entitlements-without-node-pinning-3)
+Reference: [Applying your entitlements](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=aye-applying-your-entitlements-without-node-pinning-3)
 
 #### 2.1.3 Create image pull secrets for IBM Software Hub instance
 
@@ -562,7 +557,7 @@ oc get secret wo-wa-auth-encryption -n ${PROJECT_CPD_INST_OPERANDS} -o yaml > wo
 ${CPDM_OC_LOGIN}
 ```
 
-[https://github.ibm.com/watson-engagement-advisor/wea-backlog/issues/70312#issuecomment-158683395](https://github.ibm.com/watson-engagement-advisor/wea-backlog/issues/70312#issuecomment-158683395)
+Reference (Steps Below): [https://github.ibm.com/watson-engagement-advisor/wea-backlog/issues/70312#issuecomment-158683395](https://github.ibm.com/watson-engagement-advisor/wea-backlog/issues/70312#issuecomment-158683395)
 
 - Preview the helm command
 
@@ -609,7 +604,6 @@ ${CPDM_OC_LOGIN}
   --upgrade=true
 ```
 
-
 **Note:** During the watsonx Orchestrate reconcilation, check if the UAB enabled in the custom resource.
 
 ```
@@ -643,7 +637,7 @@ oc patch wo wo --namespace="${PROJECT_CPD_INST_OPERANDS}" --type='merge' -p '{"s
 
 - Remove duplicate Postgres:
 
-Note: 1.25.3 will not be removed during upgrade. There will be two Postgres operators (1.25.4 & 1.25.4). We need to remove and recreate some artifacts for the new Postgres operator.  This will also remove some secrets as well as service account for postgres.
+Note: 1.25.3 will not be removed during upgrade. There will be two Postgres operators (1.25.3 & 1.25.4). We need to remove and recreate some artifacts for the new Postgres operator.  This will also remove some secrets as well as service account for postgres.
 
 * Back up and Delete Subsctiption and CSV for Old Postgres operator
 
@@ -665,15 +659,21 @@ oc delete subs cloud-native-postgresql-stable-v1.25-cloud-native-postgresql-cata
   oc apply -f postgres_530_helmdeploy.yaml
   ```
 
-Apply Day 0 Patch:
+##### **Patches to be applied during once Postgres + Redis + IFM are reconciled to 5.3.0**
+
+**Patch 1 - Apply Day 0 Patch:**
+
+Added as hyperlink as this critical patch can shift without notice.
 
 - [watsonx Orchestrate 5.3.0 hot fix](https://www.ibm.com/support/pages/applying-watsonx-orchestrate-530-hotfix-hotfix-0)
 
-Apply  HOTFIX from Babu and Premdas (to resolve creating archer conversation controller deployment):
+**Patch 2 -Apply Custom Hotfix (Resolve creating archer conversation controller deployment):**
 
-[https://github.ibm.com/watson-engagement-advisor/wo-cpd-support/blob/main/wxo-support-docs/hotfix/5.3.0/5.3.0-hotfix0-with-llama-fix.md]()
+Added as hyperlink as this critical patch can shift without notice.
 
-- Additional RSI step to Hotfix above post application (This may be fixed in a larger rolled up hotfix):
+* [https://github.ibm.com/watson-engagement-advisor/wo-cpd-support/blob/main/wxo-support-docs/hotfix/5.3.0/5.3.0-hotfix0-with-llama-fix.md]([https://github.ibm.com/watson-engagement-advisor/wo-cpd-support/blob/main/wxo-support-docs/hotfix/5.3.0/5.3.0-hotfix0-with-llama-fix.md]())
+
+ **Patch 3 -** **Additional RSI step to Hotfix to help bootstrap reconcile:**
 
 ```
 mkdir cpd-cli-workspace/olm-utils-workspace/work/rsi
@@ -697,13 +697,6 @@ cpd-cli manage get-cr-status \
 --components=watsonx_orchestrate
 ```
 
-#### 2.2.3 Apply the hot fix
-
-https://github.ibm.com/WatsonOrchestrate/wo-tracker/issues/50298
-
-1. Additional blocker: TS021044182
-2. Apply the watsonx Orchestrate 5.3.0 hot fix
-3. Possible fixes needed: [TS020907695](https://ibmsf.lightning.force.com/lightning/r/500gJ0000070UA9QAM/view) and [TS021044376](https://ibmsf.lightning.force.com/lightning/r/500gJ000007U1tvQAC/view)
 
 ### 2.3 Upgrade the watsonx.ai services
 
@@ -735,7 +728,6 @@ cpd-cli manage get-cr-status \
 --components=watsonx_ai,ws,wml,ws_runtimes,ccs
 ```
 
-Check the version of each custom resource by following the [Operator and operand versions](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=versions-522-october-2025)
 
 #### 2.4 Upgrade the watsonx.governance services
 
@@ -787,7 +779,7 @@ cpd-cli service-instance upgrade \
 
 #### 2.5 Upgrade the Watson Speech services
 
-##### Increase resources for MCG
+##### Increase resources for MCG (Note: Already performed on Prod)
 
 ```
 oc patch -n openshift-storage storageclusters.ocs.openshift.io ocs-storagecluster --type merge --patch '{"spec": {"resources": {"noobaa-agent": {"limits": {"memory": "8Gi"},"requests": {"memory": "8Gi"}},"noobaa-core": {"limits": {"memory":"8Gi"},"requests": {"memory": "8Gi"}},"noobaa-db": {"limits": {"memory": "8Gi"},"requests": {"memory": "8Gi"}},"noobaa-endpoint": {"limits": {"memory": "8Gi"},"requests": {"memory": "8Gi"}}}}}'
@@ -916,7 +908,7 @@ cpd-cli manage get-cr-status \
 --components=watson_speech
 ```
 
-[Cleaning up resources](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-52-8#cli-upgrade__clean__title__1)
+Reference: [Cleaning up resources](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-52-8#cli-upgrade__clean__title__1)
 
 #### 2.6 Upgrade the Voice Gateway
 
@@ -1041,32 +1033,30 @@ cpd-cli oadp install \
 
 ### Swapping Models
 
-Patch the IFM CR with updated models (Note: This will remove **llama-3-2-90b-vision-instruct** model)
+**(Note: DO NOT PATCH FOR PROD)** Patch the IFM CR with updated models
 
 ```
 oc patch watsonxaiifm watsonxaiifm-cr \
 --namespace=${PROJECT_CPD_INST_OPERANDS} \
 --type=merge \
---patch='{"spec":{"install_model_list": ["llama-4-maverick-17b-128e-instruct-fp8","ibm-slate-30m-english-rtrvr","granite-3-2-8b-instruct","mistral-medium-2508","granite-3-3-8b-instruct"]}}'
+--patch='{"spec":{"install_model_list": ["llama-4-maverick-17b-128e-instruct-fp8","ibm-slate-30m-english-rtrvr","granite-3-2-8b-instruct","mistral-medium-2505","granite-3-3-8b-instruct"]}}'
 
 ```
 
-
-### Update the CPD Route: 
+### Update the CPD Route:
 
 Label will be missing from the cpd route post upgrade.
 
-Edit the cpd route to add the label "**expose:external-region**" to your cpd-route
+Edit the cpd route to add the label "**expose:external-regional**" to your cpd-route
 
+### Groups Missing:
 
-### Groups Missing: 
+User groups in access control are missing from UI, but not erased.
 
-User groups in access control are missing from UI, but not erased. 
-
-Check the zen-metastore-edb postgred DB values: 
+Check the zen-metastore-edb postgred DB values:
 
 ```
-oc rsh zen-metastore-edb-1
+oc rsh zen-metastore-edb-1 -n ${PROJECT_CPD_INST_OPERANDS} 
 
 
 sh-5.1$ psql -U postgres -d zen
@@ -1088,10 +1078,9 @@ CREATE TABLE user_groups_backup AS SELECT * FROM user_groups;
 UPDATE user_groups SET account_id = '999';
 ```
 
-
 ### WxO s3 storage routes
 
-[https://github.ibm.com/watson-engagement-advisor/wo-cpd-support/blob/main/wxo-support-docs/5.2/5.2.2_storage_s3_route_config_issue_for_nooba.md](https://github.ibm.com/watson-engagement-advisor/wo-cpd-support/blob/main/wxo-support-docs/5.2/5.2.2_storage_s3_route_config_issue_for_nooba.md)
+Refernece (Steps below): [https://github.ibm.com/watson-engagement-advisor/wo-cpd-support/blob/main/wxo-support-docs/5.2/5.2.2_storage_s3_route_config_issue_for_nooba.md](https://github.ibm.com/watson-engagement-advisor/wo-cpd-support/blob/main/wxo-support-docs/5.2/5.2.2_storage_s3_route_config_issue_for_nooba.md)
 
 - Identify the s3 route
 
