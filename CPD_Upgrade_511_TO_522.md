@@ -201,7 +201,7 @@ oc get AnalyticsEngine analyticsengine-sample -o yaml
 - 4.Uninstall the CCS hot fixes.
 <br>
 
-Remove the hot fix from the CCS custom resource
+1) Remove the hot fix from the CCS custom resource
 
 ```
 image_digests:
@@ -212,6 +212,13 @@ image_digests:
   wdp_connect_connection_image: sha256:02826fa27eed4813f62bce2eccd66ee8ab17c2ee56df811551746d683aa7ae0f
   wdp_connect_connector_image: sha256:c85fcfadda98e2f7d193b12234dbec013105e50b9f59f157505c28f5e572edcc
   wdp_connect_flight_image: sha256:cda30760185008c723a87bd251f60cb6402f4814ee1523c99a167ad979c5919b
+```
+
+2)Patch for the catalog-api migration
+```
+use_semi_auto_catalog_api_migration": true
+"catalog_api_postgres_migration_threads": 8
+"catalog_api_migration_job_resources": { "requests": {"cpu": "6", "ephemeral-storage": "10Mi", "memory": "6Gi"},"limits": {"cpu": "10", "ephemeral-storage": "6Gi", "memory": "10Gi"}}
 ```
 
 Save and Exit. Wait until the CCS Operator reconcilation completed and also the ccs-cr in 'Completed' status.
