@@ -494,7 +494,7 @@ Specify the following options in the `override.yaml` file in the `work` director
 # watsonx Orchestrate parameters
 ################################################################################ 
 watsonxOrchestrate:
-  installMode: agentic_skills_assistant
+  installMode: agentic_assistant
   wxolite:
     enabled: false
   uab:
