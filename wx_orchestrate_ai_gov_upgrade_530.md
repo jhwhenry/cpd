@@ -570,7 +570,7 @@ Reference (Steps Below): [https://github.ibm.com/watson-engagement-advisor/wea-b
   --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
   --image_pull_prefix=${IMAGE_PULL_PREFIX} \
   --image_pull_secret=${IMAGE_PULL_SECRET} \
-  --param-file=/tmp/work/install-options.yml \
+  --param-file=/tmp/work/override.yaml \
   --upgrade=true \
    --preview=true
   ```
