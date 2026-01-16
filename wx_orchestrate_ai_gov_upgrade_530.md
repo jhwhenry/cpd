@@ -697,6 +697,8 @@ cpd-cli manage get-cr-status \
 --components=watsonx_orchestrate
 ```
 
+ **Patch 4 -  Apply Day 1 Patch**
+To be release on 01/19
 
 ### 2.3 Upgrade the watsonx.ai services
 
@@ -771,7 +773,7 @@ cpd-cli service-instance upgrade \
 Validate the service instance upgrade.
 
 ```
-cpd-cli service-instance upgrade \
+cpd-cli service-instance list \
 --service-type=openpages \
 --profile=${CPD_PROFILE_NAME} \
 --all
