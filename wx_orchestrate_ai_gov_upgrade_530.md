@@ -665,15 +665,9 @@ oc delete subs cloud-native-postgresql-stable-v1.25-cloud-native-postgresql-cata
 
 Added as hyperlink as this critical patch can shift without notice.
 
-- [watsonx Orchestrate 5.3.0 hot fix](https://www.ibm.com/support/pages/applying-watsonx-orchestrate-530-hotfix-hotfix-0)
+- [watsonx Orchestrate 5.3.0 hotfix1](https://www.ibm.com/support/pages/node/7257359)
 
-**Patch 2 -Apply Custom Hotfix (Resolve creating archer conversation controller deployment):**
-
-Added as hyperlink as this critical patch can shift without notice.
-
-* [https://github.ibm.com/watson-engagement-advisor/wo-cpd-support/blob/main/wxo-support-docs/hotfix/5.3.0/5.3.0-hotfix0-with-llama-fix.md]([https://github.ibm.com/watson-engagement-advisor/wo-cpd-support/blob/main/wxo-support-docs/hotfix/5.3.0/5.3.0-hotfix0-with-llama-fix.md]())
-
- **Patch 3 -** **Additional RSI step to Hotfix to help bootstrap reconcile:**
+ **Patch 2 -** **Additional RSI step to help bootstrap reconcile:**
 
 ```
 mkdir cpd-cli-workspace/olm-utils-workspace/work/rsi
@@ -696,9 +690,6 @@ cpd-cli manage get-cr-status \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --components=watsonx_orchestrate
 ```
-
- **Patch 4 -  Apply Day 1 Patch**
-To be release on 01/19
 
 ### 2.3 Upgrade the watsonx.ai services
 
