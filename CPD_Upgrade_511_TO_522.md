@@ -238,7 +238,7 @@ oc get AnalyticsEngine analyticsengine-sample -o yaml -n ${PROJECT_CPD_INST_OPER
 
 <br>
 
-Edit the AnalyticsEngine analyticsengine-sample.
+Edit the CCS custom resource.
 
 ```
 oc edit ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS}
@@ -275,10 +275,20 @@ catalog_api_migration_job_resources:
 Save and Exit. Wait until the CCS Operator reconcilation completed and also the ccs-cr in 'Completed' status.
 
 ```
-oc get CCS ccs-cr -o yaml
+oc get CCS ccs-cr -o yaml -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
 - 5.Remove DataRefinery from the maintenance mode
+
+<br>
+
+Edit the DataRefinery custom resource.
+
+```
+oc edit DataRefinery datarefinery-cr -n ${PROJECT_CPD_INST_OPERANDS} 
+```
+
+Remove the maintenance mode.
 
 ```
 ignoreForMaintenance: true
@@ -287,7 +297,7 @@ ignoreForMaintenance: true
 Wait until the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status.
 
 ```
-oc get WKC wkc-cr -o yaml
+oc get WKC wkc-cr -o yaml -n ${PROJECT_CPD_INST_OPERANDS} 
 ```
 
 ### 1.2 Set up client workstation
