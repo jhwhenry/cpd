@@ -300,6 +300,20 @@ Wait until the WKC Operator reconcilation completed and also the wkc-cr in 'Comp
 oc get WKC wkc-cr -o yaml -n ${PROJECT_CPD_INST_OPERANDS} 
 ```
 
+- 6.Remove IBM Match360 hot fix
+Run the following commands to remove the image digest update from the IBM Match 360 custom resource.
+
+```
+oc patch mdm mdm-cr --type=json --patch '[{ "op": "remove", "path": "/spec/image_digests"}]' -n ${PROJECT_CPD_INST_OPERANDS}
+
+oc patch mdm mdm-cr --type=json --patch '[{ "op": "remove", "path": "/spec/mdm_data/spark/image"}]' -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
+Wait for the IBM Match 360 operator reconciliation to complete. 
+```
+oc get mdm mdm-cr -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
 ### 1.2 Set up client workstation
 
 #### 1.2.1 Prepare a client workstation
