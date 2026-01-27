@@ -152,6 +152,12 @@ cpd-cli manage get-rsi-patch-info \
 
 [Pre-upgrade check steps](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=uish-upgrading-software-hub-1#taskupgrade-instance__prereq__1)
 
+<br>
+
+**Note:**
+<br>
+No need to patch the CCS cr. Just complete the steps before Step 3 for determining approximately how long the service will be offline during the migration.
+
 #### 1.1.4 Uninstall all hotfixes and apply preventative measures
 
 Remove the hotfixes by removing the images or configurations from the CRs. (Keep this until the auto removal of tot fixes tested out)
