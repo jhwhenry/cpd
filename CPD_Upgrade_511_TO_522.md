@@ -952,11 +952,6 @@ Validating the upgrade.
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=datalineage
 ```
 
-**Apply Profiling Lineage Hotfix (Should no longer need any hotfixes)**
-
-```
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=datalineage
-```
 
 #### 2.2.3 Upgrading Analytics Engine service instance
 
