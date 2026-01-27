@@ -409,7 +409,7 @@ export VERSION=5.2.2
 2.Locate the COMPONENTS entry and confirm the COMPONENTS entry is accurate.
 
 ```
-export COMPONENTS=ibm-cert-manager,ibm-licensing,cpfs,cpd_platform,ws,ws_runtimes,wml,wkc,datastage_ent,datastage_ent_plus,analyticsengine,mantaflow,datalineage,openscale,db2wh,match360
+export COMPONENTS=ibm-licensing,cpfs,cpd_platform,ws,ws_runtimes,wml,wkc,datastage_ent,datastage_ent_plus,analyticsengine,datalineage,openscale,db2wh,match360
 ```
 
 Save the changes. `<br>`
