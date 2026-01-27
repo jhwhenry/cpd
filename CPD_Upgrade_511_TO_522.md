@@ -166,7 +166,9 @@ Remove the hotfixes by removing the images or configurations from the CRs. (Keep
 1.Remove DataLineage from the maintenance mode and uninstall the hot fixes
 
 <br>
+
 Edit the DataLineage CR.
+
 ```
 oc edit datalineage datalineage-cr -n ${PROJECT_CPD_INST_OPERANDS}
 ```
