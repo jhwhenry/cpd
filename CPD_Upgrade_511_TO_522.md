@@ -165,6 +165,14 @@ Remove the hotfixes by removing the images or configurations from the CRs. (Keep
 
 1.Remove DataLineage from the maintenance mode and uninstall the hot fixes
 
+<br>
+Edit the DataLineage CR.
+```
+oc edit datalineage datalineage-cr -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
+Remove the maintenance mode and uninstall the hot fixes.
+
 ```
 ignoreForMaintenance: true
 datalineage_scanner_service_image_tag: 3a851c76cde46def29f2e489338a040d1e430034982fa6d6c87f5b95ae99b4e8
@@ -173,7 +181,18 @@ datalineage_scanner_worker_image_tag: 1c731288ca446c22df24d4062a1ed15ac6a69305af
 datalineage_scanner_worker_image_tag_metadata: 2.3.4
 ```
 
+Save and Exit. Wait until the DataLineage Operator reconcilation completed and also the datalineage-cr in 'Completed' status.
+
 2. Remove WKC maintenance mode and the hot fixes
+
+<br>
+Edit the WKC CR.
+
+```
+oc edit wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
+Remove maintenance mode and the hot fixes
 
 ```
 ignoreForMaintenance: true
@@ -189,10 +208,18 @@ image_digests:
 Save and Exit. Wait until the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status.
 
 ```
-oc get WKC wkc-cr -o yaml
+oc get WKC wkc-cr -o yaml -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
 3. Remove AnalyticsEngine from the maintenance mode
+
+<br>
+
+Edit the AnalyticsEngine analyticsengine-sample.
+
+```
+oc edit AnalyticsEngine analyticsengine-sample -n ${PROJECT_CPD_INST_OPERANDS}
+```
 
 ```
 ignoreForMaintenance: true
@@ -201,13 +228,23 @@ ignoreForMaintenance: true
 Save and Exit. Wait until the AnalyticsEngine Operator reconcilation completed and also the analyticsengine-sample in 'Completed' status.
 
 ```
-oc get AnalyticsEngine analyticsengine-sample -o yaml
+oc get AnalyticsEngine analyticsengine-sample -o yaml -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
 - 4.Uninstall the CCS hot fixes.
 <br>
 
 1) Remove the hot fix from the CCS custom resource
+
+<br>
+
+Edit the AnalyticsEngine analyticsengine-sample.
+
+```
+oc edit ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
+Remove the hot fix.
 
 ```
 image_digests:
@@ -222,9 +259,16 @@ image_digests:
 
 2)Patch for the catalog-api migration
 ```
-use_semi_auto_catalog_api_migration": true
-"catalog_api_postgres_migration_threads": 8
-"catalog_api_migration_job_resources": { "requests": {"cpu": "6", "ephemeral-storage": "10Mi", "memory": "6Gi"},"limits": {"cpu": "10", "ephemeral-storage": "6Gi", "memory": "10Gi"}}
+catalog_api_postgres_migration_threads: 8
+catalog_api_migration_job_resources:
+  requests:
+    cpu: 6
+    ephemeral-storage: 10Mi
+    memory: 6Gi
+  limits:
+    cpu: 10
+    ephemeral-storage: 6Gi
+    memory: 10Gi
 ```
 
 Save and Exit. Wait until the CCS Operator reconcilation completed and also the ccs-cr in 'Completed' status.
