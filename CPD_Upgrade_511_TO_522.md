@@ -259,6 +259,7 @@ image_digests:
 
 2)Patch for the catalog-api migration
 ```
+use_semi_auto_catalog_api_migration: true
 catalog_api_postgres_migration_threads: 8
 catalog_api_migration_job_resources:
   requests:
