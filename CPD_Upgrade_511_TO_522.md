@@ -162,77 +162,7 @@ No need to patch the CCS cr. Just complete the steps before Step 3 for determini
 Remove the hotfixes by removing the images or configurations from the CRs. (Keep this until the auto removal of tot fixes tested out)
 <br>
 
-1.Remove DataLineage from the maintenance mode and uninstall the hot fixes
-
-<br>
-
-Edit the DataLineage CR.
-
-```
-oc edit datalineage datalineage-cr -n ${PROJECT_CPD_INST_OPERANDS}
-```
-
-Remove the maintenance mode and uninstall the hot fixes.
-
-```
-ignoreForMaintenance: true
-datalineage_scanner_service_image_tag: 3a851c76cde46def29f2e489338a040d1e430034982fa6d6c87f5b95ae99b4e8
-datalineage_scanner_service_image_tag_metadata: 2.3.1
-datalineage_scanner_worker_image_tag: 1c731288ca446c22df24d4062a1ed15ac6a69305af0ecc5288d3d44fba92d2b1
-datalineage_scanner_worker_image_tag_metadata: 2.3.4
-```
-
-Save and Exit. Wait until the DataLineage Operator reconcilation completed and also the datalineage-cr in 'Completed' status.
-
-2. Remove WKC maintenance mode and the hot fixes
-
-<br>
-Edit the WKC CR.
-
-```
-oc edit wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS}
-```
-
-Remove maintenance mode and the hot fixes
-
-```
-ignoreForMaintenance: true
-image_digests:
-  metadata_discovery_image: sha256:b89559cea54616a530557956dd806895b454bd5180cb7ce3656c440325f92591
-  wdp_kg_ingestion_service_image: sha256:0b77632e2406dff9b2bb6bbcdbf6a06f7748f5aa702a021fde1eeeebf44bda9b
-  wkc_bi_data_service_image: sha256:df96efc9d94cb6e335ce6ea1815b4c29867eee6fbd91f7ba78b11561dbfcb2ad
-  wkc_data_lineage_service_image: sha256:bc0a37a460f383f9a5fce0f7decd0a074db83b9df56d541f61835ea32a486c88
-  wkc_mde_service_manager_image: sha256:a7a3ea48d72baaae484c6dde0ff910a89164993795cf530054e2a39ee9bf90ce
-  wkc_metadata_imports_ui_image: sha256:1487c666890f13494a9d2fe14453cd0c46234bc0b799b354ca9526f090404506
-```
-
-Save and Exit. Wait until the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status.
-
-```
-oc get WKC wkc-cr -o yaml -n ${PROJECT_CPD_INST_OPERANDS}
-```
-
-3. Remove AnalyticsEngine from the maintenance mode
-
-<br>
-
-Edit the AnalyticsEngine analyticsengine-sample.
-
-```
-oc edit AnalyticsEngine analyticsengine-sample -n ${PROJECT_CPD_INST_OPERANDS}
-```
-
-```
-ignoreForMaintenance: true
-```
-
-Save and Exit. Wait until the AnalyticsEngine Operator reconcilation completed and also the analyticsengine-sample in 'Completed' status.
-
-```
-oc get AnalyticsEngine analyticsengine-sample -o yaml -n ${PROJECT_CPD_INST_OPERANDS}
-```
-
-- 4.Uninstall the CCS hot fixes.
+- 1.Uninstall the CCS hot fixes and apply the patch for migration preparation.
 <br>
 
 1) Remove the hot fix from the CCS custom resource
@@ -279,7 +209,7 @@ Save and Exit. Wait until the CCS Operator reconcilation completed and also the 
 oc get CCS ccs-cr -o yaml -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
-- 5.Remove DataRefinery from the maintenance mode
+- 2.Remove DataRefinery from the maintenance mode
 
 <br>
 
@@ -295,11 +225,75 @@ Remove the maintenance mode.
 ignoreForMaintenance: true
 ```
 
-Wait until the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status.
+- 3.Remove AnalyticsEngine from the maintenance mode
+
+<br>
+
+Edit the AnalyticsEngine analyticsengine-sample.
 
 ```
-oc get WKC wkc-cr -o yaml -n ${PROJECT_CPD_INST_OPERANDS} 
+oc edit AnalyticsEngine analyticsengine-sample -n ${PROJECT_CPD_INST_OPERANDS}
 ```
+
+```
+ignoreForMaintenance: true
+```
+
+Save and Exit. Wait until the AnalyticsEngine Operator reconcilation completed and also the analyticsengine-sample in 'Completed' status.
+
+```
+oc get AnalyticsEngine analyticsengine-sample -o yaml -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
+- 4.Remove WKC maintenance mode and the hot fixes
+
+<br>
+Edit the WKC CR.
+
+```
+oc edit wkc wkc-cr -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
+Remove maintenance mode and the hot fixes
+
+```
+ignoreForMaintenance: true
+image_digests:
+  metadata_discovery_image: sha256:b89559cea54616a530557956dd806895b454bd5180cb7ce3656c440325f92591
+  wdp_kg_ingestion_service_image: sha256:0b77632e2406dff9b2bb6bbcdbf6a06f7748f5aa702a021fde1eeeebf44bda9b
+  wkc_bi_data_service_image: sha256:df96efc9d94cb6e335ce6ea1815b4c29867eee6fbd91f7ba78b11561dbfcb2ad
+  wkc_data_lineage_service_image: sha256:bc0a37a460f383f9a5fce0f7decd0a074db83b9df56d541f61835ea32a486c88
+  wkc_mde_service_manager_image: sha256:a7a3ea48d72baaae484c6dde0ff910a89164993795cf530054e2a39ee9bf90ce
+  wkc_metadata_imports_ui_image: sha256:1487c666890f13494a9d2fe14453cd0c46234bc0b799b354ca9526f090404506
+```
+
+Save and Exit. Wait until the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status.
+
+```
+oc get WKC wkc-cr -o yaml -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
+- 5.Remove DataLineage from the maintenance mode and uninstall the hot fixes
+
+<br>
+
+Edit the DataLineage CR.
+
+```
+oc edit datalineage datalineage-cr -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
+Remove the maintenance mode and uninstall the hot fixes.
+
+```
+ignoreForMaintenance: true
+datalineage_scanner_service_image_tag: 3a851c76cde46def29f2e489338a040d1e430034982fa6d6c87f5b95ae99b4e8
+datalineage_scanner_service_image_tag_metadata: 2.3.1
+datalineage_scanner_worker_image_tag: 1c731288ca446c22df24d4062a1ed15ac6a69305af0ecc5288d3d44fba92d2b1
+datalineage_scanner_worker_image_tag_metadata: 2.3.4
+```
+
+Save and Exit. Wait until the DataLineage Operator reconcilation completed and also the datalineage-cr in 'Completed' status.
 
 - 6.Remove IBM Match360 hot fix
 Run the following commands to remove the image digest update from the IBM Match 360 custom resource.
