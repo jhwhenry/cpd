@@ -114,8 +114,7 @@ Part 2: Upgrade
 
 Part 3: Post-upgrade
 3.1 Validate platform customization settings
-3.2 CCS post-upgrade tasks
-3.3 WKC post-upgrade tasks
+3.2 WKC post-upgrade tasks
 
 Part 4: Maintenance
 
@@ -1129,11 +1128,7 @@ cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --co
 [Create a custom route using cpd-cli](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=platform-modifying-route)
 
 
-### 3.2 CCS post-upgrade tasks (Need to check with Steven)
-
-TBD
-
-### 3.3 WKC post-upgrade tasks
+### 3.2 WKC post-upgrade tasks
 
 [1.Complete the catalog-api service migration to PostgreSQL](https://www.ibm.com/docs/en/SSNFH6_5.2.x/hub/admin/post-install-services-catalog-api-migration.html)
 
