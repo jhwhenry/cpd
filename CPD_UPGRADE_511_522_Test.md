@@ -203,6 +203,12 @@ catalog_api_migration_job_resources:
     memory: 10Gi
 ```
 
+3)Remove the maintenance mode
+
+```
+ignoreForMaintenance: true
+```
+
 Save and Exit. Wait until the CCS Operator reconcilation completed and also the ccs-cr in 'Completed' status.
 
 ```
