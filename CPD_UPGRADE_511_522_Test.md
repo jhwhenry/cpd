@@ -1048,7 +1048,7 @@ cpd-cli manage apply-cr \
 --upgrade=true
 ```
 
-- Increase the `idle_in_transaction_session_timeout` of the lineage Postgres cluster
+- Increase the `idle_in_transaction_session_timeout` of the lineage Postgres cluster (e.g. datalineage-cloud-native-postgresql)
 <br>
 1)Confirm the Postgres cluster is up and running and accepting connections
 
@@ -1059,8 +1059,8 @@ cpd-cli manage apply-cr \
 <br>
 
 ```
-ALTER DATABASE scannerservice
-SET idle_in_transaction_session_timeout = '10h';
+psql -d scannerservice -U postgres
+ALTER DATABASE scannerservice SET idle_in_transaction_session_timeout = '10h';
 ```
 <br>
 
@@ -1073,15 +1073,14 @@ SET idle_in_transaction_session_timeout = '10h';
 <br>
 e.g. use value 600 - this will mean 10 hours before the app is restarted4
 
-5)Monitor the log of the scanner-service pod and wait until it finishes the migrations.
+5)Monitor the log of the lineage-scanner-service pod and wait until it finishes the migrations.
 
 <br>
 
 6)Return the timeout to the previous value of 2 minutes
 <br>
 ```
-ALTER DATABASE scannerservice
-SET idle_in_transaction_session_timeout = '2m';
+ALTER DATABASE scannerservice SET idle_in_transaction_session_timeout = '2m';
 ```
 
 7) Scale the datalineage-operator back up
