@@ -305,7 +305,7 @@ Save and Exit.
 Check whether the `image_digests` property exists in the custom resources of WKC components. 
 
 ```
-for crd in $(oc get crd | grep volumereplication | awk '{print $1}'); do
+for crd in $(oc get crd | grep wkc | awk '{print $1}'); do
   oc get crd "$crd" -o jsonpath='{.spec.names.plural}' -A -o yaml
 done
 ```
@@ -974,7 +974,7 @@ podman inspect olm-utils-play-v4 | jq -r '.[0].Mounts' |jq -r '.[] | select(.Des
 2)Make sure the `useFDB` is set to be `False` in the install-options.yml file. And remove FDBcluster for WKC if present.
 
 ```bash
-oc get fdbcluster -n ${PROJECT_CPD_INST_OPERANDS}
+oc get fdbcluster -n ${PROJECT_CPD_INST_OPERANDS} | grep wkc
 
 (If present)
 oc delete fdbcluster wkc-foundationdb-cluster -n ${PROJECT_CPD_INST_OPERANDS}
@@ -1048,7 +1048,47 @@ cpd-cli manage apply-cr \
 --upgrade=true
 ```
 
-Validating the upgrade.
+- Increase the `idle_in_transaction_session_timeout` of the lineage Postgres cluster
+<br>
+1)Confirm the Postgres cluster is up and running and accepting connections
+
+<br>
+
+2)Connect to the **Primary** replica of the lineage Postgres cluster and increase the idle_in_transaction_session_timeout.
+
+<br>
+
+```
+ALTER DATABASE scannerservice
+SET idle_in_transaction_session_timeout = '10h';
+```
+<br>
+
+3)Scale down datalineage-operator
+
+<br>
+
+4)Edit the lineage-scanner-service deployment, and change `failureThreshold` in the readiness and liveness probes.
+
+<br>
+e.g. use value 600 - this will mean 10 hours before the app is restarted4
+
+5)Monitor the log of the scanner-service pod and wait until it finishes the migrations.
+
+<br>
+
+6)Return the timeout to the previous value of 2 minutes
+<br>
+```
+ALTER DATABASE scannerservice
+SET idle_in_transaction_session_timeout = '2m';
+```
+
+7) Scale the datalineage-operator back up
+
+<br>
+
+- Validating the upgrade
 
 ```
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --components=datalineage
