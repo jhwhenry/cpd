@@ -159,10 +159,25 @@ No need to patch the CCS cr. Just complete the steps before Step 3 for determini
 
 #### 1.1.4 Uninstall all hotfixes and apply preventative measures
 
-Remove the hotfixes by removing the images or configurations from the CRs. (Keep this until the auto removal of tot fixes tested out)
+- 1.Apply preventive measure for the ZenService.
+
 <br>
 
-- 1.Uninstall the CCS hot fixes and apply the patch for migration preparation.
+Add below information under the ZenMinio section.
+```
+livenessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  failureThreshold: 6
+  timeoutSeconds: 10
+readinessProbe:
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  failureThreshold: 6
+  timeoutSeconds: 10
+```
+
+- 2.Uninstall the CCS hot fixes and apply the patch for migration preparation.
 <br>
 
 1) Remove the hot fix from the CCS custom resource
@@ -215,7 +230,7 @@ Save and Exit. Wait until the CCS Operator reconcilation completed and also the 
 oc get CCS ccs-cr -o yaml -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
-- 2.Remove DataRefinery from the maintenance mode
+- 3.Remove DataRefinery from the maintenance mode
 
 <br>
 
@@ -231,7 +246,7 @@ Remove the maintenance mode.
 ignoreForMaintenance: true
 ```
 
-- 3.Remove AnalyticsEngine from the maintenance mode
+- 4.Remove AnalyticsEngine from the maintenance mode
 
 <br>
 
@@ -253,7 +268,7 @@ Save and Exit. Wait until the AnalyticsEngine Operator reconcilation completed a
 oc get AnalyticsEngine analyticsengine-sample -o yaml -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
-- 4.Remove WKC maintenance mode and the hot fixes
+- 5.Remove WKC maintenance mode and the hot fixes
 
 <br>
 Edit the WKC CR.
@@ -281,7 +296,7 @@ Save and Exit. Wait until the WKC Operator reconcilation completed and also the 
 oc get WKC wkc-cr -o yaml -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
-- 5.Remove DataLineage from the maintenance mode and uninstall the hot fixes
+- 6.Remove DataLineage from the maintenance mode and uninstall the hot fixes
 
 <br>
 
@@ -303,7 +318,7 @@ datalineage_scanner_worker_image_tag_metadata: 2.3.4
 
 Save and Exit. Wait until the DataLineage Operator reconcilation completed and also the datalineage-cr in 'Completed' status.
 
-- 6.Remove IBM Match360 hot fix
+- 7.Remove IBM Match360 hot fix
 Run the following commands to remove the image digest update from the IBM Match 360 custom resource.
 
 ```
@@ -317,7 +332,7 @@ Wait for the IBM Match 360 operator reconciliation to complete.
 oc get mdm mdm-cr -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
-- 7.Remove Db2aaserviceService from the maintenance mode
+- 8.Remove Db2aaserviceService from the maintenance mode
 
 <br>
 
@@ -339,7 +354,7 @@ Save and Exit. Wait until the Db2aaserviceService Operator reconcilation complet
 oc get Db2aaserviceService db2aaservice-cr -o yaml -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
-- 8.Remove Db2whService from the maintenance mode
+- 9.Remove Db2whService from the maintenance mode
 
 <br>
 
@@ -446,7 +461,9 @@ cpd-cli
 ```
 
 5.Update the OpenShift CLI
-`<br>`
+
+<br>
+
 Check the OpenShift CLI version.
 
 ```
