@@ -1083,7 +1083,7 @@ e.g. use value 600 - this will mean 10 hours before the app is restarted4
 ALTER DATABASE scannerservice SET idle_in_transaction_session_timeout = '2m';
 ```
 
-7) Scale the datalineage-operator back up
+7)Scale the datalineage-operator back up
 
 <br>
 
