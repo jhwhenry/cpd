@@ -295,7 +295,25 @@ image_digests:
   wkc_metadata_imports_ui_image: sha256:1487c666890f13494a9d2fe14453cd0c46234bc0b799b354ca9526f090404506
 ```
 
-Save and Exit. Wait until the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status.
+Save and Exit. 
+
+<br>
+
+**Note:** 
+<br>
+
+Check whether the `image_digests` property exists in the custom resources of WKC components. 
+
+```
+for crd in $(oc get crd | grep volumereplication | awk '{print $1}'); do
+  oc get crd "$crd" -o jsonpath='{.spec.names.plural}' -A -o yaml
+done
+```
+
+Review the custom resource content one by one. If it contains the `image_digests` property, then remove it from the custom resource. 
+
+
+Wait until the WKC Operator reconcilation completed and also the wkc-cr in 'Completed' status.
 
 ```
 oc get WKC wkc-cr -o yaml -n ${PROJECT_CPD_INST_OPERANDS}
