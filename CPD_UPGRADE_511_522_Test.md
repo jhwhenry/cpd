@@ -185,7 +185,7 @@ readinessProbe:
 - 2.Uninstall the CCS hot fixes and apply the patch for migration preparation.
 <br>
 
-1) Remove the hot fix from the CCS custom resource
+1)Remove the hot fix from the CCS custom resource
 
 <br>
 
