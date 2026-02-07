@@ -966,7 +966,7 @@ oc delete fdbcluster wkc-foundationdb-cluster -n ${PROJECT_CPD_INST_OPERANDS}
 
 ##### 2.Upgrade WKC with custom installation
 
-Run the cpd-cli manage login-to-ocp command to log in to the cluster.
+Log into the OCP cluster.
 
 ```
 ${CPDM_OC_LOGIN}
@@ -982,6 +982,20 @@ cpd-cli manage apply-cr \
 --param-file=/tmp/work/install-options.yml \
 --license_acceptance=true \
 --upgrade=true
+```
+
+**Note:**
+
+<br>
+
+Right after the above command triggered, make change to the `asset_files_api_args` property of the CCS custom resource as below. 
+
+```
+oc patch ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{
+   "spec":{
+      "asset_files_api_args":["-c","cd /home/node/${MICROSERVICENAME};source /scripts/exportSecrets.sh;export npm_config_cache=~node;node --max-old-space-size=12288 --max-http-header-size=32768 index.mjs"]
+   }
+}'
 ```
 
 ##### 3.Validate the upgrade
