@@ -557,7 +557,10 @@ cpd-cli manage list-images \
 --case_download=false
 ```
 
-The output is saved to the list_images.csv file in the work/offline/${VERSION} directory.`<br>`
+The output is saved to the list_images.csv file in the `work/offline/${VERSION}` directory.
+
+<br>
+
 Check the output for errors:
 
 ```
