@@ -241,6 +241,8 @@ Edit the AnalyticsEngine analyticsengine-sample.
 oc edit AnalyticsEngine analyticsengine-sample -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
+Remove below section.
+
 ```
 ignoreForMaintenance: true
 ```
@@ -313,6 +315,50 @@ oc patch mdm mdm-cr --type=json --patch '[{ "op": "remove", "path": "/spec/mdm_d
 Wait for the IBM Match 360 operator reconciliation to complete. 
 ```
 oc get mdm mdm-cr -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
+- 7.Remove Db2aaserviceService from the maintenance mode
+
+<br>
+
+Edit the Db2aaserviceService db2aaservice-cr.
+
+```
+oc edit Db2aaserviceService db2aaservice-cr -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
+Remove below section.
+
+```
+ignoreForMaintenance: true
+```
+
+Save and Exit. Wait until the Db2aaserviceService Operator reconcilation completed and also the db2aaservice-cr in 'Completed' status.
+
+```
+oc get Db2aaserviceService db2aaservice-cr -o yaml -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
+- 8.Remove Db2whService from the maintenance mode
+
+<br>
+
+Edit the Db2whService db2wh-cr.
+
+```
+oc edit Db2whService db2wh-cr -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
+Remove below section.
+
+```
+ignoreForMaintenance: true
+```
+
+Save and Exit. Wait until the Db2whService Operator reconcilation completed and also the db2wh-cr in 'Completed' status.
+
+```
+oc get Db2whService db2wh-cr -o yaml -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
 ### 1.2 Set up client workstation
