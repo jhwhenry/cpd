@@ -46,7 +46,12 @@ Reference:
 
 [Mirroring images to private image registry](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=prufpcr-mirroring-images-private-container-registry)
 
-#### 3. The permissions required for the upgrade is ready
+
+#### 3. Ensure the ImageDigestMirrorSet configured properly
+
+With the proper configuration of ImageDigestMirrorSet, it can help avoid the issue - `ccs-cams-postgres` pod failing in pulling images.
+
+#### 4. The permissions required for the upgrade is ready
 
 - Openshift cluster permissions
 <br>
@@ -67,7 +72,7 @@ The Cloud Pak for Data administrator role or permissions is required for upgradi
 - Permission to access the private image registry for pushing or pull images
 - Access to the Bastion node for executing the upgrade commands
 
-#### 4. Migrate environments based on Watson Studio Runtime 22.2 and Runtime 23.1 from IBM Cloud Pak® for Data 5.1 (optional)
+#### 5. Migrate environments based on Watson Studio Runtime 22.2 and Runtime 23.1 from IBM Cloud Pak® for Data 5.1 (optional)
 
 Runtime 22.2 and Runtime 23.1 are not included in IBM® Software Hub. To continue using notebooks, scripts, and jobs that use environments based on Runtime 22.2 or Runtime 23.1, you must review them and manually migrate them, if necessary.
 
@@ -75,7 +80,7 @@ Runtime 22.2 and Runtime 23.1 are not included in IBM® Software Hub. To continu
 
 [Migrating notebooks, scripts, and jobs that use outdated environments](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=upgrading-migrating-notebooks-scripts-jobs-that-use-outdated-environments)
 
-#### 5. A pre-upgrade health check is made to ensure the cluster's readiness for upgrade.
+#### 6. A pre-upgrade health check is made to ensure the cluster's readiness for upgrade.
 
 - The OpenShift cluster, persistent storage and Cloud Pak for Data platform and services are in healthy status.
 
