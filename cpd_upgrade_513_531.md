@@ -1,11 +1,11 @@
 
-# CPD Upgrade From 5.2.0 to 5.3.1
+# CPD Upgrade From 5.1.3 to 5.3.1
 
 ## Upgrade Context
 - **OCP:** 4.16
-- **CPD:** 5.2.0 → 5.3.1
-- **Storage:** NFS
-- **Components:** ibm-licensing, cpfs, cpd_platform, wkc, datastage_ent, analyticsengine, datalineage, ikc_standard, ikc_premium, semantic_automation
+- **CPD:** 5.1.3 → 5.3.1
+- **Storage:** ODF
+- **Components:** ibm-licensing,cpfs,cpd_platform,analyticsengine,datastage_ent,datastage_ent_plus,dmc,dv,mantaflow,wkc
 - **Airgapped:** Yes
 
 # Table of Contents
