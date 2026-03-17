@@ -33,12 +33,12 @@ oc get po --no-headers --all-namespaces -o wide | grep -Ev '([[digit:]])/\1.*R' 
 ```
 
 ## 1.3 Backup before upgrade
-Note: Create a folder for 5.2.0 and maintain below created copies in that folder.
+Note: Create a folder for 5.1.3 and maintain below created copies in that folder.
 Login to the OCP cluster for cpd-cli utility.
 ```
 cpd-cli manage login-to-ocp --username=${OCP_USERNAME} --password=${OCP_PASSWORD} --server=${OCP_URL}
 ```
-### 1.3.1 Capture data for the CPD 5.2.0 instance. 
+### 1.3.1 Capture data for the CPD 5.1.3 instance. 
 No sensitive information is collected. Only the operational state of the Kubernetes artifacts is collected. The output of the command is stored in a file named collect-state.tar.gz in the cpd-cli-workspace/olm-utils-workspace/work directory.
 ```
 cpd-cli manage collect-state --cpd_instance_ns=${PROJECT_CPD_INSTANCE}
@@ -98,7 +98,7 @@ sudo dnf install helm
 ```
 
 ## 1.6 Updating your environment variables script
-Make a copy of the environment variables script used by the existing 5.2.0 variables with the name like cpd_vars_531.sh.
+Make a copy of the environment variables script used by the existing 5.1.3 variables with the name like cpd_vars_531.sh.
 
 Update the environment variables script cpd_vars_531.sh as follows.
 ```
