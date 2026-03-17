@@ -16,74 +16,29 @@
 # 1. Pre-upgrade
 ## 1.1 Checking the health of your cluster
 ```
-cpd-cli health cluster
-cpd-cli health nodes
-cpd-cli health operators --operator_ns=${PROJECT_CPD_INST_OPERATORS} --control_plane_ns=${PROJECT_CPD_INST_OPERANDS}
-cpd-cli health operands --control_plane_ns=${PROJECT_CPD_INST_OPERANDS}
-```
-
-## 1.2 Health check OCP & CPD
-```
 ${OC_LOGIN}
 oc get nodes,co,mcp
 
 ${CPDM_OC_LOGIN}
 cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
-oc get po --no-headers --all-namespaces -o wide | grep -Ev '([[digit:]])/\1.*R' | grep -v 'Completed'
+cpd-cli health cluster
+cpd-cli health nodes
+cpd-cli health operators --operator_ns=${PROJECT_CPD_INST_OPERATORS} --control_plane_ns=${PROJECT_CPD_INST_OPERANDS}
+cpd-cli health operands --control_plane_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
-
-## 1.3 Backup before upgrade
-Note: Create a folder for 5.1.3 and maintain below created copies in that folder.
-Login to the OCP cluster for cpd-cli utility.
-```
-cpd-cli manage login-to-ocp --username=${OCP_USERNAME} --password=${OCP_PASSWORD} --server=${OCP_URL}
-```
-### 1.3.1 Capture data for the CPD 5.1.3 instance. 
-No sensitive information is collected. Only the operational state of the Kubernetes artifacts is collected. The output of the command is stored in a file named collect-state.tar.gz in the cpd-cli-workspace/olm-utils-workspace/work directory.
-```
-cpd-cli manage collect-state --cpd_instance_ns=${PROJECT_CPD_INSTANCE}
-```
-### 1.3.2 Make a copy of existing custom resources (Recommended)
-```
-oc project ${PROJECT_CPD_INSTANCE}
-
-oc get ibmcpd ibmcpd-cr -o yaml > ibmcpd-cr.yaml
-
-oc get zenservice lite-cr -o yaml > lite-cr.yaml
-
-oc get CCS ccs-cr -o yaml > ccs-cr.yaml
-
-oc get wkc wkc-cr -o yaml > wkc-cr.yaml
-
-oc get analyticsengine analyticsengine-sample -o yaml > analyticsengine-cr.yaml
-
-oc get DataStage datastage -o yaml > datastage-cr.yaml
-
-oc get datalineage -o yaml > datalineage-cr.yaml
-
-oc get watsonxai -o yaml > watsonxai-cr.yaml
-
-oc get watsonxaiifm -o yaml > watsonxaiifm-cr.yaml
-```
-
-### 1.3.3 Backup the routes.
-```
-oc get routes -o yaml > routes.yaml
-```
-
-### 1.3.4 Backup the RSI patches.
+### 1.2 Backup the RSI patches
 ```
 cpd-cli manage get-rsi-patch-info \
 --cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
 --all
 ```
 
-## 1.4 Update the cpd-cli utility
+## 1.3 Update the cpd-cli utility
 ```
 wget https://github.com/IBM/cpd-cli/releases/download/v14.3.1/cpd-cli-linux-EE-14.3.1.tgz
 tar -xvf cpd-cli-linux-EE-14.3.1.tgz
 ```
-Ensure the cpd-cli manage plug-in has the latest olm-utils image.
+Ensure the `cpd-cli manage` plug-in has the latest `olm-utils` image.
 Check and confirm the olm-utils-v4 container is up and running.
 ```
 cpd-cli manage restart-container
@@ -110,12 +65,12 @@ export VERSION=5.3.1
 ```
 2. Locate the COMPONENTS entry and confirm the COMPONENTS entry is accurate.
 ```
-export COMPONENTS=ibm-licensing,cpfs,cpd_platform,wkc,datastage_ent, analyticsengine,datalineage,ikc_standard,ikc_premium,semantic_automation
+export COMPONENTS=ibm-licensing,cpfs,cpd_platform,analyticsengine,datastage_ent,datastage_ent_plus,dmc,dv,mantaflow,wkc
 ```
 3. Add a new section called Image pull configuration to your script and add the following environment variables
 https://www.ibm.com/docs/en/software-hub/5.3.x?topic=cri-updating-your-environment-variables-script
 ```
-export IMAGE_PULL_SECRET=${IBM_ENTITLEMENT_KEY}
+export IMAGE_PULL_SECRET=<the name of the namespace-scoped secret that will contain the base64 encoded credentials for pulling images>
 export IMAGE_PULL_CREDENTIALS=$(echo -n "$PRIVATE_REGISTRY_PULL_USER:$PRIVATE_REGISTRY_PULL_PASSWORD" | base64 -w 0)
 export IMAGE_PULL_PREFIX=${PRIVATE_REGISTRY_LOCATION}
 ```
