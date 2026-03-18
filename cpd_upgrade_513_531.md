@@ -26,33 +26,41 @@ cpd-cli health nodes
 cpd-cli health operators --operator_ns=${PROJECT_CPD_INST_OPERATORS} --control_plane_ns=${PROJECT_CPD_INST_OPERANDS}
 cpd-cli health operands --control_plane_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
-### 1.2 Backup the RSI patches
-```
-cpd-cli manage get-rsi-patch-info \
---cpd_instance_ns=${PROJECT_CPD_INSTANCE} \
---all
-```
 
-## 1.3 Update the cpd-cli utility
+## 1.2 Update the cpd-cli utility
+### 1.2.1 Download the latest cpd-cli for 5.3.1
 ```
 wget https://github.com/IBM/cpd-cli/releases/download/v14.3.1/cpd-cli-linux-EE-14.3.1.tgz
 tar -xvf cpd-cli-linux-EE-14.3.1.tgz
 ```
-Ensure the `cpd-cli manage` plug-in has the latest `olm-utils` image.
-Check and confirm the olm-utils-v4 container is up and running.
+
+### 1.2.2 Obtaining the olm-utils-v4 image
+```
+podman pull cp.icr.io/cp/cpd/olm-utils-premium-v4:${VERSION}.amd64 --tls-verify=false
+
+podman login ${PRIVATE_REGISTRY_LOCATION} -u ${PRIVATE_REGISTRY_PUSH_USER} -p ${PRIVATE_REGISTRY_PUSH_PASSWORD}
+
+podman tag cp.icr.io/cp/cpd/olm-utils-premium-v4:${VERSION}.amd64 ${PRIVATE_REGISTRY_LOCATION}/cp/cpd/olm-utils-premium-v4:${VERSION}.amd64 
+
+podman push ${PRIVATE_REGISTRY_LOCATION}/ cp/cpd/olm-utils-premium-v4:${VERSION}.amd64
+```
+
+### 1.2.3 Start up the new olm-utils-v4 container
+Confirm the olm-utils-v4 container is up and running.
+
 ```
 cpd-cli manage restart-container
 podman ps | grep olm-utils-v4
 ```
 
-## 1.5 Install Helm CLI
+## 1.3 Install Helm CLI
 Install Helm by following the https://www.ibm.com/links?url=https%3A%2F%2Fhelm.sh%2Fdocs%2Fintro%2Finstall%2F
 
 ```
 sudo dnf install helm
 ```
 
-## 1.6 Updating your environment variables script
+## 1.4 Updating your environment variables script
 Make a copy of the environment variables script used by the existing 5.1.3 variables with the name like cpd_vars_531.sh.
 
 Update the environment variables script cpd_vars_531.sh as follows.
@@ -90,25 +98,15 @@ bash ./cpd_vars_531.sh
 source ./cpd_vars_531.sh
 ```
 
-## 1.7 Mirror CPD 5.3.1 images
-### 1.7.1 Obtaining the olm-utils-v4 image
-```
-podman pull cp.icr.io/cp/cpd/olm-utils-premium-v4:${VERSION}.amd64 --tls-verify=false
-
-podman login ${PRIVATE_REGISTRY_LOCATION} -u ${PRIVATE_REGISTRY_PUSH_USER} -p ${PRIVATE_REGISTRY_PUSH_PASSWORD}
-
-podman tag cp.icr.io/cp/cpd/olm-utils-premium-v4:${VERSION}.amd64 ${PRIVATE_REGISTRY_LOCATION}/cp/cpd/olm-utils-premium-v4:${VERSION}.amd64 
-
-podman push ${PRIVATE_REGISTRY_LOCATION}/ cp/cpd/olm-utils-premium-v4:${VERSION}.amd64
-```
-### 1.7.2 Downloading CASE packages 
+## 1.5 Mirror CPD 5.3.1 images
+### 1.5.1 Downloading CASE packages 
 ```
 cpd-cli manage case-download \
 --components=${COMPONENTS} \
 --release=${VERSION}
 ```
 
-### 1.7.3 Mirroring images directly to the private container registry
+### 1.5.2 Mirroring images directly to the private container registry
 https://www.ibm.com/docs/en/software-hub/5.3.x?topic=mipcr-mirroring-images-directly-private-container-registry-1
 
 Log in to the IBM Entitled registry:
@@ -131,67 +129,13 @@ cpd-cli manage mirror-images \
 --arch=${IMAGE_ARCH} \
 --case_download=false
 ```
-Mirror the required vLLM images for Inference foundation models (ibm-watsonx-ai-ifm)
-```
-skopeo copy --all \
---src-username cp \
---src-password ${IBM_ENTITLEMENT_KEY} \
---src-tls-verify=false \
---dest-username ${PRIVATE_REGISTRY_PUSH_USER} \
---dest-password ${PRIVATE_REGISTRY_PUSH_PASSWORD} \
---dest-tls-verify=false \
-docker://cp.icr.io/cp/cpd/vllm@sha256:cc95bc7619549a5fb9342f8c41c613df5cd65b4e1f90b408db062559a2fdcff9 \
-docker://${PRIVATE_REGISTRY_LOCATION}/cp/cpd/vllm@sha256:cc95bc7619549a5fb9342f8c41c613df5cd65b4e1f90b408db062559a2fdcff9
-```
 
-## 1.8 Final checks before start the upgrade
-### 1.8.1 Pre-upgade check 
-https://www.ibm.com/docs/en/software-hub/5.3.x?topic=hub-upgrading-software
+## 1.6 Final checks before start the upgrade
+### 1.6.1 Pre-upgade check 
+[https://www.ibm.com/docs/en/software-hub/5.3.x?topic=hub-upgrading-software](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=hub-upgrading-software#taskupgrade-instance__prereq__1)
 
-### 1.8.2 Uninstall all hotfixes
+### 1.6.2 Uninstall all hotfixes
 Needs to check all CRs for any custom image used.
-
-### 1.8.3 Backup the RSI patches
-```
-cpd-cli manage get-rsi-patch-info \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---all
-```
-### 1.8.4 Final health check OCP & CPD
-Check OCP status
-Log onto the bastion node, in the termial log into OCP and run this command.
-```
-oc get co
-```
-Make sure all the cluster operators are in AVAILABLE status. And not in PROGRESSING or DEGRADED status.
-Run this command and make sure all nodes are in Ready status.
-```
-oc get nodes
-```
-Run this command and make sure all the machine configuretion pool are in a healthy status.
-```
-oc get mcp
-```
-Check Cloud Pak for Data status
-Log onto the bastion node, and make sure the IBM Cloud Pak for Data command-line interface is installed properly.
-Run this command in the terminal and make sure the Lite and all the services' status are in Ready status.
-```
-${CPDM_OC_LOGIN}
-cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
-```
-Run this command and make sure all pods are healthy.
-```
-oc get po --no-headers --all-namespaces -o wide | grep -Ev '([[:digit:]])/\1.*R' | grep -v 'Completed'
-```
-Check the private container registry status if installed
-Log into bastion node, where the private container registry is usually installed, as root. Run this command in the terminal and make sure it succeeds.
-```
-podman login --username $PRIVATE_REGISTRY_PULL_USER --password $PRIVATE_REGISTRY_PULL_PASSWORD $PRIVATE_REGISTRY_LOCATION --tls-verify=false
-```
-You can run this command to verify the images are in the private container registry.
-```
-curl -k -u ${PRIVATE_REGISTRY_PULL_USER}:${PRIVATE_REGISTRY_PULL_PASSWORD} https://${PRIVATE_REGISTRY_LOCATION}/v2/_catalog?n=6000 | jq .
-```
 
 # 2. Upgrade
 ## 2.1 Migrate to Red Hat OpenShift certificate manager
@@ -293,7 +237,7 @@ cpd-cli manage apply-cluster-components \
 oc get pods --namespace=${PROJECT_LICENSE_SERVICE}
 ```
 
-## 2.3 Creating image pull secrets for an instance of IBM Software Hub (Upgrading from Version 5.2 to Version 5.3)
+## 2.3 Creating image pull secrets for an instance of IBM Software Hub
 https://www.ibm.com/docs/en/software-hub/5.3.x?topic=uish-creating-image-pull-secrets-instance-1
 
 Follow the steps from the above link. Consider the `Private container registry` option.
@@ -312,10 +256,13 @@ cpd-cli manage case-download \
 --operator_ns=${PROJECT_CPD_INST_OPERATORS} \
 --cluster_resources=true
 ```
+
 Change to the work directory. The default location of the work directory is `cpd-cli-workspace/olm-utils-workspace/work`.
+
 ```
 cd cpd-cli-workspace/olm-utils-workspace/work
 ```
+
 Log in to Red Hat® OpenShift® Container Platform as a cluster administrator.
 ```
 ${OC_LOGIN}
