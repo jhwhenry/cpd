@@ -285,16 +285,14 @@ Applying your entitlements without node pinning
 ```
 cpd-cli manage apply-entitlement \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---entitlement=cpd-enterprise
-
-cpd-cli manage apply-entitlement \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---entitlement=ikc-premium
-
-cpd-cli manage apply-entitlement \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---entitlement=data-lineage \
+--entitlement=cpd-enterprise \
 --production=false
+
+cpd-cli manage apply-entitlement \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--entitlement=datastage \
+--production=false
+
 ```
 
 ## 2.5 Upgrade IBM Software Hub
@@ -345,20 +343,13 @@ Create the install-options.yml file in the cpd-cli work directory (For example: 
 ```
 ---
 # ............................................................................
-# IBM Knowledge Catalog Premium parameters
+# IBM Knowledge Catalog parameters
 # ............................................................................
 non_olm:
-  ikcPremium:
+  wkc:
     enableDataQuality: False
     enableKnowledgeGraph: False
     useFDB: False
-    enableAISearch: False
-    enableSemanticAutomation: False
-    enableSemanticEnrichment: True
-    enableSemanticEmbedding: False
-    enableTextToSql: False
-    enableModelsOn: 'cpu'
-    customModelTextToSQL: granite-3-3-8b-instruct
 ```
 
 Upgrade with the custom option
@@ -378,34 +369,19 @@ Check ccs progress first:
 ```
 watch oc get ccs 
 ```
-Check WKC Premium progress:
+Check WKC progress:
 ```
 oc get ikc_premium
 ```
 
-## 2.7 Upgrade DataLineage
-```
-cpd-cli manage install-components \
---license_acceptance=true \
---components=datalineage \
---release=${VERSION} \
---operator_ns=${PROJECT_CPD_INST_OPERATORS} \
---instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---image_pull_prefix=${IMAGE_PULL_PREFIX} \
---image_pull_secret=${IMAGE_PULL_SECRET} \
---upgrade=true
-```
-Check DataLineage progress:
-```
-oc get datalineage
-```
+## 2.7 Apply the CCS Patch2 or hot fix for 5.3.1 
 
 
 ## 2.8 Upgrade DataStage
 ```
 cpd-cli manage install-components \
 --license_acceptance=true \
---components=datastage_ent \
+--components=datastage_ent_plus \
 --release=${VERSION} \
 --operator_ns=${PROJECT_CPD_INST_OPERATORS} \
 --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
@@ -419,5 +395,6 @@ oc get DataStage
 ```
 
 # 3. Post-upgrade tasks
-RSI patches, hotfix links, and DataStage patches.
+## 3.1 Post-upgrade of WKC
+https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-51-29#cli-upgrade__next-steps__title__1
 
