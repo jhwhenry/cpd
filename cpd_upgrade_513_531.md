@@ -356,7 +356,7 @@ Upgrade with the custom option
 ```
 cpd-cli manage install-components \
 --license_acceptance=true \
---components=${IKC_TYPE} \
+--components=wkc \
 --release=${VERSION} \
 --operator_ns=${PROJECT_CPD_INST_OPERATORS} \
 --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
@@ -371,7 +371,9 @@ watch oc get ccs
 ```
 Check WKC progress:
 ```
-oc get ikc_premium
+cpd-cli manage get-cr-status \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \ 
+--components=wkc
 ```
 
 ## 2.7 Apply the CCS Patch2 or hot fix for 5.3.1 
@@ -389,12 +391,77 @@ cpd-cli manage install-components \
 --image_pull_secret=${IMAGE_PULL_SECRET} \
 --upgrade=true
 ```
+Check DataStage status
+```
+cpd-cli manage get-cr-status \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \ 
+--components=datastage_ent_plus
+```
+
+## 2.9 Upgrade MANTA Automated Data Lineage 
+```
+cpd-cli manage install-components \
+--license_acceptance=true \
+--components=mantaflow \
+--release=${VERSION} \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--image_pull_prefix=${IMAGE_PULL_PREFIX} \
+--image_pull_secret=${IMAGE_PULL_SECRET} \
+--upgrade=true
+```
 Check DataStage progress
 ```
 oc get DataStage
 ```
 
+## 2.10 Upgrade Db2 Data Management Console
+```
+cpd-cli manage install-components \
+--license_acceptance=true \
+--components=dmc \
+--release=${VERSION} \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--image_pull_prefix=${IMAGE_PULL_PREFIX} \
+--image_pull_secret=${IMAGE_PULL_SECRET} \
+--upgrade=true
+```
+Check DataStage progress
+```
+cpd-cli manage get-cr-status \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \ 
+--components=dmc
+```
+
+## 2.11 Upgrade Data Virtualization
+```
+cpd-cli manage install-components \
+--license_acceptance=true \
+--components=dv \
+--release=${VERSION} \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--image_pull_prefix=${IMAGE_PULL_PREFIX} \
+--image_pull_secret=${IMAGE_PULL_SECRET} \
+--upgrade=true
+```
+Check DV progress
+```
+cpd-cli manage get-cr-status \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--components=dv
+```
+
+Upgrading existing service instances.
+```
+https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-51-34#cli-upgrade__svc-inst__title__1
+```
+
 # 3. Post-upgrade tasks
 ## 3.1 Post-upgrade of WKC
 https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-51-29#cli-upgrade__next-steps__title__1
+
+## 3.2 Post-upgrade of DV
+https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-51-34#cli-upgrade__next-steps__title__1
 
