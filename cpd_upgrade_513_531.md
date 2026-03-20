@@ -153,7 +153,8 @@ cpd-cli manage list-images \
 ```
 
 The output is saved to the `list_images.csv` file in the `work/offline/${VERSION}` directory. Run below command by detecting images that are missing or that cannot be inspected.
-````
+
+```
 grep "level=fatal" list_images.csv
 ```
 
