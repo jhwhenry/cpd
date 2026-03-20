@@ -576,12 +576,13 @@ cpd-cli service-instance list \
 
 ### 3.1.3 Completing the Db2 migration to PostgreSQL
 Migrate IBM Knowledge Catalog data from the previously used Db2 and CouchDB databases to the EDB Native PostgreSQL database that is used starting in Version 5.3. 
+<br>
 [Db2 migration to PostgreSQL](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=upgrading-post-upgrade-setup-knowledge-catalog)
 
 ### 3.1.4 Run the global search bulk sync utility
 If you didn't synchronize the global search index in version 5.1, complete these tasks:
-To be able to use the global search indexed data for relationships, see [Bulk sync relationships for global search](https://www.ibm.com/docs/en/SSNFH6_5.3.x/wsj/admin/admin-bulk-sync-rel.html).
-To be able to use the global search indexed data for assets, see [Bulk sync assets for global search](https://www.ibm.com/docs/en/SSNFH6_5.3.x/wsj/admin/admin-bulk-sync.html).
+- To be able to use the global search indexed data for relationships, see [Bulk sync relationships for global search](https://www.ibm.com/docs/en/SSNFH6_5.3.x/wsj/admin/admin-bulk-sync-rel.html).
+- To be able to use the global search indexed data for assets, see [Bulk sync assets for global search](https://www.ibm.com/docs/en/SSNFH6_5.3.x/wsj/admin/admin-bulk-sync.html).
 
 ## 3.2 Post-upgrade of DV
 ### 3.2.1 Upgrading existing service instances
@@ -589,6 +590,7 @@ To be able to use the global search indexed data for assets, see [Bulk sync asse
 
 ### 3.2.2 Post-upgrade configuration
 [Post-upgrade configuration](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-51-34#cli-upgrade__next-steps__title__1)
+
 **Note:**
 <br>
 You don't need to do below task again as it's already completed in the step 3.1.
