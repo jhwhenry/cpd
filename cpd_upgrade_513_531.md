@@ -117,7 +117,7 @@ cpd-cli manage case-download \
 --release=${VERSION}
 ```
 
-### 1.5.1 Downloading the cluster-scoped resource definitions for the scheduling service
+### 1.5.2 Downloading the cluster-scoped resource definitions for the scheduling service
 
 ```
 cpd-cli manage case-download \
@@ -133,7 +133,7 @@ Rename the `cluster_scoped_resources.yaml`
 mv cluster_scoped_resources.yaml ${VERSION}-${PROJECT_SCHEDULING_SERVICE}-cluster_scoped_resources.yaml
 ```
 
-### 1.5.2 Downloading the cluster-scoped resources for the platform and services
+### 1.5.3 Downloading the cluster-scoped resources for the platform and services
 
 Download from GitHub.
 
