@@ -596,5 +596,7 @@ You don't need to do below task again as it's already completed in the step 3.1.
 [Complete the catalog-api service migration to PostgreSQL](https://www.ibm.com/docs/en/SSNFH6_5.3.x/hub/admin/post-install-services-catalog-api-migration.html)
 
 ## 3.3 Apply hot fixes
-- Apply DataStage hot fix [DataStage 5.3.1 Patch 0 Instructions] (https://github.ibm.com/PrivateCloud-analytics/CPD-Quality/issues/77787#issuecomment-178071428)
-- Apply the wkc-search hot fix [wkc-search performance hot fix](https://github.ibm.com/PrivateCloud-analytics/CPD-Quality/issues/79360#issuecomment-182594863)
+### 3.3.1 Apply DataStage hot fix 
+[DataStage 5.3.1 Patch 0 Instructions](https://github.ibm.com/PrivateCloud-analytics/CPD-Quality/issues/77787#issuecomment-178071428)
+### 3.3.2 Apply the wkc-search hot fix
+[wkc-search performance hot fix](https://github.ibm.com/PrivateCloud-analytics/CPD-Quality/issues/79360#issuecomment-182594863)
