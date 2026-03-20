@@ -531,8 +531,57 @@ cpd-cli manage get-cr-status \
 ```
 
 # 3. Post-upgrade tasks
+
+#### 3.1 Creating a profile to use the cpd-cli management commands
+Create a profile on the workstation from which you will upgrade the service instances.
+<br>
+[Creating a profile to use the cpd-cli management commands](https://www.ibm.com/docs/en/SSNFH6_5.3.x/cpd-cli/cpd-profile-mgmt.html)
+<br>
+**Note:**
+The profile must be associated with a IBM Software Hub user who has either the following permissions:
+<br>
+- Create service instances (can_provision)
+- Manage service instances (manage_service_instances)
+
+
 ## 3.1 Post-upgrade of WKC
-https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-51-29#cli-upgrade__next-steps__title__1
+
+### 3.1.1 Upgrading Analytics Engine service instance
+
+- Set the environment variable `CPD_PROFILE_NAME`.
+<br>
+```
+export CPD_PROFILE_NAME=<the profile name created in the Step 3.1>
+```
+
+- Upgrading the Spark service instance
+
+```
+cpd-cli service-instance upgrade \
+--service-type=spark \
+--profile=${CPD_PROFILE_NAME} \
+--all
+```
+
+- Validating the service instance upgrade status.
+
+```
+cpd-cli service-instance list \
+--service-type=spark \
+--profile=${CPD_PROFILE_NAME}
+```
+
+### 3.1.2 Completing the catalog-api service migration to PostgreSQL
+[Complete the catalog-api service migration to PostgreSQL](https://www.ibm.com/docs/en/SSNFH6_5.3.x/hub/admin/post-install-services-catalog-api-migration.html)
+
+### 3.1.3 Completing the Db2 migration to PostgreSQL
+Migrate IBM Knowledge Catalog data from the previously used Db2 and CouchDB databases to the EDB Native PostgreSQL database that is used starting in Version 5.3. 
+[Db2 migration to PostgreSQL](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=upgrading-post-upgrade-setup-knowledge-catalog)
+
+### 3.1.4 Run the global search bulk sync utility
+If you didn't synchronize the global search index in version 5.1, complete these tasks:
+To be able to use the global search indexed data for relationships, see [Bulk sync relationships for global search](https://www.ibm.com/docs/en/SSNFH6_5.3.x/wsj/admin/admin-bulk-sync-rel.html).
+To be able to use the global search indexed data for assets, see [Bulk sync assets for global search](https://www.ibm.com/docs/en/SSNFH6_5.3.x/wsj/admin/admin-bulk-sync.html).
 
 ## 3.2 Post-upgrade of DV
 ### 3.2.1 Upgrading existing service instances
@@ -542,12 +591,10 @@ https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-51
 [Post-upgrade configuration](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-51-34#cli-upgrade__next-steps__title__1)
 **Note:**
 <br>
-You don't need to do this task again if it's completed in the step 3.1.
+You don't need to do below task again as it's already completed in the step 3.1.
 <br>
 [Complete the catalog-api service migration to PostgreSQL](https://www.ibm.com/docs/en/SSNFH6_5.3.x/hub/admin/post-install-services-catalog-api-migration.html)
 
 ## 3.3 Apply hot fixes
-- Apply DataStage hot fix 
+- Apply DataStage hot fix [DataStage 5.3.1 Patch 0 Instructions] (https://github.ibm.com/PrivateCloud-analytics/CPD-Quality/issues/77787#issuecomment-178071428)
 - Apply the wkc-search hot fix [wkc-search performance hot fix](https://github.ibm.com/PrivateCloud-analytics/CPD-Quality/issues/79360#issuecomment-182594863)
-
-
