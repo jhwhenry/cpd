@@ -292,7 +292,7 @@ oc get deployment -A | grep ibm-licensing-operator
 ${CPDM_OC_LOGIN}
 ```
 
-### 2.3.3 Upgrade the License Service.
+### 2.3.3 Upgrade the License Service
 
 ```
 cpd-cli manage apply-cluster-components \
@@ -509,9 +509,11 @@ cpd-cli manage install-components \
 --image_pull_secret=${IMAGE_PULL_SECRET} \
 --upgrade=true
 ```
-Check DataStage progress
+Check MantaFlow progress
 ```
-oc get DataStage
+cpd-cli manage get-cr-status \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--components=mantaflow
 ```
 
 ## 2.10 Upgrade Db2 Data Management Console
