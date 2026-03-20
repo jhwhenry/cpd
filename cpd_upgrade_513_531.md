@@ -43,6 +43,9 @@ cpd-cli health operands --control_plane_ns=${PROJECT_CPD_INST_OPERANDS}
 
 Complete the above two checks by following the steps of the `Before you begin` section in this documentation [Pre-upgrade check for CCS](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=hub-upgrading-software#taskupgrade-instance__prereq__1_)
 
+### 1.1.3 Evaluate the risk of encounting known issues before the upgrade
+[OpenSearch index check before CCS upgrade](https://ibm.box.com/s/u6w3uv886q9tv6yb00fbczezx6glhg69)
+
 
 ## 1.2 Updating the IBM Software Hub command-line interface
 ### 1.2.1 Obtaining the olm-utils-v4 image
@@ -346,7 +349,6 @@ oc apply -f cluster_scoped_resources.yaml \
 --force-conflicts
 ```
 
-
 ### 2.4.2 Applying your entitlements to monitor and report use against license terms
 Applying the entitlements of `cpd-enterprise `.
 
@@ -399,10 +401,12 @@ oc create secret docker-registry ${IMAGE_PULL_SECRET} \
 --from-file ".dockerconfigjson=dockerconfig.json" \
 --namespace=${PROJECT_CPD_INST_OPERANDS}
 ```
+
 ### 2.5.2 Run the cpd-cli manage login-to-ocp command to log in to the cluster
 ```
 ${CPDM_OC_LOGIN}
 ```
+
 ### 2.5.3 Upgrade the required operators and custom resources for the instance
 ```
 cpd-cli manage install-components \
@@ -418,7 +422,6 @@ cpd-cli manage install-components \
 ```
 
 Once the above command `cpd-cli manage install-components` is completed, make sure the status of the IBM Software Hub is in 'Completed' status.
-
 ```
 cpd-cli manage get-cr-status \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \ 
@@ -437,6 +440,7 @@ cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
 ## 2.6 Upgrade WKC
+
 ### 2.6.1 Preparing to upgrade IBM Knowledge Catalog
 
 Before you can upgrade IBM Knowledge Catalog to Version 5.3 and migrate all IBM Knowledge Catalog data to the EDB Native PostgreSQL database that is used in Version 5.3, complete several checks and preparation tasks.
@@ -470,10 +474,19 @@ cpd-cli manage get-cr-status \
 --components=wkc
 ```
 
-## 2.7 Apply the CCS Patch2 or hot fix for 5.3.1 
-
-
 ## 2.8 Upgrade DataStage
+
+DataStage should have been upgraded as part of the WKC upgrade.
+
+But we can double check DataStage status with below command.
+```
+cpd-cli manage get-cr-status \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \ 
+--components=datastage_ent_plus
+```
+
+If the DataStage version is `5.3.1` and in `Completed` status, then nothing else needed to be done for DataStage. Otherwise, run below command for completing the DataStage upgrade.
+
 ```
 cpd-cli manage install-components \
 --license_acceptance=true \
@@ -485,14 +498,16 @@ cpd-cli manage install-components \
 --image_pull_secret=${IMAGE_PULL_SECRET} \
 --upgrade=true
 ```
-Check DataStage status
-```
-cpd-cli manage get-cr-status \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \ 
---components=datastage_ent_plus
-```
 
 ## 2.9 Upgrade MANTA Automated Data Lineage 
+
+### 2.9.1 Run the cpd-cli manage login-to-ocp command to log in to the cluster
+```
+${CPDM_OC_LOGIN}
+```
+
+### 2.9.2 Upgrade the operator and custom resource for MANTA Automated Data Lineage
+
 ```
 cpd-cli manage install-components \
 --license_acceptance=true \
@@ -504,7 +519,8 @@ cpd-cli manage install-components \
 --image_pull_secret=${IMAGE_PULL_SECRET} \
 --upgrade=true
 ```
-Check MantaFlow progress
+
+Once the above command `cpd-cli manage install-components` completed successfully, you can run the `cpd-cli manage get-cr-status` command for the validation.
 ```
 cpd-cli manage get-cr-status \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
@@ -560,4 +576,9 @@ https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-51
 
 ## 3.2 Post-upgrade of DV
 https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-51-34#cli-upgrade__next-steps__title__1
+
+## 3.3 Apply hot fixes
+- Apply DataStage hot fix 
+- Apply the wkc-search hot fix [wkc-search performance hot fix](https://github.ibm.com/PrivateCloud-analytics/CPD-Quality/issues/79360#issuecomment-182594863)
+
 
