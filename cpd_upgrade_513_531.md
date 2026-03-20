@@ -27,38 +27,27 @@ cpd-cli health operators --operator_ns=${PROJECT_CPD_INST_OPERATORS} --control_p
 cpd-cli health operands --control_plane_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-## 1.2 Update the cpd-cli utility
-### 1.2.1 Download the latest cpd-cli for 5.3.1
-```
-wget https://github.com/IBM/cpd-cli/releases/download/v14.3.1/cpd-cli-linux-EE-14.3.1.tgz
-tar -xvf cpd-cli-linux-EE-14.3.1.tgz
-```
+## 1.2 Updating the IBM Software Hub command-line interface
+### 1.2.1 Obtaining the olm-utils-v4 image
 
-### 1.2.2 Obtaining the olm-utils-v4 image
 ```
-podman pull cp.icr.io/cp/cpd/olm-utils-premium-v4:${VERSION}.amd64 --tls-verify=false
+podman pull cp.icr.io/cp/cpd/olm-utils-v4:${VERSION}.amd64 --tls-verify=false
 
 podman login ${PRIVATE_REGISTRY_LOCATION} -u ${PRIVATE_REGISTRY_PUSH_USER} -p ${PRIVATE_REGISTRY_PUSH_PASSWORD}
 
-podman tag cp.icr.io/cp/cpd/olm-utils-premium-v4:${VERSION}.amd64 ${PRIVATE_REGISTRY_LOCATION}/cp/cpd/olm-utils-premium-v4:${VERSION}.amd64 
+podman tag cp.icr.io/cp/cpd/olm-utils-v4:${VERSION}.amd64 ${PRIVATE_REGISTRY_LOCATION}/cp/cpd/olm-utils-v4:${VERSION}.amd64 
 
-podman push ${PRIVATE_REGISTRY_LOCATION}/ cp/cpd/olm-utils-premium-v4:${VERSION}.amd64
+podman push ${PRIVATE_REGISTRY_LOCATION}/cp/cpd/olm-utils-v4:${VERSION}.amd64
 ```
 
-### 1.2.3 Start up the new olm-utils-v4 container
-Confirm the olm-utils-v4 container is up and running.
+### 1.2.2 Updating the IBM Software Hub command-line interface
 
-```
-cpd-cli manage restart-container
-podman ps | grep olm-utils-v4
-```
+[Update the cpd-cli utility](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=workstations-updating-software-hub-cli)
 
 ## 1.3 Install Helm CLI
-Install Helm by following the https://www.ibm.com/links?url=https%3A%2F%2Fhelm.sh%2Fdocs%2Fintro%2Finstall%2F
 
-```
-sudo dnf install helm
-```
+Install Helm CLI by following this documentation [Installing Helm] (https://www.ibm.com/links?url=https%3A%2F%2Fhelm.sh%2Fdocs%2Fintro%2Finstall%2F)
+
 
 ## 1.4 Updating your environment variables script
 Make a copy of the environment variables script used by the existing 5.1.3 variables with the name like cpd_vars_531.sh.
