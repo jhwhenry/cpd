@@ -104,7 +104,7 @@ source ./cpd_vars_531.sh
 
 Reference: [Updating your environment variables script](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=information-updating-your-environment-variables-script)
 
-## 1.5 Mirror CPD 5.3.1 images
+## 1.5 Mirror images
 ### 1.5.1 Downloading CASE packages 
 ```
 cpd-cli manage case-download \
@@ -112,7 +112,7 @@ cpd-cli manage case-download \
 --release=${VERSION}
 ```
 
-### 1.5.2 Mirroring images directly to the private container registry
+### 1.5.2 Mirroring IBM Software Hub images directly to the private container registry
 
 Log in to the IBM Entitled registry:
 ```
@@ -160,59 +160,20 @@ grep "level=fatal" list_images.csv
 
 [Mirroring images directly to the private container registry](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=mipcr-mirroring-images-directly-private-container-registry-1)
 
-## 1.6 Final checks before start the upgrade
-### 1.6.1 Pre-upgade check 
-[https://www.ibm.com/docs/en/software-hub/5.3.x?topic=hub-upgrading-software](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=hub-upgrading-software#taskupgrade-instance__prereq__1)
+### 1.5.3 Mirroring Red Hat OpenShift certificate manager images to a private container registry
+Mirror the Red Hat OpenShift certificate manager images to your private container registry before you install the certificate manager.
+[Mirroring Red Hat OpenShift certificate manager images](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=manager-mirroring-red-hat-openshift-certificate-images)
+
 
 # 2. Upgrade
 ## 2.1 Migrate to Red Hat OpenShift certificate manager
-https://www.ibm.com/docs/en/software-hub/5.3.x?topic=upgrading-migrating-red-hat-openshift-certificate-manager
 
-The IBM Certificate Manager is deprecated.
+The IBM Certificate manager is deprecated.
 
-### 2.1.1. Backing up your existing certificates before migrating to Red Hat OpenShift certificate manager
-https://www.ibm.com/docs/en/software-hub/5.3.x?topic=manager-backing-up-your-existing-certificates
+If the IBM Certificate manager (ibm-cert-manager) is installed on your cluster, use the following steps to migrate your certificates from the IBM Certificate manager to the Red Hat OpenShift certificate manager (cert-manager Operator).
 
-### 2.1.2. Uninstalling IBM Certificate manager
-https://www.ibm.com/docs/en/software-hub/5.3.x?topic=manager-uninstalling-certificate
+[Migrating from the IBM Certificate manager to the Red Hat OpenShift certificate manager](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=upgrading-migrating-red-hat-openshift-certificate-manager)
 
-### 2.1.3. Mirroring Red Hat OpenShift certificate manager images to a private container registry
-https://www.ibm.com/docs/en/software-hub/5.3.x?topic=manager-mirroring-red-hat-openshift-certificate-images
-
-<b>Note:</b> Make sure you can obtain your Red Hat pull secret from the Red Hat OpenShift Cluster Manager.
-
-<b>Note:</b> Ensure that the oc-mirror plug-in V2 is installed on the client workstation. For more information, see Mirroring images for a disconnected installation by using the oc-mirror plugin v2 in the Red Hat OpenShift Container Platform documentation.
-
-### 2.1.4. Installing the Red Hat OpenShift Container Platform cert-manager Operator
-https://www.ibm.com/docs/en/software-hub/5.3.x?topic=manager-installing-cert-operator
-
-<b>Installing the cert-manager Operator for Red Hat OpenShift</b>
-
-Log in to the OpenShift Container Platform web console.
-
-Navigate to Operators → OperatorHub.
-
-Enter `cert-manager` Operator for Red Hat OpenShift into the filter box.
-
-Select the cert-manager Operator for Red Hat OpenShift version from Version drop-down list, and click Install.
-
-On the Install Operator page:
-
-Update the Update channel, if necessary. The channel defaults to `stable-v1`, which installs the latest stable release of the cert-manager Operator for Red Hat OpenShift.
-
-Choose the Installed Namespace for the Operator. The default Operator namespace is `cert-manager-operator`.
-
-If the `cert-manager-operator` namespace does not exist, it is created for you.
-
-choose the `AllNamespaces` installation mode. 
-
-Select an Update approval strategy Automatic
-
-Verification
-
-Navigate to Operators → Installed Operators.
-
-Verify that cert-manager Operator for Red Hat OpenShift is listed with a Status of Succeeded in the cert-manager-operator namespace.
 
 ## 2.2 Upgrade shared cluster components
 https://www.ibm.com/docs/en/software-hub/5.3.x?topic=pyc-upgrading-shared-cluster-components
