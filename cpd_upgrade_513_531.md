@@ -106,9 +106,15 @@ Reference: [Updating your environment variables script](https://www.ibm.com/docs
 
 ## 1.5 Downloading CASE packages and cluster-scoped resource files 
 
-### 1.5.1 Downloading CASE packages and the cluster-scoped resource definitions for the scheduling service
+### 1.5.1 Downloading CASE packages
 
-Download from GitHub.
+```
+cpd-cli manage case-download \
+--components=${COMPONENTS} \
+--release=${VERSION}
+```
+
+### 1.5.1 Downloading the cluster-scoped resource definitions for the scheduling service
 
 ```
 cpd-cli manage case-download \
@@ -124,7 +130,7 @@ Rename the `cluster_scoped_resources.yaml`
 mv cluster_scoped_resources.yaml ${VERSION}-${PROJECT_SCHEDULING_SERVICE}-cluster_scoped_resources.yaml
 ```
 
-### 1.5.2 Downloading CASE packages and the cluster-scoped resources for the platform and services
+### 1.5.2 Downloading the cluster-scoped resources for the platform and services
 
 Download from GitHub.
 
