@@ -306,18 +306,12 @@ Confirm that the License Service pods are Running or Completed:
 oc get pods --namespace=${PROJECT_LICENSE_SERVICE}
 ```
 
-## 2.3 Creating image pull secrets for an instance of IBM Software Hub
-https://www.ibm.com/docs/en/software-hub/5.3.x?topic=uish-creating-image-pull-secrets-instance-1
-
-Follow the steps from the above link. Consider the `Private container registry` option.
-
 ## 2.4 Prepare to upgrade IBM Software Hub
-### 2.4.1 Run the cpd-cli manage login-to-ocp command to log in to the cluster
-```
-${CPDM_OC_LOGIN}
-```
-### 2.4.2 Updating the cluster-scoped resources for the platform and services
-https://www.ibm.com/docs/en/software-hub/5.3.x?topic=puish-updating-cluster-scoped-resources-instance
+
+### 2.4.1 Updating the cluster-scoped resources for the platform and services
+
+1.Generate cluster-scoped resources for platform and services
+
 ```
 cpd-cli manage case-download \
 --components=${COMPONENTS} \
@@ -326,25 +320,58 @@ cpd-cli manage case-download \
 --cluster_resources=true
 ```
 
-Change to the work directory. The default location of the work directory is `cpd-cli-workspace/olm-utils-workspace/work`.
+2.Change to the `work` directory. 
+<br>
+The default location of the work directory is `cpd-cli-workspace/olm-utils-workspace/work`.
 
 ```
 cd cpd-cli-workspace/olm-utils-workspace/work
 ```
 
-Log in to Red Hat® OpenShift® Container Platform as a cluster administrator.
+3.Log in to Red Hat® OpenShift® Container Platform as a cluster administrator
 ```
 ${OC_LOGIN}
 ```
-Apply the cluster-scoped resources from the `cluster_scoped_resources.yaml` file.
+
+4.Apply the cluster-scoped resources for the from the cluster_scoped_resources.yaml file
 ```
 oc apply -f cluster_scoped_resources.yaml \
 --server-side \
 --force-conflicts
 ```
-Have a record of the resources that you generated.
+
+## 2.3 Creating image pull secrets for an instance of IBM Software Hub
+1.Log in to Red Hat® OpenShift® Container Platform as a user with sufficient permissions to complete the task.
 ```
-mv cluster_scoped_resources.yaml ${VERSION}-${PROJECT_CPD_INST_OPERATORS}-cluster_scoped_resources.yaml
+${OC_LOGIN}
+```
+
+2.Create a file named dockerconfig.json based on where your cluster pulls images from.
+```
+cat <<EOF > dockerconfig.json 
+{
+  "auths": {
+    "${PRIVATE_REGISTRY_LOCATION}": {
+      "auth": "${IMAGE_PULL_CREDENTIALS}"
+    }
+  }
+}
+EOF
+```
+
+3.Create the image pull secret in the operators project for the instance.
+
+```
+oc create secret docker-registry ${IMAGE_PULL_SECRET} \
+--from-file ".dockerconfigjson=dockerconfig.json" \
+--namespace=${PROJECT_CPD_INST_OPERATORS}
+```
+
+4.Create the image pull secret in the operands project for the instance:
+```
+oc create secret docker-registry ${IMAGE_PULL_SECRET} \
+--from-file ".dockerconfigjson=dockerconfig.json" \
+--namespace=${PROJECT_CPD_INST_OPERANDS}
 ```
 
 ### 2.4.3 Applying your entitlements to monitor and report use against license terms
