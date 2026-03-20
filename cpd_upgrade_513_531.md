@@ -31,13 +31,13 @@ cpd-cli health operands --control_plane_ns=${PROJECT_CPD_INST_OPERANDS}
 ### 1.2.1 Obtaining the olm-utils-v4 image
 
 ```
-podman pull cp.icr.io/cp/cpd/olm-utils-v4:${VERSION}.amd64 --tls-verify=false
+podman pull icr.io/cpopen/cpd/olm-utils-v4:${VERSION}.amd64 --tls-verify=false
 
 podman login ${PRIVATE_REGISTRY_LOCATION} -u ${PRIVATE_REGISTRY_PUSH_USER} -p ${PRIVATE_REGISTRY_PUSH_PASSWORD}
 
-podman tag cp.icr.io/cp/cpd/olm-utils-v4:${VERSION}.amd64 ${PRIVATE_REGISTRY_LOCATION}/cp/cpd/olm-utils-v4:${VERSION}.amd64 
+podman tag icr.io/cpopen/cpd/olm-utils-v4:${VERSION}.amd64 ${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v4:${VERSION}.amd64
 
-podman push ${PRIVATE_REGISTRY_LOCATION}/cp/cpd/olm-utils-v4:${VERSION}.amd64
+podman push ${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v4:${VERSION}.amd64
 ```
 
 ### 1.2.2 Updating the IBM Software Hub command-line interface
