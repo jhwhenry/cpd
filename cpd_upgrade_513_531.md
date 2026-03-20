@@ -43,7 +43,7 @@ cpd-cli health operands --control_plane_ns=${PROJECT_CPD_INST_OPERANDS}
 
 Complete the above two checks by following the steps of the `Before you begin` section in this documentation [Pre-upgrade check for CCS](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=hub-upgrading-software#taskupgrade-instance__prereq__1_)
 
-### 1.1.3 Evaluate the risk of encounting known issues before the upgrade
+### 1.1.3 Evaluating the risk of encounting known issues before the upgrade
 [OpenSearch index check before CCS upgrade](https://ibm.box.com/s/u6w3uv886q9tv6yb00fbczezx6glhg69)
 
 
@@ -64,7 +64,7 @@ podman push ${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v4:${VERSION}.amd6
 
 [Update the cpd-cli utility](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=workstations-updating-software-hub-cli)
 
-## 1.3 Install Helm CLI
+## 1.3 Installing Helm CLI
 
 [Installing Helm](https://www.ibm.com/links?url=https%3A%2F%2Fhelm.sh%2Fdocs%2Fintro%2Finstall%2F)
 
@@ -151,7 +151,7 @@ Rename the `cluster_scoped_resources.yaml`.
 mv cluster_scoped_resources.yaml ${VERSION}-${PROJECT_CPD_INST_OPERATORS}-cluster_scoped_resources.yaml
 ```
 
-## 1.6 Mirror images
+## 1.6 Mirroring images
 
 ### 1.6.1 Mirroring IBM Software Hub images directly to the private container registry
 
@@ -207,7 +207,7 @@ Mirror the Red Hat OpenShift certificate manager images to your private containe
 
 
 # 2. Upgrade
-## 2.1 Migrate to Red Hat OpenShift certificate manager
+## 2.1 Migrating to Red Hat OpenShift certificate manager
 
 The IBM Certificate manager is deprecated.
 
@@ -215,7 +215,7 @@ If the IBM Certificate manager (ibm-cert-manager) is installed on your cluster, 
 
 [Migrating from the IBM Certificate manager to the Red Hat OpenShift certificate manager](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=upgrading-migrating-red-hat-openshift-certificate-manager)
 
-## 2.2 Upgrade the Scheduling service
+## 2.2 Upgrading the Scheduling service
 
 If you're not sure whether the Scheduling service is installed on the cluster, run the following command:
 ```
@@ -287,7 +287,7 @@ Confirm that the Scheduling service pods are Running or Completed:
 oc get pods --namespace=${PROJECT_SCHEDULING_SERVICE}
 ```
 
-## 2.3 Upgrade the License Service
+## 2.3 Upgrading the License Service
 
 ### 2.3.1 Get the project of the License service
 
@@ -301,7 +301,7 @@ oc get deployment -A | grep ibm-licensing-operator
 ${CPDM_OC_LOGIN}
 ```
 
-### 2.3.3 Upgrade the License Service
+### 2.3.3 Upgrading the License Service
 
 ```
 cpd-cli manage apply-cluster-components \
@@ -315,7 +315,7 @@ Confirm that the License Service pods are Running or Completed:
 oc get pods --namespace=${PROJECT_LICENSE_SERVICE}
 ```
 
-## 2.4 Prepare to upgrade IBM Software Hub
+## 2.4 Preparing to upgrade IBM Software Hub
 
 ### 2.4.1 Updating the cluster-scoped resources for the platform and services
 
@@ -367,7 +367,7 @@ cpd-cli manage apply-entitlement \
 --production=false
 ```
 
-## 2.5 Upgrade IBM Software Hub
+## 2.5 Upgrading IBM Software Hub
 ## 2.5.1 Creating image pull secrets for an instance of IBM Software Hub
 1.Log in to Red Hat® OpenShift® Container Platform as a user with sufficient permissions to complete the task.
 ```
@@ -407,7 +407,7 @@ oc create secret docker-registry ${IMAGE_PULL_SECRET} \
 ${CPDM_OC_LOGIN}
 ```
 
-### 2.5.3 Upgrade the required operators and custom resources for the instance
+### 2.5.3 Upgrading the required operators and custom resources for the instance
 ```
 cpd-cli manage install-components \
 --license_acceptance=true \
@@ -428,7 +428,7 @@ cpd-cli manage get-cr-status \
 --components=cpd_platform
 ```
 
-### 2.5.4 Apply the RSI patches
+### 2.5.4 Applying the RSI patches
 Run the following command to re-apply your existing custom patches.
 ```
 cpd-cli manage apply-rsi-patches --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
@@ -439,7 +439,7 @@ Check the RSI patches status again:
 cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --all
 ```
 
-## 2.6 Upgrade WKC
+## 2.6 Upgrading WKC
 
 ### 2.6.1 Preparing to upgrade IBM Knowledge Catalog
 
@@ -452,7 +452,7 @@ Before you can upgrade IBM Knowledge Catalog to Version 5.3 and migrate all IBM 
 ${CPDM_OC_LOGIN}
 ```
 
-### 2.6.3 Upgrade the operator and custom resource for IBM Knowledge Catalog
+### 2.6.3 Upgrading the operator and custom resource for IBM Knowledge Catalog
 
 ```
 cpd-cli manage install-components \
@@ -474,44 +474,19 @@ cpd-cli manage get-cr-status \
 --components=wkc
 ```
 
-## 2.8 Upgrade DataStage
+## 2.7 Upgrading DataStage, MANTA Automated Data Lineage and Data Management Console
 
-DataStage should have been upgraded as part of the WKC upgrade.
-
-But we can double check DataStage status with below command.
-```
-cpd-cli manage get-cr-status \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \ 
---components=datastage_ent_plus
-```
-
-If the DataStage version is `5.3.1` and in `Completed` status, then nothing else needed to be done for DataStage. Otherwise, run below command for completing the DataStage upgrade.
-
-```
-cpd-cli manage install-components \
---license_acceptance=true \
---components=datastage_ent_plus \
---release=${VERSION} \
---operator_ns=${PROJECT_CPD_INST_OPERATORS} \
---instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---image_pull_prefix=${IMAGE_PULL_PREFIX} \
---image_pull_secret=${IMAGE_PULL_SECRET} \
---upgrade=true
-```
-
-## 2.9 Upgrade MANTA Automated Data Lineage 
-
-### 2.9.1 Run the cpd-cli manage login-to-ocp command to log in to the cluster
+### 2.7.1 Run the cpd-cli manage login-to-ocp command to log in to the cluster
 ```
 ${CPDM_OC_LOGIN}
 ```
 
-### 2.9.2 Upgrade the operator and custom resource for MANTA Automated Data Lineage
+### 2.7.2 Upgrading the operator and custom resource
 
 ```
 cpd-cli manage install-components \
 --license_acceptance=true \
---components=mantaflow \
+--components=datastage_ent_plus,datastage_ent,mantaflow,dmc \
 --release=${VERSION} \
 --operator_ns=${PROJECT_CPD_INST_OPERATORS} \
 --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
@@ -520,33 +495,21 @@ cpd-cli manage install-components \
 --upgrade=true
 ```
 
-Once the above command `cpd-cli manage install-components` completed successfully, you can run the `cpd-cli manage get-cr-status` command for the validation.
+Once the above command `cpd-cli manage install-components` completed successfully, run the `cpd-cli manage get-cr-status` command for the validation.
 ```
 cpd-cli manage get-cr-status \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---components=mantaflow
+--components=datastage_ent_plus,datastage_ent,mantaflow,dmc
 ```
 
-## 2.10 Upgrade Db2 Data Management Console
+## 2.8 Upgrading Data Virtualization
+
+### 2.8.1 Run the cpd-cli manage login-to-ocp command to log in to the cluster
 ```
-cpd-cli manage install-components \
---license_acceptance=true \
---components=dmc \
---release=${VERSION} \
---operator_ns=${PROJECT_CPD_INST_OPERATORS} \
---instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---image_pull_prefix=${IMAGE_PULL_PREFIX} \
---image_pull_secret=${IMAGE_PULL_SECRET} \
---upgrade=true
-```
-Check DataStage progress
-```
-cpd-cli manage get-cr-status \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \ 
---components=dmc
+${CPDM_OC_LOGIN}
 ```
 
-## 2.11 Upgrade Data Virtualization
+### 2.8.2 Upgrading the operator and custom resource
 ```
 cpd-cli manage install-components \
 --license_acceptance=true \
@@ -558,16 +521,13 @@ cpd-cli manage install-components \
 --image_pull_secret=${IMAGE_PULL_SECRET} \
 --upgrade=true
 ```
-Check DV progress
+
+Once the above command `cpd-cli manage install-components` completed successfully, run the `cpd-cli manage get-cr-status` command for the validation.
+
 ```
 cpd-cli manage get-cr-status \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --components=dv
-```
-
-Upgrading existing service instances.
-```
-https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-51-34#cli-upgrade__svc-inst__title__1
 ```
 
 # 3. Post-upgrade tasks
@@ -575,7 +535,16 @@ https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-51
 https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-51-29#cli-upgrade__next-steps__title__1
 
 ## 3.2 Post-upgrade of DV
-https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-51-34#cli-upgrade__next-steps__title__1
+### 3.2.1 Upgrading existing service instances
+[Upgrading existing service instances](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-51-34#cli-upgrade__svc-inst__title__1)
+
+### 3.2.2 Post-upgrade configuration
+[Post-upgrade configuration](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-51-34#cli-upgrade__next-steps__title__1)
+**Note:**
+<br>
+You don't need to do this task again if it's completed in the step 3.1.
+<br>
+[Complete the catalog-api service migration to PostgreSQL](https://www.ibm.com/docs/en/SSNFH6_5.3.x/hub/admin/post-install-services-catalog-api-migration.html)
 
 ## 3.3 Apply hot fixes
 - Apply DataStage hot fix 
