@@ -340,7 +340,27 @@ oc apply -f cluster_scoped_resources.yaml \
 --force-conflicts
 ```
 
-## 2.3 Creating image pull secrets for an instance of IBM Software Hub
+
+### 2.4.2 Applying your entitlements to monitor and report use against license terms
+Applying the entitlements of `cpd-enterprise `.
+
+```
+cpd-cli manage apply-entitlement \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--entitlement=cpd-enterprise \
+--production=false
+```
+Applying the entitlements of `datastage`.
+
+```
+cpd-cli manage apply-entitlement \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--entitlement=datastage \
+--production=false
+```
+
+## 2.5 Upgrade IBM Software Hub
+## 2.5.1 Creating image pull secrets for an instance of IBM Software Hub
 1.Log in to Red Hat® OpenShift® Container Platform as a user with sufficient permissions to complete the task.
 ```
 ${OC_LOGIN}
@@ -373,37 +393,12 @@ oc create secret docker-registry ${IMAGE_PULL_SECRET} \
 --from-file ".dockerconfigjson=dockerconfig.json" \
 --namespace=${PROJECT_CPD_INST_OPERANDS}
 ```
-
-### 2.4.3 Applying your entitlements to monitor and report use against license terms
-https://www.ibm.com/docs/en/software-hub/5.3.x?topic=aye-applying-your-entitlements-without-node-pinning-1
-
-Applying your entitlements without node pinning
-```
-cpd-cli manage apply-entitlement \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---entitlement=cpd-enterprise \
---production=false
-
-cpd-cli manage apply-entitlement \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---entitlement=datastage \
---production=false
-
-```
-
-## 2.5 Upgrade IBM Software Hub
-### 2.5.1. Run the cpd-cli manage login-to-ocp command to log in to the cluster.
+### 2.5.2 Run the cpd-cli manage login-to-ocp command to log in to the cluster
 ```
 ${CPDM_OC_LOGIN}
 ```
-### 2.5.2 Upgrade the required operators and custom resources for the instance.
-https://www.ibm.com/docs/en/software-hub/5.3.x?topic=uish-upgrading-software-hub
-
-See all available license URLs
+### 2.5.3 Upgrade the required operators and custom resources for the instance
 ```
-cpd-cli manage get-license --release=${VERSION}
-
-
 cpd-cli manage install-components \
 --license_acceptance=true \
 --components=cpd_platform \
@@ -412,30 +407,35 @@ cpd-cli manage install-components \
 --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --image_pull_prefix=${IMAGE_PULL_PREFIX} \
 --image_pull_secret=${IMAGE_PULL_SECRET} \
---run_storage_tests=false \
+--run_storage_tests=true \
 --upgrade=true
 ```
+
 Once the above command `cpd-cli manage install-components` is complete, make sure the status of the IBM Software Hub is in 'Completed' status.
+
 ```
 cpd-cli manage get-cr-status \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \ 
 --components=cpd_platform
 ```
-### 2.5.3 Apply the RSI patches
+
+### 2.5.4 Apply the RSI patches
 Run the following command to re-apply your existing custom patches.
 ```
 cpd-cli manage apply-rsi-patches --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
+
 Check the RSI patches status again: 
 ```
 cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --all
-
-cat $CPD_CLI_WORK_DIR/get_rsi_patch_info.log
 ```
 
 ## 2.6 Upgrade WKC
-Create the install-options.yml file in the cpd-cli work directory (For example: cpd-cli-workspace/olm-utils-workspace/work)
-<br><b>These need to be checked</b>
+### 2.6.1 
+https://www.ibm.com/docs/en/software-hub/5.3.x?topic=upgrading-preparing-upgrade-knowledge-catalog
+
+### 2.6.2
+Create the `install-options.yml` file in the cpd-cli work directory (For example: cpd-cli-workspace/olm-utils-workspace/work)
 ```
 ---
 # ............................................................................
@@ -443,12 +443,13 @@ Create the install-options.yml file in the cpd-cli work directory (For example: 
 # ............................................................................
 non_olm:
   wkc:
-    enableDataQuality: False
-    enableKnowledgeGraph: False
-    useFDB: False
+    enableDataQuality: true
+    enableKnowledgeGraph: true
+    useFDB: true
 ```
 
-Upgrade with the custom option
+Upgrade WKC with the custom option.
+
 ```
 cpd-cli manage install-components \
 --license_acceptance=true \
@@ -461,10 +462,12 @@ cpd-cli manage install-components \
 --param-file=/tmp/work/install-options.yml \
 --upgrade=true
 ```
+
 Check ccs progress first:
 ```
 watch oc get ccs 
 ```
+
 Check WKC progress:
 ```
 cpd-cli manage get-cr-status \
