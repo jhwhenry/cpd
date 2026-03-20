@@ -96,7 +96,6 @@ cpd-cli manage case-download \
 ```
 
 ### 1.5.2 Mirroring images directly to the private container registry
-https://www.ibm.com/docs/en/software-hub/5.3.x?topic=mipcr-mirroring-images-directly-private-container-registry-1
 
 Log in to the IBM Entitled registry:
 ```
@@ -110,7 +109,10 @@ cpd-cli manage login-private-registry \
 ${PRIVATE_REGISTRY_LOCATION} \
 ${PRIVATE_REGISTRY_PUSH_USER} \
 ${PRIVATE_REGISTRY_PUSH_PASSWORD}
+```
 
+Mirror the images to the private container registry.
+```
 cpd-cli manage mirror-images \
 --components=${COMPONENTS} \
 --release=${VERSION} \
@@ -118,6 +120,27 @@ cpd-cli manage mirror-images \
 --arch=${IMAGE_ARCH} \
 --case_download=false
 ```
+
+For each component, the command generates a log file in the work directory.Run the following command to print out any errors in the log files:
+```
+grep "error" mirror_*.log
+```
+
+Confirm by inspecting the contents of the private container registry:
+```
+cpd-cli manage list-images \
+--components=${COMPONENTS} \
+--release=${VERSION} \
+--target_registry=${PRIVATE_REGISTRY_LOCATION} \
+--case_download=false
+```
+
+The output is saved to the `list_images.csv` file in the `work/offline/${VERSION}` directory. Run below command by detecting images that are missing or that cannot be inspected.
+````
+grep "level=fatal" list_images.csv
+```
+
+[Mirroring images directly to the private container registry](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=mipcr-mirroring-images-directly-private-container-registry-1)
 
 ## 1.6 Final checks before start the upgrade
 ### 1.6.1 Pre-upgade check 
