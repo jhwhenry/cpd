@@ -104,15 +104,47 @@ source ./cpd_vars_531.sh
 
 Reference: [Updating your environment variables script](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=information-updating-your-environment-variables-script)
 
-## 1.5 Mirror images
-### 1.5.1 Downloading CASE packages 
+## 1.5 Downloading CASE packages and cluster-scoped resource files 
+
+### 1.5.1 Downloading CASE packages and the cluster-scoped resource definitions for the scheduling service
+
+Download from GitHub.
+
+```
+cpd-cli manage case-download \
+--components=scheduler \
+--release=${VERSION} \
+--scheduler_ns=${PROJECT_SCHEDULING_SERVICE} \
+--cluster_resources=true
+```
+
+Rename the `cluster_scoped_resources.yaml`
+
+```
+mv cluster_scoped_resources.yaml ${VERSION}-${PROJECT_SCHEDULING_SERVICE}-cluster_scoped_resources.yaml
+```
+
+### 1.5.2 Downloading CASE packages and the cluster-scoped resources for the platform and services
+
+Download from GitHub.
+
 ```
 cpd-cli manage case-download \
 --components=${COMPONENTS} \
---release=${VERSION}
+--release=${VERSION} \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--cluster_resources=true
 ```
 
-### 1.5.2 Mirroring IBM Software Hub images directly to the private container registry
+Rename the `cluster_scoped_resources.yaml`.
+
+```
+mv cluster_scoped_resources.yaml ${VERSION}-${PROJECT_CPD_INST_OPERATORS}-cluster_scoped_resources.yaml
+```
+
+## 1.6 Mirror images
+
+### 1.6.1 Mirroring IBM Software Hub images directly to the private container registry
 
 Log in to the IBM Entitled registry:
 ```
@@ -160,7 +192,7 @@ grep "level=fatal" list_images.csv
 
 [Mirroring images directly to the private container registry](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=mipcr-mirroring-images-directly-private-container-registry-1)
 
-### 1.5.3 Mirroring Red Hat OpenShift certificate manager images to a private container registry
+### 1.6.2 Mirroring Red Hat OpenShift certificate manager images to a private container registry
 Mirror the Red Hat OpenShift certificate manager images to your private container registry before you install the certificate manager.
 [Mirroring Red Hat OpenShift certificate manager images](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=manager-mirroring-red-hat-openshift-certificate-images)
 
