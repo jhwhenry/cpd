@@ -417,7 +417,7 @@ cpd-cli manage install-components \
 --upgrade=true
 ```
 
-Once the above command `cpd-cli manage install-components` is complete, make sure the status of the IBM Software Hub is in 'Completed' status.
+Once the above command `cpd-cli manage install-components` is completed, make sure the status of the IBM Software Hub is in 'Completed' status.
 
 ```
 cpd-cli manage get-cr-status \
@@ -437,24 +437,18 @@ cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
 ## 2.6 Upgrade WKC
-### 2.6.1 
-https://www.ibm.com/docs/en/software-hub/5.3.x?topic=upgrading-preparing-upgrade-knowledge-catalog
+### 2.6.1 Preparing to upgrade IBM Knowledge Catalog
 
-### 2.6.2
-Create the `install-options.yml` file in the cpd-cli work directory (For example: cpd-cli-workspace/olm-utils-workspace/work)
+Before you can upgrade IBM Knowledge Catalog to Version 5.3 and migrate all IBM Knowledge Catalog data to the EDB Native PostgreSQL database that is used in Version 5.3, complete several checks and preparation tasks.
+<br>
+[Pre-upgrade tasks](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=upgrading-preparing-upgrade-knowledge-catalog)
+
+### 2.6.2 Run the cpd-cli manage login-to-ocp command to log in to the cluster
 ```
----
-# ............................................................................
-# IBM Knowledge Catalog parameters
-# ............................................................................
-non_olm:
-  wkc:
-    enableDataQuality: true
-    enableKnowledgeGraph: true
-    useFDB: true
+${CPDM_OC_LOGIN}
 ```
 
-Upgrade WKC with the custom option.
+### 2.6.3 Upgrade the operator and custom resource for IBM Knowledge Catalog
 
 ```
 cpd-cli manage install-components \
@@ -465,19 +459,14 @@ cpd-cli manage install-components \
 --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --image_pull_prefix=${IMAGE_PULL_PREFIX} \
 --image_pull_secret=${IMAGE_PULL_SECRET} \
---param-file=/tmp/work/install-options.yml \
 --upgrade=true
 ```
 
-Check ccs progress first:
-```
-watch oc get ccs 
-```
+Once the above command `cpd-cli manage install-components` completed successfully, you can run the `cpd-cli manage get-cr-status` command for the validation.
 
-Check WKC progress:
 ```
 cpd-cli manage get-cr-status \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \ 
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --components=wkc
 ```
 
