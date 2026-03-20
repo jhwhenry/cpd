@@ -46,7 +46,7 @@ podman push ${PRIVATE_REGISTRY_LOCATION}/cp/cpd/olm-utils-v4:${VERSION}.amd64
 
 ## 1.3 Install Helm CLI
 
-Install Helm CLI by following this documentation [Installing Helm] (https://www.ibm.com/links?url=https%3A%2F%2Fhelm.sh%2Fdocs%2Fintro%2Finstall%2F)
+[Installing Helm] (https://www.ibm.com/links?url=https%3A%2F%2Fhelm.sh%2Fdocs%2Fintro%2Finstall%2F)
 
 
 ## 1.4 Updating your environment variables script
