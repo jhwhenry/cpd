@@ -63,7 +63,7 @@ podman push ${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v4:${VERSION}.amd6
 
 ## 1.3 Install Helm CLI
 
-[Installing Helm] (https://www.ibm.com/links?url=https%3A%2F%2Fhelm.sh%2Fdocs%2Fintro%2Finstall%2F)
+[Installing Helm](https://www.ibm.com/links?url=https%3A%2F%2Fhelm.sh%2Fdocs%2Fintro%2Finstall%2F)
 
 ## 1.4 Updating your environment variables script
 Make a copy of the environment variables script used by the existing 5.1.3 variables with the name like `cpd_vars_531.sh`.
