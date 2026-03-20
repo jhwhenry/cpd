@@ -48,11 +48,10 @@ podman push ${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v4:${VERSION}.amd6
 
 [Installing Helm] (https://www.ibm.com/links?url=https%3A%2F%2Fhelm.sh%2Fdocs%2Fintro%2Finstall%2F)
 
-
 ## 1.4 Updating your environment variables script
-Make a copy of the environment variables script used by the existing 5.1.3 variables with the name like cpd_vars_531.sh.
+Make a copy of the environment variables script used by the existing 5.1.3 variables with the name like `cpd_vars_531.sh`.
 
-Update the environment variables script cpd_vars_531.sh as follows.
+Update the environment variables script `cpd_vars_531.sh` as follows.
 ```
 vi cpd_vars_531.sh
 ```
@@ -65,9 +64,8 @@ export VERSION=5.3.1
 export COMPONENTS=ibm-licensing,cpfs,cpd_platform,analyticsengine,datastage_ent,datastage_ent_plus,dmc,dv,mantaflow,wkc
 ```
 3. Add a new section called Image pull configuration to your script and add the following environment variables
-https://www.ibm.com/docs/en/software-hub/5.3.x?topic=cri-updating-your-environment-variables-script
 ```
-export IMAGE_PULL_SECRET=<the name of the namespace-scoped secret that will contain the base64 encoded credentials for pulling images>
+export IMAGE_PULL_SECRET=<the name of the namespace-scoped pull secret that will contain the base64 encoded credentials for pulling images>
 export IMAGE_PULL_CREDENTIALS=$(echo -n "$PRIVATE_REGISTRY_PULL_USER:$PRIVATE_REGISTRY_PULL_PASSWORD" | base64 -w 0)
 export IMAGE_PULL_PREFIX=${PRIVATE_REGISTRY_LOCATION}
 ```
@@ -86,6 +84,8 @@ bash ./cpd_vars_531.sh
 ```
 source ./cpd_vars_531.sh
 ```
+
+Reference: [Updating your environment variables script](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=information-updating-your-environment-variables-script)
 
 ## 1.5 Mirror CPD 5.3.1 images
 ### 1.5.1 Downloading CASE packages 
