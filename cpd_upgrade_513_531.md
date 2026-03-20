@@ -14,7 +14,17 @@
 - 3. Post-upgrade tasks
 
 # 1. Pre-upgrade
-## 1.1 Checking the health of your cluster
+
+**Note:**
+Sourcing the latest environment variables used this environment before proceeding with the following procedures. Here's an example:
+```
+source ./cpd_vars.sh
+```
+
+## 1.1 Pre-upgrade check
+
+### 1.1.1 Checking the health of your cluster
+
 ```
 ${OC_LOGIN}
 oc get nodes,co,mcp
@@ -26,6 +36,13 @@ cpd-cli health nodes
 cpd-cli health operators --operator_ns=${PROJECT_CPD_INST_OPERATORS} --control_plane_ns=${PROJECT_CPD_INST_OPERANDS}
 cpd-cli health operands --control_plane_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
+### 1.1.2 Checking the Common Core services before the upgrade
+
+- 1. Check whether Global Search configured properly
+- 2. Run the `precheck_migration.sh` to determine whether you can run an automatic migration of the common core services or whether you need to configure common core services to run a semi-automatic migration.
+
+Complete the above two checks by following the steps of the `Before you begin` section in this documentation [Pre-upgrade check for CCS](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=hub-upgrading-software#taskupgrade-instance__prereq__1_)
+
 
 ## 1.2 Updating the IBM Software Hub command-line interface
 ### 1.2.1 Obtaining the olm-utils-v4 image
@@ -145,9 +162,6 @@ grep "level=fatal" list_images.csv
 ## 1.6 Final checks before start the upgrade
 ### 1.6.1 Pre-upgade check 
 [https://www.ibm.com/docs/en/software-hub/5.3.x?topic=hub-upgrading-software](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=hub-upgrading-software#taskupgrade-instance__prereq__1)
-
-### 1.6.2 Uninstall all hotfixes
-Needs to check all CRs for any custom image used.
 
 # 2. Upgrade
 ## 2.1 Migrate to Red Hat OpenShift certificate manager
