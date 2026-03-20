@@ -206,12 +206,16 @@ If the IBM Certificate manager (ibm-cert-manager) is installed on your cluster, 
 
 [Migrating from the IBM Certificate manager to the Red Hat OpenShift certificate manager](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=upgrading-migrating-red-hat-openshift-certificate-manager)
 
-## 2.2 Upgrade the scheduling service
-https://www.ibm.com/docs/en/software-hub/5.3.x?topic=pyc-upgrading-shared-cluster-components
+## 2.2 Upgrade the Scheduling service
 
-### 2.2.1 Updating cluster-scoped resources for the scheduling service
+If you're not sure whether the Scheduling service is installed on the cluster, run the following command:
+```
+oc get scheduling -A
+```
 
-1.Generate the cluster-scoped resource definitions for the scheduling service:
+### 2.2.1 Updating cluster-scoped resources for the Scheduling service
+
+1.Generate the cluster-scoped resource definitions for the Scheduling service:
 ```
 cpd-cli manage case-download \
 --components=scheduler \
@@ -229,14 +233,14 @@ cpd-cli manage case-download \
 ${OC_LOGIN}
 ```
 
-4.Apply the cluster-scoped resources for the scheduling service from the cluster_scoped_resources.yaml file:
+4.Apply the cluster-scoped resources for the Scheduling service from the cluster_scoped_resources.yaml file:
 ```
 oc apply -f cluster_scoped_resources.yaml \
 --server-side \
 --force-conflicts
 ```
 
-### 2.2.2 Creating image pull secrets for the scheduling service
+### 2.2.2 Creating image pull secrets for the Scheduling service
 1.Create a file named dockerconfig.json based on where your cluster pulls images from:
 
 ```
@@ -251,14 +255,14 @@ cat <<EOF > dockerconfig.json
 EOF
 ```
 
-2.Create the image pull secret in the project where the scheduling service is installed:
+2.Create the image pull secret in the project where the Scheduling service is installed:
 ```
 oc create secret docker-registry ${IMAGE_PULL_SECRET} \
 --from-file ".dockerconfigjson=dockerconfig.json" \
 --namespace=${PROJECT_SCHEDULING_SERVICE}
 ```
 
-### 2.2.3 Upgrading the scheduling service
+### 2.2.3 Upgrading the Scheduling service
 ```
 cpd-cli manage apply-scheduler \
 --release=${VERSION} \
@@ -268,58 +272,36 @@ cpd-cli manage apply-scheduler \
 --image_pull_secret=${IMAGE_PULL_SECRET}
 ```
 
-Confirm that the scheduling service pods are Running or Completed:
+Confirm that the Scheduling service pods are Running or Completed:
 
 ```
 oc get pods --namespace=${PROJECT_SCHEDULING_SERVICE}
 ```
 
-## 2.2 Upgrade shared cluster components
-https://www.ibm.com/docs/en/software-hub/5.3.x?topic=pyc-upgrading-shared-cluster-components
+## 2.3 Upgrade the License Service
 
-### 2.2.1 If you're not sure which project the License Service is in, run the following command:
+### 2.3.1 Get the project of the License service
+
+If you're not sure which project the License Service is in, run the following command:
 ```
 oc get deployment -A | grep ibm-licensing-operator
 ```
-If you're not sure whether the scheduling service is installed on the cluster, run the following command:
-```
-oc get scheduling -A
-```
-If the scheduling service is installed, ensure that the COMPONENTS variable in your environment variables script includes the scheduler component.
 
-### 2.2.2  Log in to the Red Hat OpenShift Container Platform cluster:
-```
-${CPDM_OC_LOGIN}
-```
-Verify install plans allow upgrade approval
-```
- oc get ip -A
-```
-If approval is manual and approved is false, change approved to true to allow the upgrade.  One can change approved back to false after upgrade is completed.
-```
-oc patch installplan <installplan-name> -n <namespace> --type merge -p '{"spec":{"approved":true}}'
-```
-Run the cpd-cli manage login-to-ocp command to log in to the cluster
+### 2.3.2  Log in to the Red Hat OpenShift Container Platform cluster
 ```
 ${CPDM_OC_LOGIN}
 ```
 
-### 2.2.3 Upgrade the License Service.
-Confirm the project in which the License Service is running.
-```
-oc get deployment -A |  grep ibm-licensing-operator
-```
-Make sure the project returned by the command matches the environment variable PROJECT_LICENSE_SERVICE in your environment variables script `cpd_vars_531.sh`.
+### 2.3.3 Upgrade the License Service.
 
-Upgrade the License Service.
 ```
 cpd-cli manage apply-cluster-components \
 --release=${VERSION} \
 --license_acceptance=true \
 --licensing_ns=${PROJECT_LICENSE_SERVICE}
 ```
+Confirm that the License Service pods are Running or Completed:
 
-### 2.2.4 Confirm that the License Service pods are Running or Completed:
 ```
 oc get pods --namespace=${PROJECT_LICENSE_SERVICE}
 ```
