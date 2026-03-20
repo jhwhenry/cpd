@@ -206,6 +206,73 @@ If the IBM Certificate manager (ibm-cert-manager) is installed on your cluster, 
 
 [Migrating from the IBM Certificate manager to the Red Hat OpenShift certificate manager](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=upgrading-migrating-red-hat-openshift-certificate-manager)
 
+## 2.2 Upgrade the scheduling service
+https://www.ibm.com/docs/en/software-hub/5.3.x?topic=pyc-upgrading-shared-cluster-components
+
+### 2.2.1 Updating cluster-scoped resources for the scheduling service
+
+1.Generate the cluster-scoped resource definitions for the scheduling service:
+```
+cpd-cli manage case-download \
+--components=scheduler \
+--release=${VERSION} \
+--scheduler_ns=${PROJECT_SCHEDULING_SERVICE} \
+--cluster_resources=true
+```
+
+2.Change to the work directory. The default location of the work directory is `cpd-cli-workspace/olm-utils-workspace/work`.
+<br>
+
+3.Log in to Red Hat® OpenShift® Container Platform as a cluster administrator.
+
+```
+${OC_LOGIN}
+```
+
+4.Apply the cluster-scoped resources for the scheduling service from the cluster_scoped_resources.yaml file:
+```
+oc apply -f cluster_scoped_resources.yaml \
+--server-side \
+--force-conflicts
+```
+
+### 2.2.2 Creating image pull secrets for the scheduling service
+1.Create a file named dockerconfig.json based on where your cluster pulls images from:
+
+```
+cat <<EOF > dockerconfig.json 
+{
+  "auths": {
+    "${PRIVATE_REGISTRY_LOCATION}": {
+      "auth": "${IMAGE_PULL_CREDENTIALS}"
+    }
+  }
+}
+EOF
+```
+
+2.Create the image pull secret in the project where the scheduling service is installed:
+```
+oc create secret docker-registry ${IMAGE_PULL_SECRET} \
+--from-file ".dockerconfigjson=dockerconfig.json" \
+--namespace=${PROJECT_SCHEDULING_SERVICE}
+```
+
+### 2.2.3 Upgrading the scheduling service
+```
+cpd-cli manage apply-scheduler \
+--release=${VERSION} \
+--license_acceptance=true \
+--scheduler_ns=${PROJECT_SCHEDULING_SERVICE} \
+--image_pull_prefix=${IMAGE_PULL_PREFIX} \
+--image_pull_secret=${IMAGE_PULL_SECRET}
+```
+
+Confirm that the scheduling service pods are Running or Completed:
+
+```
+oc get pods --namespace=${PROJECT_SCHEDULING_SERVICE}
+```
 
 ## 2.2 Upgrade shared cluster components
 https://www.ibm.com/docs/en/software-hub/5.3.x?topic=pyc-upgrading-shared-cluster-components
