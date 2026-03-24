@@ -217,7 +217,7 @@ After you create the DPA, do the following checks.
 
 <br>
 
-1)Check that the velero pods are running in the ${OADP_PROJECT} project.
+Check that the velero pods are running in the ${OADP_PROJECT} project.
 
 ```
 oc get po -n ${OADP_PROJECT}
