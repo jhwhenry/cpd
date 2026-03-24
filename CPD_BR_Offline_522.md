@@ -360,11 +360,11 @@ For each Db2U cluster, do the following substeps:
 ```
 export DB2UCLUSTER=<db2ucluster_name>
 ```
-- 2)Label the cluster:
+- 2) Label the cluster:
 ```
 oc label db2ucluster ${DB2UCLUSTER} db2u/cpdbr=db2u --overwrite
 ```
-- 3)Verify that the Db2U cluster now contains the new label:
+- 3) Verify that the Db2U cluster now contains the new label:
 ```
 oc get db2ucluster ${DB2UCLUSTER} --show-labels
 ```
