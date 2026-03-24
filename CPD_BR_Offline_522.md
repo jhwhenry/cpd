@@ -1,6 +1,9 @@
 # Offline Backup & Restore Runbook - 5.2.2
 
-
+## Assumption
+- The `cpd-cli` command-line interface (5.2.2) is available in the Bastion node
+- The OpenShift command-line interface (4.16) is available in the Bastion node
+ 
 ## Set environment
 1. Source the `cpd_vars.sh`.
 
