@@ -509,5 +509,108 @@ To view logs of the tenant backup and all sub-backups, run the following command
 cpd-cli oadp tenant-backup log ${TENANT_BACKUP_NAME}
 ```
 
+## Restoring IBM Software Hub to a different cluster
+### Set up work statiion
+### Sourcing the environment variables
+### Installing the Pre-requistes
+- Node settings
+### Installing the Licensing and IBM Cert Manager
+
+### Restoring the scheduling service
+Log in to Red Hat OpenShift Container Platform as a cluster administrator:
+```
+${OC_LOGIN}
+```
+
+Configure the OADP client to set the IBM Software Hub project to the scheduling service project:
+```
+cpd-cli oadp client config set cpd-namespace=${PROJECT_SCHEDULING_SERVICE}
+```
+
+Configure the OADP client to set the OADP project to the project where the OADP operator is installed:
+```
+cpd-cli oadp client config set namespace=${OADP_PROJECT}
+```
+
+Restore an offline backup by running one of the following commands.
+```
+ cpd-cli oadp restore create ${PROJECT_SCHEDULING_SERVICE}-restore \
+ --from-backup=${PROJECT_SCHEDULING_SERVICE}-offline \
+ --include-resources='operatorgroups,configmaps,catalogsources.operators.coreos.com,subscriptions.operators.coreos.com,customresourcedefinitions.apiextensions.k8s.io,scheduling.scheduler.spectrumcomputing.ibm.com' \
+ --include-cluster-resources=true \
+ --skip-hooks \
+ --log-level=debug \
+ --verbose \
+ --image-prefix=${PRIVATE_REGISTRY_LOCATION}
+```
+
+### Restoring an IBM Software Hub instance.
+**Note** You cannot restore a backup to a different project of the IBM Software Hub instance.
+<br>
+Log in to Red Hat OpenShift Container Platform as a cluster administrator:
+```
+${OC_LOGIN}
+```
+
+Restore IBM Software Hub by running one of the following commands.
+
+```
+ cpd-cli oadp tenant-restore create ${TENANT_OFFLINE_BACKUP_NAME}-restore \
+ --from-tenant-backup ${TENANT_OFFLINE_BACKUP_NAME} \
+ --image-prefix=${PRIVATE_REGISTRY_LOCATION}/ubi9 \
+ --verbose \
+ --log-level=debug &> ${TENANT_OFFLINE_BACKUP_NAME}-restore.log&
+```
+
+Get the status of the installed components:
+```
+cpd-cli manage get-cr-status \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+```
+
+Ensure that the status of all of the services is `Completed` or `Succeeded`.
+
+To view a list of restores, run the following command:
+```
+cpd-cli oadp tenant-restore list
+```
+
+To view the detailed status of the restore, run the following command:
+```
+cpd-cli oadp tenant-restore status ${TENANT_BACKUP_NAME}-restore --details
+```
+
+The command shows a varying number of sub-restores in the following form: `cpd-tenant-r-xxx`. You can view more information about these sub-restores by running the following command:
+```
+cpd-cli oadp restore status <SUB_RESTORE_NAME> --details
+```
+
+To view logs of the tenant restore, run the following command:
+```
+cpd-cli oadp tenant-restore log ${TENANT_BACKUP_NAME}-restore
+```
+### Completing post-restore tasks
+
+#### Applying RSI patches to the control plane
+```
+cpd-cli manage apply-rsi-patches --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} -vvv
+```
+
+#### Restarting IBM Knowledge Catalog lineage pods
+Log in to Red Hat OpenShift Container Platform as a cluster administrator:
+```
+${OC_LOGIN}
+```
+
+Restart the wkc-data-lineage-service-xxx pod:
+```
+oc delete -n ${PROJECT_CPD_INST_OPERANDS} "$(oc get pods -o name -n ${PROJECT_CPD_INST_OPERANDS} | grep wkc-data-lineage-service)"
+```
+
+Restart the wdp-kg-ingestion-service-xxx pod:
+```
+oc delete -n ${PROJECT_CPD_INST_OPERANDS} "$(oc get pods -o name -n ${PROJECT_CPD_INST_OPERANDS} | grep wdp-kg-ingestion-service)"
+```
+
 ## Reference
-[IBM Software Hub online backup and restore to the same cluster with the OADP utility](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=cluster-backup-restore-software-hub-oadp-utility)
+[Offline backup and restore to a different cluster with the IBM Software Hub OADP utility](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=utility-offline-backup-restore-different-cluster)
