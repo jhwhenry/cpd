@@ -112,19 +112,7 @@ oc new-project ${OADP_PROJECT}
 oc annotate namespace ${OADP_PROJECT} openshift.io/node-selector=""
 ```
 
-- Install the cpdbr-tenant service.
-```
-cpd-cli oadp install \
---component=cpdbr-tenant \
---namespace ${OADP_PROJECT} \
---tenant-operator-namespace ${PROJECT_CPD_INST_OPERATORS} \
---cpdbr-hooks-image-prefix=${PRIVATE_REGISTRY}/cpdbr-oadp:${VERSION} \
---cpfs-image-prefix=${PRIVATE_REGISTRY} \
---skip-recipes \
---log-level=debug \
---verbose
-```
-- Install the Red Hat OADP operator.
+- Install the Red Hat OADP operator if it's not installed yet.
 
 Check whether the OADP operator already installed or not.
 
@@ -133,12 +121,14 @@ oc get csv -A | grep -i oadp
 ```
 
 If the OADP operator Not installed, then follow below link for the OADP installation.
-
+<br>
 [Install the OADP operator and configure it to work with your object store](https://docs.redhat.com/en/documentation/openshift_container_platform/4.16/html/backup_and_restore/oadp-application-backup-and-restore#installing-oadp)
 
 - Create a secret in the ${OADP_PROJECT} project with the credentials of the S3-compatible object store that you are using to store the backups.
+
 <br>
 Create a file named `credentials-velero` that contains the credentials for the object store:
+
 ```
 cat << EOF > credentials-velero
 [default]
@@ -154,8 +144,7 @@ oc create secret generic cloud-credentials \
 --from-file cloud=./credentials-velero
 ```
 
-### Create the DataProtectionApplication (DPA) custom resource, and specify a name for the instance.
-Here's an example of the DPA configuration.
+- Create the DataProtectionApplication (DPA) custom resource
 
 ```
 cat << EOF | oc apply -f -
@@ -223,10 +212,13 @@ spec:
       resourceTimeout: 60m
 EOF
 ```
+
 After you create the DPA, do the following checks.
 
 <br>
+
 1)Check that the velero pods are running in the ${OADP_PROJECT} project.
+
 ```
 oc get po -n ${OADP_PROJECT}
 ```
@@ -259,6 +251,20 @@ Example output:
 ```
 NAME           PROVIDER    BUCKET             PREFIX              PHASE        LAST VALIDATED      ACCESS MODE
 dpa-sample-1   aws         ${BUCKET_NAME}     ${BUCKET_PREFIX}    Available    <timestamp>
+```
+
+- Install the cpdbr-tenant service if it's not installed yet.
+
+```
+cpd-cli oadp install \
+--component=cpdbr-tenant \
+--namespace ${OADP_PROJECT} \
+--tenant-operator-namespace ${PROJECT_CPD_INST_OPERATORS} \
+--cpdbr-hooks-image-prefix=${PRIVATE_REGISTRY}/cpdbr-oadp:${VERSION} \
+--cpfs-image-prefix=${PRIVATE_REGISTRY} \
+--skip-recipes \
+--log-level=debug \
+--verbose
 ```
 
 ## Installing the jq JSON command-line utility
