@@ -39,11 +39,13 @@ podman login registry.redhat.io -u ${REDHAT_USER} -p ${REDHAT_PASSWORD}
 - Run the following commands to mirror the images the private container registry.
 <br>
 **ose-cli**
+  
 ```
 oc image mirror registry.redhat.io/openshift4/ose-cli:latest ${PRIVATE_REGISTRY_LOCATION}/openshift4/ose-cli:latest --insecure
 ```
 
 **ubi-minimal**
+
 ```
 oc image mirror registry.redhat.io/ubi9/ubi-minimal:latest ${PRIVATE_REGISTRY_LOCATION}/ubi9/ubi-minimal:latest --insecure
 ```
