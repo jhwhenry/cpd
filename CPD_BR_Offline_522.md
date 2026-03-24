@@ -76,7 +76,9 @@ A S3-compatible object storage shared between the source and target cluster is r
 #### Update the shell script `cpd_vars.sh` and add below environment variables.
 
 <br>
+
 Here's an example. Change the envirable variable value if needed.
+
 ```
 export OADP_PROJECT=openshift-adp
 export OADP_VERSION=v1.4.4
