@@ -338,10 +338,74 @@ oc get clusters.postgresql.k8s.enterprisedb.io \
 -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
-### Checking if any volumes or pods labeled as `exclude-from-backup`
+### Checking if any volumes or pods labeled have special labels
 ```
-oc get pods/pvc -l velero.io/exclude-from-backup=true
+oc get pods,pvc -l velero.io/exclude-from-backup=true
+oc get pods,pvc -l icpdsupport/empty-on-backup=true
 ```
+
+### Preparing Db2
+Log in to Red Hat OpenShift Container Platform as a cluster administrator.
+```
+${OC_LOGIN}
+```
+
+Retrieve the names of the IBM Software Hub deployment's Db2U clusters:
+```
+oc get db2ucluster -A -ojsonpath='{.items[?(@.spec.environment.dbType=="db2oltp")].metadata.name}'
+```
+
+For each Db2U cluster, do the following substeps:
+- 1) Export the Db2U cluster name:
+```
+export DB2UCLUSTER=<db2ucluster_name>
+```
+- 2)Label the cluster:
+```
+oc label db2ucluster ${DB2UCLUSTER} db2u/cpdbr=db2u --overwrite
+```
+- 3)Verify that the Db2U cluster now contains the new label:
+```
+oc get db2ucluster ${DB2UCLUSTER} --show-labels
+```
+
+For each Db2U cluster, check if Q Replication is enabled. 
+```
+oc get po -n ${PROJECT_CPD_INST_OPERANDS} | grep ${DB2UCLUSTER} | grep qrep
+```
+Stop the Q Replication if enabled.
+
+### Preparing Db2 Warehouse
+Log in to Red Hat OpenShift Container Platform as a cluster administrator.
+```
+${OC_LOGIN}
+```
+
+Retrieve the names of the IBM Software Hub deployment's Db2U clusters:
+```
+oc get db2ucluster -A -ojsonpath='{.items[?(@.spec.environment.dbType=="db2wh")].metadata.name}'
+```
+
+For each Db2U cluster, do the following substeps:
+- 1)Export the Db2U cluster name:
+```
+export DB2UCLUSTER=<db2ucluster_name>
+```
+- 2)Label the cluster:
+```
+oc label db2ucluster ${DB2UCLUSTER} db2u/cpdbr=db2u --overwrite
+```
+- 3)Verify that the Db2U cluster now contains the new label:
+```
+oc get db2ucluster ${DB2UCLUSTER} --show-labels
+```
+
+For each Db2U cluster, if Q Replication is enabled, stop Q Replication by doing the following steps.
+```
+oc get po -n ${PROJECT_CPD_INST_OPERANDS} | grep ${DB2UCLUSTER} | grep qrep
+```
+
+Stop the Q Replication if enabled.
 
 ### Checking the status of installed services
 ```
@@ -351,7 +415,7 @@ cpd-cli manage get-cr-status \
 --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-## Creating an online backup
+## Creating an offline backup
 ### Log in to Red Hat OpenShift Container Platform as a cluster administrator:
 ```
 ${OC_LOGIN}
@@ -373,26 +437,25 @@ Run service backup prechecks:
 cpd-cli oadp backup precheck \
 --backup-type singleton \
 --include-namespaces=${PROJECT_SCHEDULING_SERVICE} \
---exclude-checks ValidVolumeSnapshotClass \
---hook-kind=checkpoint \
 --log-level=debug \
---verbose
+--verbose \
+--hook-kind=br
 ```
 
 Back up the IBM Software Hub scheduling service:
 
 ```
-cpd-cli oadp backup create ${PROJECT_SCHEDULING_SERVICE}-online \
+cpd-cli oadp backup create ${PROJECT_SCHEDULING_SERVICE}-offline \
 --backup-type singleton \
---include-namespaces=${PROJECT_SCHEDULING_SERVICE} \
+--include-namespaces ${PROJECT_SCHEDULING_SERVICE} \
 --include-resources='operatorgroups,configmaps,catalogsources.operators.coreos.com,subscriptions.operators.coreos.com,customresourcedefinitions.apiextensions.k8s.io,scheduling.scheduler.spectrumcomputing.ibm.com' \
---prehooks=false \
---posthooks=false \
---with-checkpoint \
+--prehooks=true \
+--posthooks=true \
 --log-level=debug \
 --verbose \
---hook-kind=checkpoint \
---selector 'icpdsupport/ignore-on-nd-backup notin (true)'
+--hook-kind=br \
+--selector 'velero.io/exclude-from-backup notin (true)' \
+--image-prefix=PRIVATE_REGISTRY_LOCATION/ubi9
 ```
 
 Validate the backup:
@@ -401,26 +464,31 @@ Validate the backup:
 cpd-cli oadp backup validate \
 --backup-type singleton \
 --include-namespaces=${PROJECT_SCHEDULING_SERVICE} \
---backup-names ${PROJECT_SCHEDULING_SERVICE}-online \
+--backup-names ${PROJECT_SCHEDULING_SERVICE}-offline \
 --log-level trace \
 --verbose \
---hook-kind checkpoint
+--hook-kind=br
 ```
 ### Backing up IBM Software Hub instance
 
 Specify a backup name
 
 ```
-export TENANT_BACKUP_NAME=oadp_br_20250805_01
+export TENANT_BACKUP_NAME=oadp_br_20260401_01
 ```
 
 Create a backup:
 
 ```
-cpd-cli oadp tenant-backup create ${TENANT_BACKUP_NAME} \
+cpd-cli oadp tenant-backup create ${TENANT_OFFLINE_BACKUP_NAME} \
+--namespace ${OADP_PROJECT} \
+--vol-mnt-pod-mem-request=1Gi \
+--vol-mnt-pod-mem-limit=4Gi \
 --tenant-operator-namespace ${PROJECT_CPD_INST_OPERATORS} \
+--mode offline \
+--image-prefix=PRIVATE_REGISTRY_LOCATION/ubi9 \
 --log-level=debug \
---verbose
+--verbose &> ${TENANT_OFFLINE_BACKUP_NAME}.log&
 ```
 
 Confirm that the tenant backup was created and has a Completed status:
@@ -432,8 +500,7 @@ cpd-cli oadp tenant-backup list
 To view the detailed status of the backup, run the following command:
 
 ```
-cpd-cli oadp tenant-backup status ${TENANT_BACKUP_NAME} \
---details
+cpd-cli oadp tenant-backup status ${TENANT_BACKUP_NAME} --details
 ```
 
 To view logs of the tenant backup and all sub-backups, run the following command:
