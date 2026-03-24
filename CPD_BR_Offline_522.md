@@ -72,26 +72,31 @@ The IBM Software Hub OADP backup and restore utility supports the following S3-c
 
 A S3-compatible object storage shared between the source and target cluster is recommended for the offline restore to a different cluster.
 
-### Creating environment variables
-Create an shell script named `oadp_br_vars.sh`.
+### Setting environment variables required by OADP
+#### Update the shell script `cpd_vars.sh` and add below environment variables.
+
 <br>
 Here's an example. Change the envirable variable value if needed.
 ```
-export OADP_PROJECT=adp-openshift
+export OADP_PROJECT=openshift-adp
+export OADP_VERSION=v1.4.4
+export S3_URL=<The URL of the object store that you are using to store backups.If the object store is MinIO, you can get the s3url by running oc get route.>
 export ACCESS_KEY_ID=<The access key ID to access the object store>
 export SECRET_ACCESS_KEY=<The access key secret to access the object store>
-export CPDBR_VELERO_PLUGIN_IMAGE_LOCATION=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/cpdbr-velero-plugin:${VERSION}.${IMAGE_ARCH}
-export VELERO_POD_CPU_LIMIT=2
-export NODE_AGENT_POD_CPU_LIMIT=2
-export S3_URL=<The URL of the object store that you are using to store backups.If the object store is MinIO, you can get the s3url by running oc get route.>
+export CPDBR_VELERO_PLUGIN_IMAGE_LOCATION=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/cpdbr-velero-plugin:${VERSION}
+export CPFS_OADP_PLUGIN_VERSION=4.14.1
+export VELERO_POD_CPU_LIMIT=4
+export NODE_AGENT_POD_CPU_LIMIT=4
 export BUCKET_NAME=velero
-export BUCKET_PREFIX=cpdbackup
-export REGION=minio
+export BUCKET_PREFIX=cpd522backup
+export REGION=us-east
+export UPLOADER_TYPE=kopia
 ```
 
-Source the shell script.
-```
-source oadp_br_vars.sh
+#### Sourcing the environment variables
+
+```bash
+source cpd_vars.sh
 ```
 
 ### Installing backup and restore components
