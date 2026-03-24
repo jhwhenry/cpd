@@ -1,4 +1,4 @@
-# Online Backup Runbook for watsonx.AI
+# Offline Backup & Restore Runbook - 5.2.2
 
 
 ## Set environment
