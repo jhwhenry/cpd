@@ -288,7 +288,7 @@ Configure the client to set the OADP project:
 cpd-cli oadp client config set namespace=${OADP_PROJECT}
 ```
 
-## Preparation for the Online backup
+## Preparation for the Offline backup
 ### Check whether the services that you are using support platform backup and restore.
 ```
 cpd-cli oadp service-registry check \
@@ -300,10 +300,10 @@ cpd-cli oadp service-registry check \
 ### Check that you installed the correct version of OADP components.
 - Check that the OADP operator version is 1.4.x:
 ```
-oc get csv -A | grep "OADP Operator"
+oc get csv -A | grep -i oadp
 ```
 
-- Check that the cpd-cli oadp version is 5.1.0:
+- Check that the cpd-cli oadp version is 5.2.2:
 ```
 cpd-cli oadp version
 ```
@@ -330,10 +330,17 @@ oc get cm zen-cs-aux-ckpt-cm
 oc get cm zen-cs-aux-qu-cm
 oc get cm zen-cs2-aux-ckpt-cm
 ```
+Delete them if any of them exist.
+
 ### Checking the primary instance of every PostgreSQL cluster is in sync with its replicas
 ```
 oc get clusters.postgresql.k8s.enterprisedb.io \
 -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
+### Checking if any volumes or pods labeled as `exclude-from-backup`
+```
+oc get pods/pvc -l velero.io/exclude-from-backup=true
 ```
 
 ### Checking the status of installed services
