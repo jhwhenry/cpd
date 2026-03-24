@@ -257,14 +257,14 @@ dpa-sample-1   aws         ${BUCKET_NAME}     ${BUCKET_PREFIX}    Available    <
 
 ```
 cpd-cli oadp install \
---component=cpdbr-tenant \
---namespace ${OADP_PROJECT} \
---tenant-operator-namespace ${PROJECT_CPD_INST_OPERATORS} \
---cpdbr-hooks-image-prefix=${PRIVATE_REGISTRY}/cpdbr-oadp:${VERSION} \
---cpfs-image-prefix=${PRIVATE_REGISTRY} \
---skip-recipes \
---log-level=debug \
---verbose
+  --component=cpdbr-tenant \
+  --namespace ${OADP_PROJECT} \
+  --tenant-operator-namespace ${PROJECT_CPD_INST_OPERATORS} \
+  --cpdbr-hooks-image-prefix=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd \
+  --cpfs-image-prefix=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpfs \
+  --skip-recipes \
+  --log-level=debug \
+  --verbose
 ```
 
 ## Installing the jq JSON command-line utility
