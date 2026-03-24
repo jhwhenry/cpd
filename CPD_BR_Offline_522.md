@@ -2,10 +2,9 @@
 
 ## Assumption
 - The `cpd-cli` command-line interface (5.2.2) is available in the Bastion node
-- The OpenShift command-line interface (4.16) is available in the Bastion node
+- The `oc` command-line interface (4.16) is available in the Bastion node
  
-## Set environment
-1. Source the `cpd_vars.sh`.
+## Sourcing the environment variables
 
 ```bash
 source cpd_vars.sh
@@ -38,10 +37,22 @@ podman login registry.redhat.io -u ${REDHAT_USER} -p ${REDHAT_PASSWORD}
 ```
 
 - Run the following commands to mirror the images the private container registry.
-
+<br>
+**ose-cli**
 ```
 oc image mirror registry.redhat.io/openshift4/ose-cli:latest ${PRIVATE_REGISTRY_LOCATION}/openshift4/ose-cli:latest --insecure
+```
+
+**ubi-minimal**
+```
 oc image mirror registry.redhat.io/ubi9/ubi-minimal:latest ${PRIVATE_REGISTRY_LOCATION}/ubi9/ubi-minimal:latest --insecure
+```
+
+**db2u-velero-plugin**
+```
+cpd-cli manage copy-image \
+--from=icr.io/db2u/db2u-velero-plugin:${VERSION} \
+--to=${PRIVATE_REGISTRY_LOCATION}/db2u/db2u-velero-plugin:${VERSION}
 ```
 
 ## Installing IBM Software Hub OADP backup and restore utility components
