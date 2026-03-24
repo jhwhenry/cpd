@@ -274,27 +274,20 @@ wget -O jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
 chmod +x ./jq
 cp jq /usr/local/bin
 ```
+
 ## Configuring the OADP backup and restore utility
+Log in to Red Hat OpenShift Container Platform as a cluster administrator.
+
+```
+${OC_LOGIN}
+```
+
 Configure the client to set the OADP project:
+
 ```
 cpd-cli oadp client config set namespace=${OADP_PROJECT}
 ```
 
-## Creating volume snapshot classes on the source cluster
-
-If you are backing up IBM Software Hub on NetApp Trident storage, create the following volume snapshot class.
-```
-cat << EOF | oc apply -f -
-apiVersion: snapshot.storage.k8s.io/v1
-kind: VolumeSnapshotClass
-metadata:
-  name: csi-snapclass
-  labels:
-    velero.io/csi-volumesnapshot-class: "true"
-driver: csi.trident.netapp.io
-deletionPolicy: Retain
-EOF
-```
 ## Preparation for the Online backup
 ### Check whether the services that you are using support platform backup and restore.
 ```
