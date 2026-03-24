@@ -38,6 +38,7 @@ podman login registry.redhat.io -u ${REDHAT_USER} -p ${REDHAT_PASSWORD}
 
 - Run the following commands to mirror the images the private container registry.
 <br>
+
 **ose-cli**
   
 ```
@@ -62,7 +63,14 @@ cpd-cli manage copy-image \
 ### Setting up object storage
 An S3-compatible object storage that uses Signature Version 4 is needed to store the backups. A bucket must be created in object storage. 
 <br>
-The MinIO object storage can be used for the air-gapped cluster.
+
+The IBM Software Hub OADP backup and restore utility supports the following S3-compatible object storage:
+- AWS S3
+- IBM Cloud Object Storage
+- MinIO
+- Ceph® Object Gateway
+
+A S3-compatible object storage shared between the source and target cluster is recommended for the offline restore to a different cluster.
 
 ### Creating environment variables
 Create an shell script named `oadp_br_vars.sh`.
