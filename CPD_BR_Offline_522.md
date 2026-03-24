@@ -129,40 +129,12 @@ cpd-cli oadp install \
 Check whether the OADP operator already installed or not.
 
 ```
-oc get csv -A | grep "OADP Operator"
-
-cpd-cli oadp version
+oc get csv -A | grep -i oadp
 ```
 
-If the OADP operator Not installed, then run below command.
+If the OADP operator Not installed, then follow below link for the OADP installation.
 
-```
-cpd-cli oadp install \
-  --component oadp-operator \
-  --namespace oadp-operator \
-  --oadp-version v1.4.4 \
-  --log-level trace \
-  --velero-cpu-limit 2 \
-  --velero-mem-limit 2Gi \
-  --velero-cpu-request 1 \
-  --velero-mem-request 256Mi \
-  --node-agent-pod-cpu-limit 2 \
-  --node-agent-pod-mem-limit 2Gi \
-  --node-agent-pod-cpu-request 0.5 \
-  --node-agent-pod-mem-request 256Mi \
-  --uploader-type ${UPLOADER_TYPE} \
-  --bucket-name=velero \
-  --prefix=cpdbackup \
-  --access-key-id ${ACCESS_KEY_ID} \
-  --secret-access-key ${SECRET_ACCESS_KEY} \
-  --s3force-path-style=true \
-  --region=minio \
-  --s3url ${S3_URL} \
-  --cpfs-oadp-plugin-image "icr.io/cpopen/cpfs/cpfs-oadp-plugins:4.10.0" \
-  --swhub-velero-plugin-image "icr.io/cpopen/cpd/cpdbr-velero-plugin:5.2.0" \
-  --cpdbr-velero-plugin-image "icr.io/cpopen/cpd/swhub-velero-plugin:5.2.0" \
-  --verbose
-```
+[Install the OADP operator and configure it to work with your object store](https://docs.redhat.com/en/documentation/openshift_container_platform/4.16/html/backup_and_restore/oadp-application-backup-and-restore#installing-oadp)
 
 - Create a secret in the ${OADP_PROJECT} project with the credentials of the S3-compatible object store that you are using to store the backups.
 <br>
@@ -181,6 +153,7 @@ oc create secret generic cloud-credentials \
 --namespace ${OADP_PROJECT} \
 --from-file cloud=./credentials-velero
 ```
+
 ### Create the DataProtectionApplication (DPA) custom resource, and specify a name for the instance.
 Here's an example of the DPA configuration.
 
@@ -190,16 +163,51 @@ apiVersion: oadp.openshift.io/v1alpha1
 kind: DataProtectionApplication
 metadata:
   name: dpa-sample
+  namespace: ${OADP_PROJECT}
 spec:
+  backupImages: false
+  backupLocations:
+    - velero:
+        accessMode: ReadWrite
+        config:
+          region: ${REGION}
+          s3ForcePathStyle: "true"
+          s3Url: ${S3_URL}
+        credential:
+          key: cloud
+          name: cloud-credentials
+        default: true
+        objectStorage:
+          bucket: ${BUCKET_NAME}
+          prefix: ${BUCKET_PREFIX}
+        provider: aws
   configuration:
+    nodeAgent:
+      enable: true
+      podConfig:
+        resourceAllocations:
+          limits:
+            cpu: "${NODE_AGENT_POD_CPU_LIMIT}"
+            memory: 32Gi
+          requests:
+            cpu: 500m
+            memory: 256Mi
+        tolerations:
+        - effect: NoSchedule
+          key: icp4data
+          operator: Exists
+      timeout: 72h
+      uploaderType: ${UPLOADER_TYPE}
     velero:
       customPlugins:
-      - image: icr.io/cpopen/cpfs/cpfs-oadp-plugins:4.10.0
+      - image: icr.io/cpopen/cpfs/cpfs-oadp-plugins:${CPFS_OADP_PLUGIN_VERSION}
         name: cpfs-oadp-plugin
-      - image: icr.io/cpopen/cpd/cpdbr-velero-plugin:5.2.0
+      - image: icr.io/cpopen/cpd/cpdbr-velero-plugin:${VERSION}
         name: cpdbr-velero-plugin
-      - image: icr.io/cpopen/cpd/swhub-velero-plugin:55.2.0
+      - image: icr.io/cpopen/cpd/swhub-velero-plugin:${VERSION}
         name: swhub-velero-plugin
+      - image: icr.io/db2u/db2u-velero-plugin:${VERSION}
+        name: db2u-velero-plugin
       defaultPlugins:
       - aws
       - openshift
@@ -213,37 +221,6 @@ spec:
             cpu: 500m
             memory: 256Mi
       resourceTimeout: 60m
-    nodeAgent:
-      enable: true
-      uploaderType: kopia
-      timeout: 72h
-      podConfig:
-        resourceAllocations:
-          limits:
-            cpu: "${NODE_AGENT_POD_CPU_LIMIT}"
-            memory: 32Gi
-          requests:
-            cpu: 500m
-            memory: 256Mi
-        tolerations:
-        - key: icp4data
-          operator: Exists
-          effect: NoSchedule
-  backupImages: false
-  backupLocations:
-    - velero:
-        provider: aws
-        default: true
-        objectStorage:
-          bucket: ${BUCKET_NAME}
-          prefix: ${BUCKET_PREFIX}
-        config:
-          region: ${REGION}
-          s3ForcePathStyle: "true"
-          s3Url: ${S3_URL}
-        credential:
-          name: cloud-credentials
-          key: cloud
 EOF
 ```
 After you create the DPA, do the following checks.
