@@ -28,7 +28,9 @@ export VERSION=5.2.2
 <br>
 Change the envirable variable value if needed.
 <br>
+
 **Note**
+
 <br>
 
 The `BUCKET_NAME` and `BUCKET_PREFIX` should be the same as that used by the offline backup.
