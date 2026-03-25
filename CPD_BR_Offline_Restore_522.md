@@ -106,6 +106,10 @@ Wait for the cpd-cli to return the following message before proceeding to the ne
 [SUCCESS]... The apply-cluster-components command ran successfully.
 ```
 
+## Cleaning up the target cluster after a previous restore
+This is only required if there was a previous restore.
+[Cleaning up the target cluster after a previous restore](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=utility-offline-backup-restore-different-cluster#reference_acp_qwm_ddc__title__3)
+
 ## Restoring the scheduling service
 Log in to Red Hat OpenShift Container Platform as a cluster administrator:
 ```
