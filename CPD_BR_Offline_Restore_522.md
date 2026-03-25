@@ -19,15 +19,18 @@ Make sure that the target cluster meets the following requirements:
 - Make sure the `cpd-cli` command-line interface (5.2.2) and `oc` command-line interface (4.16) are available in the Bastion node.
 - Update the shell script `cpd_vars.sh` and update the `VERSION`.
 <br>
+
 ```
 export VERSION=5.2.2
 ```
+
 - Update the shell script `cpd_vars.sh` and add below environment variables like below.
 <br>
 Change the envirable variable value if needed.
 <br>
 **Note**
 <br>
+
 The `BUCKET_NAME` and `BUCKET_PREFIX` should be the same as that used by the offline backup.
 
 ```
