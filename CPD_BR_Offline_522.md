@@ -70,7 +70,7 @@ The IBM Software Hub OADP backup and restore utility supports the following S3-c
 - MinIO
 - Ceph® Object Gateway
 
-A S3-compatible object storage shared between the source and target cluster is recommended for the offline restore to a different cluster.
+A S3-compatible object storage shared between the source and target cluster is required for the offline restore to a different cluster.
 
 ### Setting environment variables required by OADP
 #### Update the shell script `cpd_vars.sh` and add below environment variables.
