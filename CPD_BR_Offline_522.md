@@ -358,6 +358,7 @@ oc get pods \
 ### Checking if any volumes or pods labeled have special labels
 ```
 oc get pods,pvc -l velero.io/exclude-from-backup=true
+oc get pods,pvc -l icpdsupport/ignore-on-nd-backup=true
 oc get pods,pvc -l icpdsupport/empty-on-backup=true
 ```
 
@@ -423,6 +424,24 @@ oc get po -n ${PROJECT_CPD_INST_OPERANDS} | grep ${DB2UCLUSTER} | grep qrep
 ```
 
 Stop the Q Replication if enabled.
+
+### Stopping SPSS Modeler runtimes and jobs
+Log in to Red Hat OpenShift Container Platform as a cluster administrator.
+```
+${OC_LOGIN}
+```
+
+To stop all active SPSS Modeler runtimes and jobs
+```
+oc delete rta -l type=service,job -l component=spss-modeler
+```
+
+To check whether any SPSS Modeler runtime sessions are still running:
+```
+oc get pod -l type=spss-modeler
+```
+
+When no pods are running, no output is produced for this command.
 
 ### Checking the status of installed services
 ```
