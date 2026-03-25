@@ -29,6 +29,7 @@ Change the envirable variable value if needed.
 **Note**
 <br>
 The `BUCKET_NAME` and `BUCKET_PREFIX` should be the same as that used by the offline backup.
+
 ```
 export OADP_PROJECT=openshift-adp
 export OADP_VERSION=v1.4.4
