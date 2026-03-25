@@ -333,10 +333,27 @@ oc get cm zen-cs2-aux-ckpt-cm
 Delete them if any of them exist.
 
 ### Checking the primary instance of every PostgreSQL cluster is in sync with its replicas
+- To check the status of the database cluster:
+
 ```
 oc get clusters.postgresql.k8s.enterprisedb.io \
 -n ${PROJECT_CPD_INST_OPERANDS}
 ```
+
+- To check whether the database cluster is in fenced mode or not:
+
+```
+oc get cluster <cluster-name> -o yaml | grep -i fence -A 5
+```
+
+- To check the status of the database pods:
+
+```
+oc get pods \
+-n ${PROJECT_CPD_INST_OPERANDS} \
+-l k8s.enterprisedb.io/podRole=instance
+```
+
 
 ### Checking if any volumes or pods labeled have special labels
 ```
