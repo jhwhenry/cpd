@@ -12,22 +12,18 @@ Make sure that the target cluster meets the following requirements:
 - The target cluster allows for the same node configuration as the source cluster. For example, if the source cluster uses a custom KubeletConfig, the target cluster must allow the same custom KubeletConfig.
 - IBM Software Hub & Services have been uninstalled including the clean up of CRs, operators and namespaces.
 - IBM Scheduler has been uninstalled including the clean up of namespaces.
-- IBM Licensing service and IBM Cert manager have been installed including the clean up of namespaces.
+- IBM Licensing service and IBM Cert manager have been reinstalled including the clean up of namespaces.
 
 ## Set up work statiion
 
 - Make sure the `cpd-cli` command-line interface (5.2.2) and `oc` command-line interface (4.16) are available in the Bastion node.
 - Update the shell script `cpd_vars.sh` and update the `VERSION`. <br>
-
 ```
 export VERSION=5.2.2
 ```
-
 - Update the shell script `cpd_vars.sh` and add below environment variables like below. <br>
 Change the envirable variable value if needed. <br>
-**Note**
-<br>
-
+**Note** <br>
 The `BUCKET_NAME` and `BUCKET_PREFIX` should be the same as that used by the offline backup.
 
 ```
