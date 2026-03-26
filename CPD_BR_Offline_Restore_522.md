@@ -196,6 +196,10 @@ velero-7d847d5bb7-zm6vd                                 1/1     Running   0     
 Verify that the backup storage location PHASE is Available.
 
 ```
+cpd-cli oadp client config set namespace=${OADP_PROJECT}
+```
+
+```
 cpd-cli oadp backup-location list
 ```
 
@@ -204,36 +208,6 @@ Example output:
 ```
 NAME           PROVIDER    BUCKET             PREFIX              PHASE        LAST VALIDATED      ACCESS MODE
 dpa-sample-1   aws         ${BUCKET_NAME}     ${BUCKET_PREFIX}    Available    <timestamp>
-```
-
-- Install the cpdbr-tenant service if it's not installed yet.
-
-```
-cpd-cli oadp install \
-  --component=cpdbr-tenant \
-  --namespace ${OADP_PROJECT} \
-  --tenant-operator-namespace ${PROJECT_CPD_INST_OPERATORS} \
-  --cpdbr-hooks-image-prefix=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd \
-  --cpfs-image-prefix=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpfs \
-  --skip-recipes \
-  --log-level=debug \
-  --verbose
-```
-
-## Installing the cpdbr-tenant service 
-
-Installing the cpdbr-tenant service for CPD 5.2.2 :
-
-```
-cpd-cli oadp install \
-  --component=cpdbr-tenant \
-  --namespace ${OADP_PROJECT} \
-  --tenant-operator-namespace ${PROJECT_CPD_INST_OPERATORS} \
-  --cpdbr-hooks-image-prefix=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd \
-  --cpfs-image-prefix=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpfs \
-  --skip-recipes \
-  --log-level=debug \
-  --verbose
 ```
 
 Check that the cpd-cli oadp version is 5.2.2:
