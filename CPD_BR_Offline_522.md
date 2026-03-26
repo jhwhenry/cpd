@@ -344,10 +344,10 @@ oc get clusters.postgresql.k8s.enterprisedb.io \
 -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
-- To check whether the database cluster is in fenced mode or not:
+- To check whether any of the PostgreSQL cluster is in fenced mode or not:
 
 ```
-oc get cluster <cluster-name> -o yaml | grep -i fence -A 5
+oc get clusters.postgresql.k8s.enterprisedb.io <cluster-name> -o yaml | grep -i fence -A 5
 ```
 
 - To check the status of the database pods:
