@@ -38,7 +38,7 @@ export VELERO_POD_CPU_LIMIT=4
 export NODE_AGENT_POD_CPU_LIMIT=4
 export BUCKET_NAME=velero
 export BUCKET_PREFIX=cpd522backup
-export REGION=us-east
+export REGION=minio
 export UPLOADER_TYPE=kopia
 ```
 
