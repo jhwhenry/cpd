@@ -490,7 +490,7 @@ cpd-cli oadp backup create ${PROJECT_SCHEDULING_SERVICE}-offline \
 --verbose \
 --hook-kind=br \
 --selector 'velero.io/exclude-from-backup notin (true)' \
---image-prefix=PRIVATE_REGISTRY_LOCATION/ubi9
+--image-prefix=${PRIVATE_REGISTRY_LOCATION}/ubi9
 ```
 
 Validate the backup:
@@ -521,7 +521,7 @@ cpd-cli oadp tenant-backup create ${TENANT_OFFLINE_BACKUP_NAME} \
 --vol-mnt-pod-mem-limit=4Gi \
 --tenant-operator-namespace ${PROJECT_CPD_INST_OPERATORS} \
 --mode offline \
---image-prefix=PRIVATE_REGISTRY_LOCATION/ubi9 \
+--image-prefix=${PRIVATE_REGISTRY_LOCATION}/ubi9 \
 --log-level=debug \
 --verbose &> ${TENANT_OFFLINE_BACKUP_NAME}.log&
 ```
