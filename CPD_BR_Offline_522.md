@@ -513,7 +513,7 @@ cpd-cli oadp backup validate \
 Specify a backup name
 
 ```
-export TENANT_BACKUP_NAME=oadp_br_20260401_01
+export TENANT_OFFLINE_BACKUP_NAME=oadp_br_20260401_01
 ```
 
 Create a backup:
