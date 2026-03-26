@@ -80,7 +80,7 @@ A S3-compatible object storage shared between the source and target cluster is r
 Here's an example. Change the envirable variable value if needed.
 
 ```
-export OADP_PROJECT=openshift-adp
+export OADP_PROJECT=oadp-operator
 export OADP_VERSION=v1.4.4
 export S3_URL=<The URL of the object store that you are using to store backups.If the object store is MinIO, you can get the s3url by running oc get route.>
 export ACCESS_KEY_ID=<The access key ID to access the object store>
