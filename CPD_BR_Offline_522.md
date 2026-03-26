@@ -361,9 +361,9 @@ oc get pods \
 
 ### Checking if any volumes or pods labeled have special labels
 ```
-oc get pods,pvc -l velero.io/exclude-from-backup=true
-oc get pods,pvc -l icpdsupport/ignore-on-nd-backup=true
-oc get pods,pvc -l icpdsupport/empty-on-backup=true
+oc get pods,pvc -l velero.io/exclude-from-backup=true -n ${PROJECT_CPD_INST_OPERANDS} 
+oc get pods,pvc -l icpdsupport/ignore-on-nd-backup=true -n ${PROJECT_CPD_INST_OPERANDS} 
+oc get pods,pvc -l icpdsupport/empty-on-backup=true -n ${PROJECT_CPD_INST_OPERANDS} 
 ```
 
 ### Preparing Db2
