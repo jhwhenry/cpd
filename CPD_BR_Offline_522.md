@@ -243,6 +243,10 @@ velero-7d847d5bb7-zm6vd                                 1/1     Running   0     
 Verify that the backup storage location PHASE is Available.
 
 ```
+cpd-cli oadp client config set namespace=${OADP_PROJECT}
+```
+
+```
 cpd-cli oadp backup-location list
 ```
 
