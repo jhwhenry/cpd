@@ -329,10 +329,10 @@ cpd-cli oadp du-pv
 ### Removing MongoDB-related ConfigMaps
 Ensure that these ConfigMaps do not exist in the operand project by running the following commands:
 ```
-oc get cm zen-cs-aux-br-cm
-oc get cm zen-cs-aux-ckpt-cm
-oc get cm zen-cs-aux-qu-cm
-oc get cm zen-cs2-aux-ckpt-cm
+oc get cm zen-cs-aux-br-cm -n ${PROJECT_CPD_INST_OPERANDS}
+oc get cm zen-cs-aux-ckpt-cm -n ${PROJECT_CPD_INST_OPERANDS}
+oc get cm zen-cs-aux-qu-cm -n ${PROJECT_CPD_INST_OPERANDS}
+oc get cm zen-cs2-aux-ckpt-cm -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 Delete them if any of them exist.
 
