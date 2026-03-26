@@ -189,13 +189,13 @@ spec:
       uploaderType: ${UPLOADER_TYPE}
     velero:
       customPlugins:
-      - image: icr.io/cpopen/cpfs/cpfs-oadp-plugins:${CPFS_OADP_PLUGIN_VERSION}
+      - image: ${PRIVATE_REGISTRY_LOCATION}/cpopen/cpfs/cpfs-oadp-plugins:${CPFS_OADP_PLUGIN_VERSION}
         name: cpfs-oadp-plugin
-      - image: icr.io/cpopen/cpd/cpdbr-velero-plugin:${VERSION}
+      - image: ${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/cpdbr-velero-plugin:${VERSION}
         name: cpdbr-velero-plugin
-      - image: icr.io/cpopen/cpd/swhub-velero-plugin:${VERSION}
+      - image: ${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/swhub-velero-plugin:${VERSION}
         name: swhub-velero-plugin
-      - image: icr.io/db2u/db2u-velero-plugin:${VERSION}
+      - image: ${PRIVATE_REGISTRY_LOCATION}/db2u/db2u-velero-plugin:${VERSION}
         name: db2u-velero-plugin
       defaultPlugins:
       - aws
