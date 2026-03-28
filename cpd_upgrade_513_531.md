@@ -349,24 +349,6 @@ oc apply -f cluster_scoped_resources.yaml \
 --force-conflicts
 ```
 
-### 2.4.2 Applying your entitlements to monitor and report use against license terms
-Applying the entitlements of `cpd-enterprise `.
-
-```
-cpd-cli manage apply-entitlement \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---entitlement=cpd-enterprise \
---production=false
-```
-Applying the entitlements of `datastage`.
-
-```
-cpd-cli manage apply-entitlement \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---entitlement=datastage \
---production=false
-```
-
 ## 2.5 Upgrading IBM Software Hub
 ## 2.5.1 Creating image pull secrets for an instance of IBM Software Hub
 1.Log in to Red Hat® OpenShift® Container Platform as a user with sufficient permissions to complete the task.
