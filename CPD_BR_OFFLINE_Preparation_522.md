@@ -100,7 +100,7 @@ cpd-cli oadp install \
 
 This script will save, and destroy these configmaps, and force reconcile all the services.
 <br>
-[cpdbr-service-refresh](https://github.ibm.com/PrivateCloud-analytics/cpdbr-team/blob/main/scripts/br-cms-validation/cpdbr-service-refresh.sh)
+[cpdbr-service-refresh](https://github.com/IBM/cpd-cli/blob/master/cpdops/files/cpdbr-service-refresh.sh)
 
 **Note:**
 Download the script to local client work station before the OADP backup.
@@ -109,5 +109,5 @@ Download the script to local client work station before the OADP backup.
 Run the script and force reconcile all the services.
 
 ```
-./cpdbr_service_refresh.sh --tenant-operator-namespace=${PROJECT_CPD_INST_OPERATORS} --cpd-namespace=${PROJECT_CPD_INST_OPERANDS}
+./cpdbr-service-refresh.sh -t ${PROJECT_CPD_INST_OPERATORS}
 ```
