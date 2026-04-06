@@ -319,10 +319,9 @@ oc get pods --namespace=${PROJECT_LICENSE_SERVICE}
 ### 2.4.1 Updating the cluster-scoped resources for the platform and services
 
 1.Generate cluster-scoped resources for platform and services
-
 <br>
-**Note:** Remove the `scheduler` from the the `COMPONENTS` list as it has been covered in the step 2.2.
 
+**Note:** Remove the `scheduler` from the the `COMPONENTS` list as it has been covered in the step 2.2.
 ```
 cpd-cli manage case-download \
 --components=${COMPONENTS} \
