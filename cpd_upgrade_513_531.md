@@ -1,9 +1,9 @@
 
-# CPD Upgrade From 5.1.3 to 5.3.1
+# CPD Upgrade From 5.1.3 to 5.3.1 Patch 2
 
 ## Upgrade Context
 - **OCP:** 4.16
-- **CPD:** 5.1.3 → 5.3.1
+- **CPD:** 5.1.3 → 5.3.1 Patch 2
 - **Storage:** ODF
 - **Components:** ibm-licensing,cpfs,cpd_platform,analyticsengine,datastage_ent,datastage_ent_plus,dmc,dv,mantaflow,wkc
 - **Airgapped:** Yes
@@ -43,9 +43,8 @@ cpd-cli health operands --control_plane_ns=${PROJECT_CPD_INST_OPERANDS}
 
 Complete the above two checks by following the steps of the `Before you begin` section in this documentation [Pre-upgrade check for CCS](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=hub-upgrading-software#taskupgrade-instance__prereq__1_)
 
-### 1.1.3 Evaluating the risk of encounting known issues before the upgrade
-[OpenSearch index check before CCS upgrade](https://ibm.box.com/s/u6w3uv886q9tv6yb00fbczezx6glhg69)
-
+### 1.1.3 Global Search legacy index compatibility check before upgrade
+[Known Issue: Global Search Legacy Index Compatibility When Upgrading to CPD 5.3.1 patch 2](https://www.ibm.com/support/pages/node/7268540#pre-upgrade-checklist)
 
 ## 1.2 Updating the IBM Software Hub command-line interface
 ### 1.2.1 Obtaining the olm-utils-v4 image
