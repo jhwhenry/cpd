@@ -5,13 +5,60 @@
 - **OCP:** 4.16
 - **CPD:** 5.2.2 → 5.3.1 Patch 3
 - **Storage:** ODF
-- **Components:** ibm-licensing,cpfs,cpd_platform,analyticsengine,datastage_ent,datastage_ent_plus,dmc,dv,mantaflow,wkc
+- **Components:** cpd_platform,wkc,analyticsengine,datalineage,ws,ws_runtimes,wml,openscale,db2wh,match360
 - **Airgapped:** Yes
 
 # Table of Contents
 - 1. Pre-upgrade
 - 2. Upgrade
 - 3. Post-upgrade tasks
+
+# Pre-requisites
+
+### 1. Backup of the cluster is done.
+
+Backup your Cloud Pak for Data cluster before the upgrade.
+
+**Note:**
+Make sure there are no scheduled backups conflicting with the scheduled upgrade.
+
+### 2. The image mirroring completed successfully
+
+If a private container registry is in-use to host the IBM Software Hub software images, you must mirror the updated images from the IBM® Entitled Registry to the private container registry. 
+
+### 3. The CASE files and cluster resource files downloaded successfully
+
+Before upgrading IBM Software Hub platform or any services, you must download the required cluster‑scoped resources, such as ClusterRoles and ClusterRoleBindings—for the components you plan to upgrade. Ensure that these files are available on the bastion node for use during the upgrade.
+
+### 4. The permissions required for the upgrade is ready
+
+- Openshift cluster permissions
+<br>
+  An Openshift cluster administrator can complete all of the installation tasks.
+<br>
+
+However, if you want to enable users with fewer permissions to complete some of the installation tasks, refer to the IBM Documentation about `Reauthorizing an instance administrator with the minimum RBAC to upgrade components`.
+<br>
+
+- IBM Software Hub permissions
+
+<br>
+The Cloud Pak for Data administrator role or permissions is required for upgrading the service instances.
+
+- Permission to access the private image registry for pushing or pull images
+- Access to the Bastion node for executing the upgrade commands
+
+### 5. A pre-upgrade health check is made to ensure the cluster's readiness for upgrade.
+
+- The OpenShift cluster, persistent storage, IBM Software Hub platform and services are in healthy status.
+
+### 6. Migrating to Red Hat OpenShift certificate manager
+
+The IBM Certificate manager is deprecated.
+
+If the IBM Certificate manager (ibm-cert-manager) is installed on your cluster, refer to IBM Documentation to migrate your certificates from the IBM Certificate manager to the Red Hat OpenShift certificate manager (cert-manager Operator).
+
+[Migrating from the IBM Certificate manager to the Red Hat OpenShift certificate manager](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=upgrading-migrating-red-hat-openshift-certificate-manager)
 
 # 1. Pre-upgrade
 
