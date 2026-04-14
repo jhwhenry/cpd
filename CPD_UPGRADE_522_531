@@ -1,0 +1,582 @@
+
+# CPD Upgrade From 5.2.2 to 5.3.1 Patch 3
+
+## Upgrade Context
+- **OCP:** 4.16
+- **CPD:** 5.2.2 → 5.3.1 Patch 3
+- **Storage:** ODF
+- **Components:** ibm-licensing,cpfs,cpd_platform,analyticsengine,datastage_ent,datastage_ent_plus,dmc,dv,mantaflow,wkc
+- **Airgapped:** Yes
+
+# Table of Contents
+- 1. Pre-upgrade
+- 2. Upgrade
+- 3. Post-upgrade tasks
+
+# 1. Pre-upgrade
+
+**Note:**
+Sourcing the latest environment variables used this environment before proceeding with the following procedures. Here's an example:
+```
+source ./cpd_vars.sh
+```
+
+## 1.1 Pre-upgrade check
+
+### 1.1.1 Checking the health of your cluster
+
+```
+${OC_LOGIN}
+oc get nodes,co,mcp
+
+${CPDM_OC_LOGIN}
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+cpd-cli health cluster
+cpd-cli health nodes
+cpd-cli health operators --operator_ns=${PROJECT_CPD_INST_OPERATORS} --control_plane_ns=${PROJECT_CPD_INST_OPERANDS}
+cpd-cli health operands --control_plane_ns=${PROJECT_CPD_INST_OPERANDS}
+```
+### 1.1.2 Checking the Common Core services before the upgrade
+
+- 1. Check whether Global Search configured properly
+- 2. Run the `precheck_migration.sh` to determine whether you can run an automatic migration of the common core services or whether you need to configure common core services to run a semi-automatic migration.
+
+Complete the above two checks by following the steps of the `Before you begin` section in this documentation [Pre-upgrade check for CCS](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=hub-upgrading-software#taskupgrade-instance__prereq__1_)
+
+### 1.1.3 Global Search legacy index compatibility check before upgrade
+[Known Issue: Global Search Legacy Index Compatibility When Upgrading to CPD 5.3.1 patch 2](https://www.ibm.com/support/pages/node/7268540#pre-upgrade-checklist)
+
+## 1.2 Updating the IBM Software Hub command-line interface
+### 1.2.1 Obtaining the olm-utils-v4 image
+
+```
+podman pull icr.io/cpopen/cpd/olm-utils-v4:${VERSION}.amd64 --tls-verify=false
+
+podman login ${PRIVATE_REGISTRY_LOCATION} -u ${PRIVATE_REGISTRY_PUSH_USER} -p ${PRIVATE_REGISTRY_PUSH_PASSWORD}
+
+podman tag icr.io/cpopen/cpd/olm-utils-v4:${VERSION}.amd64 ${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v4:${VERSION}.amd64
+
+podman push ${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v4:${VERSION}.amd64
+```
+
+### 1.2.2 Updating the IBM Software Hub command-line interface
+
+[Update the cpd-cli utility](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=workstations-updating-software-hub-cli)
+
+## 1.3 Installing Helm CLI
+
+[Installing Helm](https://www.ibm.com/links?url=https%3A%2F%2Fhelm.sh%2Fdocs%2Fintro%2Finstall%2F)
+
+## 1.4 Updating your environment variables script
+Make a copy of the environment variables script used by the existing 5.2.2 variables with the name like `cpd_vars_531.sh`.
+
+Update the environment variables script `cpd_vars_531.sh` as follows.
+```
+vi cpd_vars_531.sh
+```
+1. Locate the VERSION entry and update the environment variable for VERSION.
+```
+export VERSION=5.3.1
+```
+2. Locate the COMPONENTS entry and confirm the COMPONENTS entry is accurate.
+```
+export COMPONENTS=ibm-licensing,cpfs,cpd_platform,analyticsengine,datastage_ent,datastage_ent_plus,dmc,dv,mantaflow,wkc
+```
+3. Add a new section called Image pull configuration to your script and add the following environment variables
+```
+export IMAGE_PULL_SECRET=<the name of the namespace-scoped pull secret that will contain the base64 encoded credentials for pulling images>
+export IMAGE_PULL_CREDENTIALS=$(echo -n "$PRIVATE_REGISTRY_PULL_USER:$PRIVATE_REGISTRY_PULL_PASSWORD" | base64 -w 0)
+export IMAGE_PULL_PREFIX=${PRIVATE_REGISTRY_LOCATION}
+```
+4. Locate the OLM_UTILS_IMAGE entry and update the value
+```
+export OLM_UTILS_IMAGE=${PRIVATE_REGISTRY_LOCATION}/cpopen/cpd/olm-utils-v4:${VERSION}.amd64
+export OLM_UTILS_LAUNCH_ARGS=" --network=host"
+```
+5. Save the changes. 
+
+6. Confirm that the script does not contain any errors.
+```
+bash ./cpd_vars_531.sh
+```
+7. Run this command to apply cpd_vars_531.sh
+```
+source ./cpd_vars_531.sh
+```
+
+Reference: [Updating your environment variables script](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=information-updating-your-environment-variables-script)
+
+## 1.5 Downloading CASE packages and cluster-scoped resource files 
+
+### 1.5.1 Downloading CASE packages
+
+```
+cpd-cli manage case-download \
+--components=${COMPONENTS} \
+--release=${VERSION}
+```
+
+### 1.5.2 Downloading the cluster-scoped resource definitions for the scheduling service
+
+```
+cpd-cli manage case-download \
+--components=scheduler \
+--release=${VERSION} \
+--scheduler_ns=${PROJECT_SCHEDULING_SERVICE} \
+--cluster_resources=true
+```
+
+Rename the `cluster_scoped_resources.yaml`
+
+```
+mv cluster_scoped_resources.yaml ${VERSION}-${PROJECT_SCHEDULING_SERVICE}-cluster_scoped_resources.yaml
+```
+
+### 1.5.3 Downloading the cluster-scoped resources for the platform and services
+
+Download from GitHub.
+
+```
+cpd-cli manage case-download \
+--components=${COMPONENTS} \
+--release=${VERSION} \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--cluster_resources=true
+```
+
+Rename the `cluster_scoped_resources.yaml`.
+
+```
+mv cluster_scoped_resources.yaml ${VERSION}-${PROJECT_CPD_INST_OPERATORS}-cluster_scoped_resources.yaml
+```
+
+## 1.6 Mirroring images
+
+### 1.6.1 Mirroring IBM Software Hub images directly to the private container registry
+
+Log in to the IBM Entitled registry:
+```
+cpd-cli manage login-entitled-registry ${IBM_ENTITLEMENT_KEY}
+```
+Log in to the private container registry.
+
+The following command assumes that you are using a private container registry that is secured with credentials:
+```
+cpd-cli manage login-private-registry \
+${PRIVATE_REGISTRY_LOCATION} \
+${PRIVATE_REGISTRY_PUSH_USER} \
+${PRIVATE_REGISTRY_PUSH_PASSWORD}
+```
+
+Mirror the images to the private container registry.
+```
+cpd-cli manage mirror-images \
+--components=${COMPONENTS} \
+--release=${VERSION} \
+--target_registry=${PRIVATE_REGISTRY_LOCATION} \
+--arch=${IMAGE_ARCH} \
+--case_download=false
+```
+
+For each component, the command generates a log file in the work directory.Run the following command to print out any errors in the log files:
+```
+grep "error" mirror_*.log
+```
+
+Confirm by inspecting the contents of the private container registry:
+```
+cpd-cli manage list-images \
+--components=${COMPONENTS} \
+--release=${VERSION} \
+--target_registry=${PRIVATE_REGISTRY_LOCATION} \
+--case_download=false
+```
+
+The output is saved to the `list_images.csv` file in the `work/offline/${VERSION}` directory. Run below command by detecting images that are missing or that cannot be inspected.
+
+```
+grep "level=fatal" list_images.csv
+```
+
+[Mirroring images directly to the private container registry](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=mipcr-mirroring-images-directly-private-container-registry-1)
+
+### 1.6.2 Mirroring Red Hat OpenShift certificate manager images to a private container registry
+Mirror the Red Hat OpenShift certificate manager images to your private container registry before you install the certificate manager.
+[Mirroring Red Hat OpenShift certificate manager images](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=manager-mirroring-red-hat-openshift-certificate-images)
+
+
+# 2. Upgrade
+## 2.1 Migrating to Red Hat OpenShift certificate manager
+
+The IBM Certificate manager is deprecated.
+
+If the IBM Certificate manager (ibm-cert-manager) is installed on your cluster, use the following steps to migrate your certificates from the IBM Certificate manager to the Red Hat OpenShift certificate manager (cert-manager Operator).
+
+[Migrating from the IBM Certificate manager to the Red Hat OpenShift certificate manager](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=upgrading-migrating-red-hat-openshift-certificate-manager)
+
+## 2.2 Upgrading the Scheduling service
+
+If you're not sure whether the Scheduling service is installed on the cluster, run the following command:
+```
+oc get scheduling -A
+```
+
+### 2.2.1 Updating cluster-scoped resources for the Scheduling service
+
+1.Generate the cluster-scoped resource definitions for the Scheduling service:
+```
+cpd-cli manage case-download \
+--components=scheduler \
+--release=${VERSION} \
+--scheduler_ns=${PROJECT_SCHEDULING_SERVICE} \
+--cluster_resources=true
+```
+
+2.Change to the work directory. The default location of the work directory is `cpd-cli-workspace/olm-utils-workspace/work`.
+<br>
+
+3.Log in to Red Hat® OpenShift® Container Platform as a cluster administrator.
+
+```
+${OC_LOGIN}
+```
+
+4.Apply the cluster-scoped resources for the Scheduling service from the cluster_scoped_resources.yaml file:
+```
+oc apply -f cluster_scoped_resources.yaml \
+--server-side \
+--force-conflicts
+```
+
+### 2.2.2 Creating image pull secrets for the Scheduling service
+1.Create a file named dockerconfig.json based on where your cluster pulls images from:
+
+```
+cat <<EOF > dockerconfig.json 
+{
+  "auths": {
+    "${PRIVATE_REGISTRY_LOCATION}": {
+      "auth": "${IMAGE_PULL_CREDENTIALS}"
+    }
+  }
+}
+EOF
+```
+
+2.Create the image pull secret in the project where the Scheduling service is installed:
+```
+oc create secret docker-registry ${IMAGE_PULL_SECRET} \
+--from-file ".dockerconfigjson=dockerconfig.json" \
+--namespace=${PROJECT_SCHEDULING_SERVICE}
+```
+
+### 2.2.3 Upgrading the Scheduling service
+```
+cpd-cli manage apply-scheduler \
+--release=${VERSION} \
+--license_acceptance=true \
+--scheduler_ns=${PROJECT_SCHEDULING_SERVICE} \
+--image_pull_prefix=${IMAGE_PULL_PREFIX} \
+--image_pull_secret=${IMAGE_PULL_SECRET}
+```
+
+Confirm that the Scheduling service pods are Running or Completed:
+
+```
+oc get pods --namespace=${PROJECT_SCHEDULING_SERVICE}
+```
+
+## 2.3 Upgrading the License Service
+
+### 2.3.1 Get the project of the License service
+
+If you're not sure which project the License Service is in, run the following command:
+```
+oc get deployment -A | grep ibm-licensing-operator
+```
+
+### 2.3.2  Log in to the Red Hat OpenShift Container Platform cluster
+```
+${CPDM_OC_LOGIN}
+```
+
+### 2.3.3 Upgrading the License Service
+
+```
+cpd-cli manage apply-cluster-components \
+--release=${VERSION} \
+--license_acceptance=true \
+--licensing_ns=${PROJECT_LICENSE_SERVICE}
+```
+Confirm that the License Service pods are Running or Completed:
+
+```
+oc get pods --namespace=${PROJECT_LICENSE_SERVICE}
+```
+
+## 2.4 Preparing to upgrade IBM Software Hub
+
+### 2.4.1 Updating the cluster-scoped resources for the platform and services
+
+1.Generate cluster-scoped resources for platform and services
+<br>
+
+**Note:** Remove the `scheduler` from the the `COMPONENTS` list as it has been covered in the step 2.2.
+```
+cpd-cli manage case-download \
+--components=${COMPONENTS} \
+--release=${VERSION} \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--cluster_resources=true
+```
+
+2.Change to the `work` directory. 
+<br>
+The default location of the work directory is `cpd-cli-workspace/olm-utils-workspace/work`.
+
+```
+cd cpd-cli-workspace/olm-utils-workspace/work
+```
+
+3.Log in to Red Hat® OpenShift® Container Platform as a cluster administrator
+```
+${OC_LOGIN}
+```
+
+4.Apply the cluster-scoped resources for the from the cluster_scoped_resources.yaml file
+```
+oc apply -f cluster_scoped_resources.yaml \
+--server-side \
+--force-conflicts
+```
+
+## 2.5 Upgrading IBM Software Hub
+## 2.5.1 Creating image pull secrets for an instance of IBM Software Hub
+1.Log in to Red Hat® OpenShift® Container Platform as a user with sufficient permissions to complete the task.
+```
+${OC_LOGIN}
+```
+
+2.Create a file named dockerconfig.json based on where your cluster pulls images from.
+```
+cat <<EOF > dockerconfig.json 
+{
+  "auths": {
+    "${PRIVATE_REGISTRY_LOCATION}": {
+      "auth": "${IMAGE_PULL_CREDENTIALS}"
+    }
+  }
+}
+EOF
+```
+
+3.Create the image pull secret in the operators project for the instance.
+
+```
+oc create secret docker-registry ${IMAGE_PULL_SECRET} \
+--from-file ".dockerconfigjson=dockerconfig.json" \
+--namespace=${PROJECT_CPD_INST_OPERATORS}
+```
+
+4.Create the image pull secret in the operands project for the instance:
+```
+oc create secret docker-registry ${IMAGE_PULL_SECRET} \
+--from-file ".dockerconfigjson=dockerconfig.json" \
+--namespace=${PROJECT_CPD_INST_OPERANDS}
+```
+
+### 2.5.2 Run the cpd-cli manage login-to-ocp command to log in to the cluster
+```
+${CPDM_OC_LOGIN}
+```
+
+### 2.5.3 Upgrading the required operators and custom resources for the instance
+```
+cpd-cli manage install-components \
+--license_acceptance=true \
+--components=cpd_platform \
+--release=${VERSION} \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--image_pull_prefix=${IMAGE_PULL_PREFIX} \
+--image_pull_secret=${IMAGE_PULL_SECRET} \
+--run_storage_tests=true \
+--upgrade=true
+```
+
+Once the above command `cpd-cli manage install-components` is completed, make sure the status of the IBM Software Hub is in 'Completed' status.
+```
+cpd-cli manage get-cr-status \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \ 
+--components=cpd_platform
+```
+
+### 2.5.4 Applying the RSI patches
+Run the following command to re-apply your existing custom patches.
+```
+cpd-cli manage apply-rsi-patches --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+```
+
+Check the RSI patches status again: 
+```
+cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --all
+```
+
+## 2.6 Upgrading WKC
+
+### 2.6.1 Preparing to upgrade IBM Knowledge Catalog
+
+Before you can upgrade IBM Knowledge Catalog to Version 5.3 and migrate all IBM Knowledge Catalog data to the EDB Native PostgreSQL database that is used in Version 5.3, complete several checks and preparation tasks.
+<br>
+[Pre-upgrade tasks](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=upgrading-preparing-upgrade-knowledge-catalog)
+
+### 2.6.2 Run the cpd-cli manage login-to-ocp command to log in to the cluster
+```
+${CPDM_OC_LOGIN}
+```
+
+### 2.6.3 Upgrading the operator and custom resource for IBM Knowledge Catalog
+
+```
+cpd-cli manage install-components \
+--license_acceptance=true \
+--components=wkc \
+--release=${VERSION} \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--image_pull_prefix=${IMAGE_PULL_PREFIX} \
+--image_pull_secret=${IMAGE_PULL_SECRET} \
+--upgrade=true
+```
+
+Once the above command `cpd-cli manage install-components` completed successfully, you can run the `cpd-cli manage get-cr-status` command for the validation.
+
+```
+cpd-cli manage get-cr-status \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--components=wkc
+```
+
+## 2.7 Upgrading DataStage, MANTA Automated Data Lineage and Data Management Console
+
+### 2.7.1 Run the cpd-cli manage login-to-ocp command to log in to the cluster
+```
+${CPDM_OC_LOGIN}
+```
+
+### 2.7.2 Upgrading the operator and custom resource
+
+```
+cpd-cli manage install-components \
+--license_acceptance=true \
+--components=datastage_ent_plus,datastage_ent,mantaflow,dmc \
+--release=${VERSION} \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--image_pull_prefix=${IMAGE_PULL_PREFIX} \
+--image_pull_secret=${IMAGE_PULL_SECRET} \
+--upgrade=true
+```
+
+Once the above command `cpd-cli manage install-components` completed successfully, run the `cpd-cli manage get-cr-status` command for the validation.
+```
+cpd-cli manage get-cr-status \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--components=datastage_ent_plus,datastage_ent,mantaflow,dmc
+```
+
+## 2.8 Upgrading Data Virtualization
+
+### 2.8.1 Run the cpd-cli manage login-to-ocp command to log in to the cluster
+```
+${CPDM_OC_LOGIN}
+```
+
+### 2.8.2 Upgrading the operator and custom resource
+```
+cpd-cli manage install-components \
+--license_acceptance=true \
+--components=dv \
+--release=${VERSION} \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--image_pull_prefix=${IMAGE_PULL_PREFIX} \
+--image_pull_secret=${IMAGE_PULL_SECRET} \
+--upgrade=true
+```
+
+Once the above command `cpd-cli manage install-components` completed successfully, run the `cpd-cli manage get-cr-status` command for the validation.
+
+```
+cpd-cli manage get-cr-status \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--components=dv
+```
+
+# 3. Post-upgrade tasks
+
+#### 3.1 Creating a profile to use the cpd-cli management commands
+Create a profile on the workstation from which you will upgrade the service instances.
+<br>
+[Creating a profile to use the cpd-cli management commands](https://www.ibm.com/docs/en/SSNFH6_5.3.x/cpd-cli/cpd-profile-mgmt.html)
+<br>
+**Note:**
+The profile must be associated with a IBM Software Hub user who has either the following permissions:
+<br>
+- Create service instances (can_provision)
+- Manage service instances (manage_service_instances)
+
+
+## 3.1 Post-upgrade of WKC
+
+### 3.1.1 Upgrading Analytics Engine service instance
+
+- Set the environment variable `CPD_PROFILE_NAME`.
+<br>
+
+```
+export CPD_PROFILE_NAME=<the profile name created in the Step 3.1>
+```
+
+- Upgrading the Spark service instance
+
+```
+cpd-cli service-instance upgrade \
+--service-type=spark \
+--profile=${CPD_PROFILE_NAME} \
+--all
+```
+
+- Validating the service instance upgrade status.
+
+```
+cpd-cli service-instance list \
+--service-type=spark \
+--profile=${CPD_PROFILE_NAME}
+```
+
+### 3.1.2 Completing the catalog-api service migration to PostgreSQL
+[Complete the catalog-api service migration to PostgreSQL](https://www.ibm.com/docs/en/SSNFH6_5.3.x/hub/admin/post-install-services-catalog-api-migration.html)
+
+### 3.1.3 Completing the Db2 migration to PostgreSQL
+Migrate IBM Knowledge Catalog data from the previously used Db2 and CouchDB databases to the EDB Native PostgreSQL database that is used starting in Version 5.3. 
+<br>
+[Db2 migration to PostgreSQL](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=upgrading-post-upgrade-setup-knowledge-catalog)
+
+### 3.1.4 Run the global search bulk sync utility
+If you didn't synchronize the global search index in version 5.1, complete these tasks:
+- To be able to use the global search indexed data for relationships, see [Bulk sync relationships for global search](https://www.ibm.com/docs/en/SSNFH6_5.3.x/wsj/admin/admin-bulk-sync-rel.html).
+- To be able to use the global search indexed data for assets, see [Bulk sync assets for global search](https://www.ibm.com/docs/en/SSNFH6_5.3.x/wsj/admin/admin-bulk-sync.html).
+
+## 3.2 Post-upgrade of DV
+### 3.2.1 Upgrading existing service instances
+[Upgrading existing service instances](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-51-34#cli-upgrade__svc-inst__title__1)
+
+### 3.2.2 Post-upgrade configuration
+[Post-upgrade configuration](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-51-34#cli-upgrade__next-steps__title__1)
+
+**Note:**
+<br>
+You don't need to do below task again as it's already completed in the step 3.1.
+<br>
+[Complete the catalog-api service migration to PostgreSQL](https://www.ibm.com/docs/en/SSNFH6_5.3.x/hub/admin/post-install-services-catalog-api-migration.html)
