@@ -99,6 +99,8 @@ oc get DataLineage datalineage-cr -n ${PROJECT_CPD_INST_OPERANDS}
 ### 1.1.4 Global Search legacy index compatibility check before upgrade
 [Known Issue: Global Search Legacy Index Compatibility](https://www.ibm.com/support/pages/node/7268540#pre-upgrade-checklist)
 
+### 1.1.5 Uninstall all hot fixes if any
+
 
 ## 1.2 Updating the IBM Software Hub command-line interface
 ### 1.2.1 Obtaining the olm-utils-v4 image
@@ -520,9 +522,9 @@ The profile must be associated with a IBM Software Hub user who has either the f
 - Manage service instances (manage_service_instances)
 
 
-## 3.1 Post-upgrade of WKC
+## 3.2 Post-upgrade of WKC
 
-### 3.1.1 Upgrading Analytics Engine service instance
+### 3.2.1 Upgrading Analytics Engine service instance
 
 - Set the environment variable `CPD_PROFILE_NAME`.
 <br>
@@ -548,6 +550,9 @@ cpd-cli service-instance list \
 --profile=${CPD_PROFILE_NAME}
 ```
 
-## 3.2 Post-upgrade of Db2Wh
-### 3.2.1 Upgrading existing service instances
+## 3.3 Post-upgrade of Db2Wh
+### 3.3.1 Upgrading existing service instances
 [Upgrading existing service instances](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-52-41#cli-upgrade__svc-inst__title__1)
+
+## 3.4 Upgrade the cpdbr service
+[Updating the cpdbr service](https://www.ibm.com/docs/en/SSNFH6_5.3.x/hub/upgrade/v52/upgrade-platform-bar-recipe.html)
