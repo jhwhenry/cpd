@@ -587,5 +587,5 @@ You don't need to do below task again as it's already completed in the step 3.1.
 <br>
 [Complete the catalog-api service migration to PostgreSQL](https://www.ibm.com/docs/en/SSNFH6_5.3.x/hub/admin/post-install-services-catalog-api-migration.html)
 
-### 3.4 Upgrade the cpdbr service
+## 3.4 Upgrade the cpdbr service
 [Updating the cpdbr service](https://www.ibm.com/docs/en/SSNFH6_5.3.x/hub/upgrade/v52/upgrade-platform-bar-recipe.html)
