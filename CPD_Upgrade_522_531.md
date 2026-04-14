@@ -36,8 +36,7 @@ Before upgrading IBM Software Hub platform or any services, you must download th
 <br>An Openshift cluster administrator can complete all of the installation tasks.
 
 - IBM Software Hub permissions
-<br>
-The Cloud Pak for Data administrator role or permissions is required for upgrading the service instances.
+<br>The Cloud Pak for Data administrator role or permissions is required for upgrading the service instances.
 
 - Permission to access the private image registry for pushing or pull images
 
