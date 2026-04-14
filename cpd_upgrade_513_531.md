@@ -430,12 +430,18 @@ Before you can upgrade IBM Knowledge Catalog to Version 5.3 and migrate all IBM 
 <br>
 [Pre-upgrade tasks](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=upgrading-preparing-upgrade-knowledge-catalog)
 
-### 2.6.2 Run the cpd-cli manage login-to-ocp command to log in to the cluster
+### 2.6.2 Reverting temporary patches
+
+Before you can upgrade IBM Knowledge Catalog to Version 5.3, revert the temporary patches if any.
+<br>
+[Reverting temporary patches](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-52-33#cli-upgrade__patch-revert__title__1)
+
+### 2.6.3 Run the cpd-cli manage login-to-ocp command to log in to the cluster
 ```
 ${CPDM_OC_LOGIN}
 ```
 
-### 2.6.3 Upgrading the operator and custom resource for IBM Knowledge Catalog
+### 2.6.4 Upgrading the operator and custom resource for IBM Knowledge Catalog
 
 ```
 cpd-cli manage install-components \
@@ -527,9 +533,9 @@ The profile must be associated with a IBM Software Hub user who has either the f
 - Manage service instances (manage_service_instances)
 
 
-## 3.1 Post-upgrade of WKC
+## 3.2 Post-upgrade of WKC
 
-### 3.1.1 Upgrading Analytics Engine service instance
+### 3.2.1 Upgrading Analytics Engine service instance
 
 - Set the environment variable `CPD_PROFILE_NAME`.
 <br>
@@ -555,24 +561,24 @@ cpd-cli service-instance list \
 --profile=${CPD_PROFILE_NAME}
 ```
 
-### 3.1.2 Completing the catalog-api service migration to PostgreSQL
+### 3.2.2 Completing the catalog-api service migration to PostgreSQL
 [Complete the catalog-api service migration to PostgreSQL](https://www.ibm.com/docs/en/SSNFH6_5.3.x/hub/admin/post-install-services-catalog-api-migration.html)
 
-### 3.1.3 Completing the Db2 migration to PostgreSQL
+### 3.2.3 Completing the Db2 migration to PostgreSQL
 Migrate IBM Knowledge Catalog data from the previously used Db2 and CouchDB databases to the EDB Native PostgreSQL database that is used starting in Version 5.3. 
 <br>
 [Db2 migration to PostgreSQL](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=upgrading-post-upgrade-setup-knowledge-catalog)
 
-### 3.1.4 Run the global search bulk sync utility
+### 3.2.4 Run the global search bulk sync utility
 If you didn't synchronize the global search index in version 5.1, complete these tasks:
 - To be able to use the global search indexed data for relationships, see [Bulk sync relationships for global search](https://www.ibm.com/docs/en/SSNFH6_5.3.x/wsj/admin/admin-bulk-sync-rel.html).
 - To be able to use the global search indexed data for assets, see [Bulk sync assets for global search](https://www.ibm.com/docs/en/SSNFH6_5.3.x/wsj/admin/admin-bulk-sync.html).
 
-## 3.2 Post-upgrade of DV
-### 3.2.1 Upgrading existing service instances
+## 3.3 Post-upgrade of DV
+### 3.3.1 Upgrading existing service instances
 [Upgrading existing service instances](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-51-34#cli-upgrade__svc-inst__title__1)
 
-### 3.2.2 Post-upgrade configuration
+### 3.3.2 Post-upgrade configuration
 [Post-upgrade configuration](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-51-34#cli-upgrade__next-steps__title__1)
 
 **Note:**
@@ -581,3 +587,5 @@ You don't need to do below task again as it's already completed in the step 3.1.
 <br>
 [Complete the catalog-api service migration to PostgreSQL](https://www.ibm.com/docs/en/SSNFH6_5.3.x/hub/admin/post-install-services-catalog-api-migration.html)
 
+### 3.4 Upgrade the cpdbr service
+[Updating the cpdbr service](https://www.ibm.com/docs/en/SSNFH6_5.3.x/hub/upgrade/v52/upgrade-platform-bar-recipe.html)
