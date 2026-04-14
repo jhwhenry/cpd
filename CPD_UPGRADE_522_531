@@ -127,7 +127,7 @@ export VERSION=5.3.1
 ```
 2. Locate the COMPONENTS entry and confirm the COMPONENTS entry is accurate.
 ```
-export COMPONENTS=ibm-licensing,cpfs,cpd_platform,analyticsengine,datastage_ent,datastage_ent_plus,dmc,dv,mantaflow,wkc
+export COMPONENTS=cpd_platform,wkc,analyticsengine,datalineage,ws,ws_runtimes,wml,openscale,db2wh,match360
 ```
 3. Add a new section called Image pull configuration to your script and add the following environment variables
 ```
@@ -163,23 +163,7 @@ cpd-cli manage case-download \
 --release=${VERSION}
 ```
 
-### 1.5.2 Downloading the cluster-scoped resource definitions for the scheduling service
-
-```
-cpd-cli manage case-download \
---components=scheduler \
---release=${VERSION} \
---scheduler_ns=${PROJECT_SCHEDULING_SERVICE} \
---cluster_resources=true
-```
-
-Rename the `cluster_scoped_resources.yaml`
-
-```
-mv cluster_scoped_resources.yaml ${VERSION}-${PROJECT_SCHEDULING_SERVICE}-cluster_scoped_resources.yaml
-```
-
-### 1.5.3 Downloading the cluster-scoped resources for the platform and services
+### 1.5.2 Downloading the cluster-scoped resources for the platform and services
 
 Download from GitHub.
 
@@ -261,93 +245,21 @@ If the IBM Certificate manager (ibm-cert-manager) is installed on your cluster, 
 
 [Migrating from the IBM Certificate manager to the Red Hat OpenShift certificate manager](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=upgrading-migrating-red-hat-openshift-certificate-manager)
 
-## 2.2 Upgrading the Scheduling service
+## 2.2 Upgrading the License Service
 
-If you're not sure whether the Scheduling service is installed on the cluster, run the following command:
-```
-oc get scheduling -A
-```
-
-### 2.2.1 Updating cluster-scoped resources for the Scheduling service
-
-1.Generate the cluster-scoped resource definitions for the Scheduling service:
-```
-cpd-cli manage case-download \
---components=scheduler \
---release=${VERSION} \
---scheduler_ns=${PROJECT_SCHEDULING_SERVICE} \
---cluster_resources=true
-```
-
-2.Change to the work directory. The default location of the work directory is `cpd-cli-workspace/olm-utils-workspace/work`.
-<br>
-
-3.Log in to Red Hat® OpenShift® Container Platform as a cluster administrator.
-
-```
-${OC_LOGIN}
-```
-
-4.Apply the cluster-scoped resources for the Scheduling service from the cluster_scoped_resources.yaml file:
-```
-oc apply -f cluster_scoped_resources.yaml \
---server-side \
---force-conflicts
-```
-
-### 2.2.2 Creating image pull secrets for the Scheduling service
-1.Create a file named dockerconfig.json based on where your cluster pulls images from:
-
-```
-cat <<EOF > dockerconfig.json 
-{
-  "auths": {
-    "${PRIVATE_REGISTRY_LOCATION}": {
-      "auth": "${IMAGE_PULL_CREDENTIALS}"
-    }
-  }
-}
-EOF
-```
-
-2.Create the image pull secret in the project where the Scheduling service is installed:
-```
-oc create secret docker-registry ${IMAGE_PULL_SECRET} \
---from-file ".dockerconfigjson=dockerconfig.json" \
---namespace=${PROJECT_SCHEDULING_SERVICE}
-```
-
-### 2.2.3 Upgrading the Scheduling service
-```
-cpd-cli manage apply-scheduler \
---release=${VERSION} \
---license_acceptance=true \
---scheduler_ns=${PROJECT_SCHEDULING_SERVICE} \
---image_pull_prefix=${IMAGE_PULL_PREFIX} \
---image_pull_secret=${IMAGE_PULL_SECRET}
-```
-
-Confirm that the Scheduling service pods are Running or Completed:
-
-```
-oc get pods --namespace=${PROJECT_SCHEDULING_SERVICE}
-```
-
-## 2.3 Upgrading the License Service
-
-### 2.3.1 Get the project of the License service
+### 2.2.1 Get the project of the License service
 
 If you're not sure which project the License Service is in, run the following command:
 ```
 oc get deployment -A | grep ibm-licensing-operator
 ```
 
-### 2.3.2  Log in to the Red Hat OpenShift Container Platform cluster
+### 2.2.2  Log in to the Red Hat OpenShift Container Platform cluster
 ```
 ${CPDM_OC_LOGIN}
 ```
 
-### 2.3.3 Upgrading the License Service
+### 2.2.3 Upgrading the License Service
 
 ```
 cpd-cli manage apply-cluster-components \
@@ -361,9 +273,9 @@ Confirm that the License Service pods are Running or Completed:
 oc get pods --namespace=${PROJECT_LICENSE_SERVICE}
 ```
 
-## 2.4 Preparing to upgrade IBM Software Hub
+## 2.3 Preparing to upgrade IBM Software Hub
 
-### 2.4.1 Updating the cluster-scoped resources for the platform and services
+### 2.3.1 Updating the cluster-scoped resources for the platform and services
 
 1.Generate cluster-scoped resources for platform and services
 <br>
@@ -397,8 +309,8 @@ oc apply -f cluster_scoped_resources.yaml \
 --force-conflicts
 ```
 
-## 2.5 Upgrading IBM Software Hub
-## 2.5.1 Creating image pull secrets for an instance of IBM Software Hub
+## 2.4 Upgrading IBM Software Hub
+## 2.4.1 Creating image pull secrets for an instance of IBM Software Hub
 1.Log in to Red Hat® OpenShift® Container Platform as a user with sufficient permissions to complete the task.
 ```
 ${OC_LOGIN}
@@ -432,12 +344,12 @@ oc create secret docker-registry ${IMAGE_PULL_SECRET} \
 --namespace=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-### 2.5.2 Run the cpd-cli manage login-to-ocp command to log in to the cluster
+### 2.4.2 Run the cpd-cli manage login-to-ocp command to log in to the cluster
 ```
 ${CPDM_OC_LOGIN}
 ```
 
-### 2.5.3 Upgrading the required operators and custom resources for the instance
+### 2.4.3 Upgrading the required operators and custom resources for the instance
 ```
 cpd-cli manage install-components \
 --license_acceptance=true \
@@ -458,7 +370,7 @@ cpd-cli manage get-cr-status \
 --components=cpd_platform
 ```
 
-### 2.5.4 Applying the RSI patches
+### 2.4.4 Applying the RSI patches
 Run the following command to re-apply your existing custom patches.
 ```
 cpd-cli manage apply-rsi-patches --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
@@ -469,20 +381,20 @@ Check the RSI patches status again:
 cpd-cli manage get-rsi-patch-info --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} --all
 ```
 
-## 2.6 Upgrading WKC
+## 2.5 Upgrading WKC
 
-### 2.6.1 Preparing to upgrade IBM Knowledge Catalog
+### 2.5.1 Preparing to upgrade IBM Knowledge Catalog
 
 Before you can upgrade IBM Knowledge Catalog to Version 5.3 and migrate all IBM Knowledge Catalog data to the EDB Native PostgreSQL database that is used in Version 5.3, complete several checks and preparation tasks.
 <br>
 [Pre-upgrade tasks](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=upgrading-preparing-upgrade-knowledge-catalog)
 
-### 2.6.2 Run the cpd-cli manage login-to-ocp command to log in to the cluster
+### 2.5.2 Run the cpd-cli manage login-to-ocp command to log in to the cluster
 ```
 ${CPDM_OC_LOGIN}
 ```
 
-### 2.6.3 Upgrading the operator and custom resource for IBM Knowledge Catalog
+### 2.5.3 Upgrading the operator and custom resource for IBM Knowledge Catalog
 
 ```
 cpd-cli manage install-components \
@@ -504,14 +416,14 @@ cpd-cli manage get-cr-status \
 --components=wkc
 ```
 
-## 2.7 Upgrading DataStage, MANTA Automated Data Lineage and Data Management Console
+## 2.6 Upgrading DataStage, MANTA Automated Data Lineage and Data Management Console
 
-### 2.7.1 Run the cpd-cli manage login-to-ocp command to log in to the cluster
+### 2.6.1 Run the cpd-cli manage login-to-ocp command to log in to the cluster
 ```
 ${CPDM_OC_LOGIN}
 ```
 
-### 2.7.2 Upgrading the operator and custom resource
+### 2.6.2 Upgrading the operator and custom resource
 
 ```
 cpd-cli manage install-components \
