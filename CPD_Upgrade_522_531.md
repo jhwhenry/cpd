@@ -33,11 +33,13 @@ Before upgrading IBM Software Hub platform or any services, you must download th
 ### 4. The permissions required for the upgrade is ready
 
 - Openshift cluster permissions
-<br>
   An Openshift cluster administrator can complete all of the installation tasks.
+
 - IBM Software Hub permissions
 The Cloud Pak for Data administrator role or permissions is required for upgrading the service instances.
+
 - Permission to access the private image registry for pushing or pull images
+
 - Access to the Bastion node for executing the upgrade commands
 
 ### 5. A pre-upgrade health check is made to ensure the cluster's readiness for upgrade.
