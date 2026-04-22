@@ -72,6 +72,97 @@ ${PRIVATE_REGISTRY_PUSH_PASSWORD}
 --release=${VERSION} \ 
 --inspect_source_registry=true
 ```
+
+- run the following script
+
+```
+export LOCAL_SECRET_JSON=/opt/ibm/appliance/storage/ips/cpd483/ocp/pull-secret.json
+
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/cpfs/icp-cert-manager-acmesolver@sha256:2472053d912f693a5fcdd00b7d9f0a7ce98697c47eae955e31c0b602fd8a4a37 docker://hub.fbond:5000/cpopen/cpfs/icp-cert-manager-acmesolver@sha256:2472053d912f693a5fcdd00b7d9f0a7ce98697c47eae955e31c0b602fd8a4a37
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/cpfs/icp-cert-manager-acmesolver@sha256:24fca2376d04419c35a10aec50b085bbdcdbb10ea1bff2e1b1c573202d406129 docker://hub.fbond:5000/cpopen/cpfs/icp-cert-manager-acmesolver@sha256:24fca2376d04419c35a10aec50b085bbdcdbb10ea1bff2e1b1c573202d406129
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/cpfs/icp-cert-manager-acmesolver@sha256:807f2cd6fd3dc1d93d0973650fcbf9732ca91522ec375b64cd53edb6616ac74d docker://hub.fbond:5000/cpopen/cpfs/icp-cert-manager-acmesolver@sha256:807f2cd6fd3dc1d93d0973650fcbf9732ca91522ec375b64cd53edb6616ac74d
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/cpfs/icp-cert-manager-acmesolver@sha256:9ced60f18740063ab281b836d4caf21035242ac3f659c6bb022ddb546770bff9 docker://hub.fbond:5000/cpopen/cpfs/icp-cert-manager-acmesolver@sha256:9ced60f18740063ab281b836d4caf21035242ac3f659c6bb022ddb546770bff9
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/cpfs/icp-cert-manager-acmesolver@sha256:c742e7fc33390135c3c63b61f8152f2c63594789567fd905bf9d2510ad7e12a5 docker://hub.fbond:5000/cpopen/cpfs/icp-cert-manager-acmesolver@sha256:c742e7fc33390135c3c63b61f8152f2c63594789567fd905bf9d2510ad7e12a5
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/cpfs/icp-cert-manager-acmesolver@sha256:e6c16348e532b1e716428ef46856ecb89a9c17ab380879da5ae05021238d3690 docker://hub.fbond:5000/cpopen/cpfs/icp-cert-manager-acmesolver@sha256:e6c16348e532b1e716428ef46856ecb89a9c17ab380879da5ae05021238d3690
+
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/cpfs/icp-cert-manager-cainjector@sha256:2e70036d7299168331c94af70a22e3b2063c56160f616362b1a2187c12d003a4 docker://hub.fbond:5000/cpopen/cpfs/icp-cert-manager-cainjector@sha256:2e70036d7299168331c94af70a22e3b2063c56160f616362b1a2187c12d003a4
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/cpfs/icp-cert-manager-cainjector@sha256:9e80454a08e87d35eb5a16c74c4d170a8c13280adb0cdbbd85e951cd2a880a08 docker://hub.fbond:5000/cpopen/cpfs/icp-cert-manager-cainjector@sha256:9e80454a08e87d35eb5a16c74c4d170a8c13280adb0cdbbd85e951cd2a880a08
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/cpfs/icp-cert-manager-cainjector@sha256:b14602af498bc1877977b219217754ac1a497a669e27d69d7e218f12db649ba3 docker://hub.fbond:5000/cpopen/cpfs/icp-cert-manager-cainjector@sha256:b14602af498bc1877977b219217754ac1a497a669e27d69d7e218f12db649ba3
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/cpfs/icp-cert-manager-cainjector@sha256:ceee171c5ce0a8e580dfeccfe0dbfb73474c109becd45a562411678f3ab08595 docker://hub.fbond:5000/cpopen/cpfs/icp-cert-manager-cainjector@sha256:ceee171c5ce0a8e580dfeccfe0dbfb73474c109becd45a562411678f3ab08595
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/cpfs/icp-cert-manager-cainjector@sha256:fddadff3092b022630610f262b6c3389d30a97a2e95ee8e31d1ddfbdf3999c52 docker://hub.fbond:5000/cpopen/cpfs/icp-cert-manager-cainjector@sha256:fddadff3092b022630610f262b6c3389d30a97a2e95ee8e31d1ddfbdf3999c52
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/cpfs/icp-cert-manager-cainjector@sha256:ff3a99878fe11a889df5241b07ea07a84958fb50c25423bb6acb08e9f044c46d docker://hub.fbond:5000/cpopen/cpfs/icp-cert-manager-cainjector@sha256:ff3a99878fe11a889df5241b07ea07a84958fb50c25423bb6acb08e9f044c46d
+
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/cpfs/icp-cert-manager-controller@sha256:0dc719e58694fb501b8b36f3a375b3c0462624d27fe49afe6b835821e31393f3 docker://hub.fbond:5000/cpopen/cpfs/icp-cert-manager-controller@sha256:0dc719e58694fb501b8b36f3a375b3c0462624d27fe49afe6b835821e31393f3
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/cpfs/icp-cert-manager-controller@sha256:0f01a67524fa46829e455f654d3b9b00ceac44f3d870b21c022051dfcc8a00eb docker://hub.fbond:5000/cpopen/cpfs/icp-cert-manager-controller@sha256:0f01a67524fa46829e455f654d3b9b00ceac44f3d870b21c022051dfcc8a00eb
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/cpfs/icp-cert-manager-controller@sha256:4ba109b496d0f1844605d775c0280610148a8f616c171d7e8110eed7e872d23e docker://hub.fbond:5000/cpopen/cpfs/icp-cert-manager-controller@sha256:4ba109b496d0f1844605d775c0280610148a8f616c171d7e8110eed7e872d23e
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/cpfs/icp-cert-manager-controller@sha256:62319a856b5988284b34de1ee4044f62699c838811930d97fe58a24ffc054909 docker://hub.fbond:5000/cpopen/cpfs/icp-cert-manager-controller@sha256:62319a856b5988284b34de1ee4044f62699c838811930d97fe58a24ffc054909
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/cpfs/icp-cert-manager-controller@sha256:b041b9b033298042d168a98815e1a6c25337252e9dac6fcd7f00bfe0831a9073 docker://hub.fbond:5000/cpopen/cpfs/icp-cert-manager-controller@sha256:b041b9b033298042d168a98815e1a6c25337252e9dac6fcd7f00bfe0831a9073
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/cpfs/icp-cert-manager-controller@sha256:c6309ae6ae18916b8e7327c782db55f5c02f94079977d3895e7223e5f05fd6c4 docker://hub.fbond:5000/cpopen/cpfs/icp-cert-manager-controller@sha256:c6309ae6ae18916b8e7327c782db55f5c02f94079977d3895e7223e5f05fd6c4
+
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/cpfs/icp-cert-manager-webhook@sha256:24f0169191cb707f27419226077180e35879503d72bd8c75342cc14e11db65ae docker://hub.fbond:5000/cpopen/cpfs/icp-cert-manager-webhook@sha256:24f0169191cb707f27419226077180e35879503d72bd8c75342cc14e11db65ae
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/cpfs/icp-cert-manager-webhook@sha256:67a02a9264d9c6e82edc15ae36d4f99b3fa9099697c550088d27c76511189f37 docker://hub.fbond:5000/cpopen/cpfs/icp-cert-manager-webhook@sha256:67a02a9264d9c6e82edc15ae36d4f99b3fa9099697c550088d27c76511189f37
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/cpfs/icp-cert-manager-webhook@sha256:6cd127d3b327de9efdc0761bb3c769fe0f41e6aec58ca4ad0ea9940bdc903e16 docker://hub.fbond:5000/cpopen/cpfs/icp-cert-manager-webhook@sha256:6cd127d3b327de9efdc0761bb3c769fe0f41e6aec58ca4ad0ea9940bdc903e16
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/cpfs/icp-cert-manager-webhook@sha256:b646ea3330f3fd9bb3174224de69f20ef58589a464d50d1c9399211141f67bd5 docker://hub.fbond:5000/cpopen/cpfs/icp-cert-manager-webhook@sha256:b646ea3330f3fd9bb3174224de69f20ef58589a464d50d1c9399211141f67bd5
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/cpfs/icp-cert-manager-webhook@sha256:bced4ebd4a7ac776d6acec6785521fba51ecf21e026c87e8689c12d670a39b49 docker://hub.fbond:5000/cpopen/cpfs/icp-cert-manager-webhook@sha256:bced4ebd4a7ac776d6acec6785521fba51ecf21e026c87e8689c12d670a39b49
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/cpfs/icp-cert-manager-webhook@sha256:e5e0fe6f3582ad85c4b1f2ad3a833f0c99d65b8aff674af2d41554f410e3482e docker://hub.fbond:5000/cpopen/cpfs/icp-cert-manager-webhook@sha256:e5e0fe6f3582ad85c4b1f2ad3a833f0c99d65b8aff674af2d41554f410e3482e
+
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/ibm-cert-manager-operator-bundle@sha256:86f7c3d5deae86be4c0d33d76850623c46ba171bef5382c54a91e4bd3361ada2 docker://hub.fbond:5000/cpopen/ibm-cert-manager-operator-bundle@sha256:86f7c3d5deae86be4c0d33d76850623c46ba171bef5382c54a91e4bd3361ada2
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/ibm-cert-manager-operator-bundle@sha256:b9c8a65c1742c72c6351b1c8f4a858940c2bfa00ac5ec271c57b2ee7e5e7a66b docker://hub.fbond:5000/cpopen/ibm-cert-manager-operator-bundle@sha256:b9c8a65c1742c72c6351b1c8f4a858940c2bfa00ac5ec271c57b2ee7e5e7a66b
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/ibm-cert-manager-operator-bundle@sha256:d61b7b8e6a9785b59630d9c5776f72a29ffbf2e81eb753d7b11dcf2d9d77f1f0 docker://hub.fbond:5000/cpopen/ibm-cert-manager-operator-bundle@sha256:d61b7b8e6a9785b59630d9c5776f72a29ffbf2e81eb753d7b11dcf2d9d77f1f0
+
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/ibm-cert-manager-operator-catalog@sha256:4bd876de3f52e0f88a43f8546b281672de9a8d7bc7c5ff5524d700a979b26344 docker://hub.fbond:5000/cpopen/ibm-cert-manager-operator-catalog@sha256:4bd876de3f52e0f88a43f8546b281672de9a8d7bc7c5ff5524d700a979b26344
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/ibm-cert-manager-operator-catalog@sha256:78e1242e197ed1a2db82ea29887ff85b77ce39d15868fd26505fcfe7db0c3bba docker://hub.fbond:5000/cpopen/ibm-cert-manager-operator-catalog@sha256:78e1242e197ed1a2db82ea29887ff85b77ce39d15868fd26505fcfe7db0c3bba
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/ibm-cert-manager-operator-catalog@sha256:c95a0e9261ea0afbfe03fff8fe86e2f9015aad50d125dd063de0e59c9815cf38 docker://hub.fbond:5000/cpopen/ibm-cert-manager-operator-catalog@sha256:c95a0e9261ea0afbfe03fff8fe86e2f9015aad50d125dd063de0e59c9815cf38
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/ibm-cert-manager-operator-catalog@sha256:de76aa967f3ea1c2bb7d56622111f8cb82f12ed99f5a627d8050149e770fd62d docker://hub.fbond:5000/cpopen/ibm-cert-manager-operator-catalog@sha256:de76aa967f3ea1c2bb7d56622111f8cb82f12ed99f5a627d8050149e770fd62d
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/ibm-cert-manager-operator-catalog@sha256:fc11d43b2597bcf1fac3c554a7841416caf3e1d14492b71777655b3aaff4a0c9 docker://hub.fbond:5000/cpopen/ibm-cert-manager-operator-catalog@sha256:fc11d43b2597bcf1fac3c554a7841416caf3e1d14492b71777655b3aaff4a0c9
+
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/ibm-cert-manager-operator@sha256:107d784a51090b136fddfb6329e45e87d12bd4a1efeac258a2b817afacea4999 docker://hub.fbond:5000/cpopen/ibm-cert-manager-operator@sha256:107d784a51090b136fddfb6329e45e87d12bd4a1efeac258a2b817afacea4999
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/ibm-cert-manager-operator@sha256:4d8e20797eaf15fbe779f33d4cb9495ddc721dce2caf3898930066bd59ea384e docker://hub.fbond:5000/cpopen/ibm-cert-manager-operator@sha256:4d8e20797eaf15fbe779f33d4cb9495ddc721dce2caf3898930066bd59ea384e
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/ibm-cert-manager-operator@sha256:4e3ec61a34fc7c71d213999b68b1f5c3f866f97e19c12fb001d506d4166a50f1 docker://hub.fbond:5000/cpopen/ibm-cert-manager-operator@sha256:4e3ec61a34fc7c71d213999b68b1f5c3f866f97e19c12fb001d506d4166a50f1
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/ibm-cert-manager-operator@sha256:9af5ad5a81f23e9655235a42fa4ffef416dbbad7bff8911579d71cf030aaa71b docker://hub.fbond:5000/cpopen/ibm-cert-manager-operator@sha256:9af5ad5a81f23e9655235a42fa4ffef416dbbad7bff8911579d71cf030aaa71b
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/ibm-cert-manager-operator@sha256:b8c83fe5215b7412765181aaba84162b6cb188b5765e45972a6f29b2a9f19826 docker://hub.fbond:5000/cpopen/ibm-cert-manager-operator@sha256:b8c83fe5215b7412765181aaba84162b6cb188b5765e45972a6f29b2a9f19826
+skopeo copy --all --authfile ${LOCAL_SECRET_JSON} --dest-tls-verify=false --src-tls-verify=false docker://icr.io/cpopen/ibm-cert-manager-operator@sha256:e3debea7176a592e51a0f6d8dd6b73530304476774224d206c15a296ade10e96 docker://hub.fbond:5000/cpopen/ibm-cert-manager-operator@sha256:e3debea7176a592e51a0f6d8dd6b73530304476774224d206c15a296ade10e96
+
+```
+
+- run the following script
+
+```
+export LOCAL_SECRET_JSON=/opt/ibm/appliance/storage/ips/cpd483/ocp/pull-secret.json
+DEST_REG=docker://hub.fbond:5000
+
+for img in \
+icr.io/cpopen/cpfs/ibm-licensing-usage@sha256:8438c2229b500fc9c40629280701856345e228fc645a5b468bee2135c61b2387 \
+icr.io/cpopen/cpfs/ibm-licensing-usage@sha256:fe5bc4a40472926ec0df3023777b2aa8105507128bd9ac02eac2c68ad08723c1 \
+icr.io/cpopen/cpfs/ibm-licensing@sha256:14559058d4152de9513db49a22923e34a5bbb8870f1cc8d57c533c88bfb283d8 \
+icr.io/cpopen/cpfs/ibm-licensing@sha256:2c172397873edbaa2d98108115f73ca4c05d7b742745d35de0b301804a24765a \
+icr.io/cpopen/cpfs/ibm-licensing@sha256:af9901b0e96306708d5e741e5536450e9a7e138aae00385e49c53878a83dc5c2 \
+icr.io/cpopen/cpfs/ibm-licensing@sha256:b87b6c32a2050f1d5ff311d163a7b45efa7d5de1d352984b2f70fa578301a952 \
+icr.io/cpopen/cpfs/ibm-licensing@sha256:bcfb9b7d3b379ee2bb0b449cdf5af3fbc88f99c77641441ca392ebed04403e00 \
+icr.io/cpopen/cpfs/ibm-licensing@sha256:dd76a8484628970b62238334e122768aeea820ab18e24d62d23a6328c83b868c \
+icr.io/cpopen/ibm-licensing-catalog@sha256:42e8f5a12742742c1967568d497ff1c93aa7a78a3a7ad414da011d0c1eedb19a \
+icr.io/cpopen/ibm-licensing-catalog@sha256:52671613bc09e45287f1585d3a5ce5f8f5072375646c32256bd06fb6317d6202 \
+icr.io/cpopen/ibm-licensing-catalog@sha256:6519a8a3c26ebf4fe5d74eff2093004ac5e8de23079cc069c2500e98a559db1c \
+icr.io/cpopen/ibm-licensing-catalog@sha256:8af0feccfb1cedf035b9dd509d5b484bd17cf93757c19f995e56a26e1faa59b0 \
+icr.io/cpopen/ibm-licensing-catalog@sha256:e0e5c9098b477d1ffb241c9eb328d1df9013a22e07769585ecc87d47def66283 \
+icr.io/cpopen/ibm-licensing-operator-bundle@sha256:cab91a231068a6bbef03ee8db32fadf11654317c4573c6714721a15d0e2a98dd \
+icr.io/cpopen/ibm-licensing-operator-bundle@sha256:d2680c5f05c886b44df644aef6cb2fdc9534bb6a238066f6ebbb97bbeaac431e \
+icr.io/cpopen/ibm-licensing-operator-bundle@sha256:f0c49fdefce70b5125627618a948edb17ac57ccc1fb542c51e0f02dc111233b6 \
+icr.io/cpopen/ibm-licensing-operator@sha256:03a9b9a9fc0672a8a33d5095233e026e1f8a41562e0890624a44283c1eb2a266 \
+icr.io/cpopen/ibm-licensing-operator@sha256:24ca69c2f80a4369e29aa382a94d64fd3546b110787df1142c45a20b8246e844 \
+icr.io/cpopen/ibm-licensing-operator@sha256:6a107eef68f984d0cc0a79478b11bab9402ba4b0366ae3156e5263c5d42ca58d \
+icr.io/cpopen/ibm-licensing-operator@sha256:7c84f39b9ec603f5943c3c8efe1355c15140d0b7cb1842cf6c80024661ebb929 \
+icr.io/cpopen/ibm-licensing-operator@sha256:932825fc7af8b96c381d504cd0976c751661ce078257430e5c79d565f416bacb \
+icr.io/cpopen/ibm-licensing-operator@sha256:da38999d66199df0eeabd7c9e934205fb858cf2c52be8bbaf6b34adb894dd38e
+
+do
+  skopeo copy --all --authfile ${LOCAL_SECRET_JSON} \
+    --dest-tls-verify=false --src-tls-verify=false \
+    docker://${img} ${DEST_REG}/${img#icr.io/}
+done
+ 
+```
+
 - Mirror images
 ```
 ./cpd-cli manage mirror-images \
@@ -372,11 +463,11 @@ ${OC_LOGIN}
 Restore IBM Software Hub by running below command.
 
 ```
- cpd-cli oadp tenant-restore create ${TENANT_OFFLINE_BACKUP_NAME}-restore \
- --from-tenant-backup ${TENANT_OFFLINE_BACKUP_NAME} \
- --image-prefix=${PRIVATE_REGISTRY_LOCATION}/ubi9 \
- --verbose \
- --log-level=debug &> ${TENANT_OFFLINE_BACKUP_NAME}-restore.log&
+nohup ./cpd-cli oadp tenant-restore create ${TENANT_OFFLINE_BACKUP_NAME}-restore \
+--from-tenant-backup ${TENANT_OFFLINE_BACKUP_NAME} \
+--image-prefix=${PRIVATE_REGISTRY_LOCATION}/ubi9 \
+--verbose \
+--log-level=debug &> ${TENANT_OFFLINE_BACKUP_NAME}-restore.log&
 ```
 
 Get the status of the installed components:
