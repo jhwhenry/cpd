@@ -99,6 +99,13 @@ oc get DataLineage datalineage-cr -n ${PROJECT_CPD_INST_OPERANDS}
 ### 1.1.4 Global Search legacy index compatibility check before upgrade
 [Known Issue: Global Search Legacy Index Compatibility](https://www.ibm.com/support/pages/node/7268540#pre-upgrade-checklist)
 
+Add the following properties to the CCS Custom Resource prior to initiating the upgrade:
+```
+opensearch_legacy_core_version: "2.19.3"
+opensearch_legacy_plugin_version: "2.19.3.0"
+```
+Wait until the reconcilation completed successfully.
+
 ### 1.1.5 Uninstall all hot fixes if any
 
 
