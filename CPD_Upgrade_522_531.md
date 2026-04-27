@@ -40,6 +40,8 @@ Before upgrading IBM Software Hub platform or any services, you must download th
 
 - Permission to access the private image registry for pushing or pull images
 
+- Red Hat pull secret for mirroring images of Red Hat Cert Manager
+
 - Access to the Bastion node for executing the upgrade commands
 
 ### 5. A pre-upgrade health check is made to ensure the cluster's readiness for upgrade.
