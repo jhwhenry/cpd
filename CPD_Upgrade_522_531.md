@@ -86,19 +86,7 @@ cpd-cli health operands --control_plane_ns=${PROJECT_CPD_INST_OPERANDS}
 
 Complete the above two checks by following the steps of the `Before you begin` section in this documentation [Pre-upgrade check for CCS](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=hub-upgrading-software#taskupgrade-instance__prereq__1_)
 
-### 1.1.3 Take the DataLineage service out of maintenance mode
-
-```
-oc patch DataLineage datalineage-cr -p "{\"spec\":{\"ignoreForMaintenance\": true}}" --type=merge -n ${PROJECT_CPD_INST_OPERANDS}
-```
-
-Wait until the DataLineage Operator reconcilation completed and also the datalineage-cr in 'Completed' status.
-
-```
-oc get DataLineage datalineage-cr -n ${PROJECT_CPD_INST_OPERANDS}
-```
-
-### 1.1.4 Global Search legacy index compatibility check before upgrade
+### 1.1.3 Global Search legacy index compatibility check before upgrade
 **Note:** the step 1.1.4 and 1.1.5 can be done as one-go.
 <br>
 [Known Issue: Global Search Legacy Index Compatibility](https://www.ibm.com/support/pages/node/7268540#pre-upgrade-checklist)
@@ -110,9 +98,21 @@ opensearch_legacy_plugin_version: "2.19.3.0"
 ```
 Wait until the reconcilation completed successfully.
 
-### 1.1.5 Uninstall all hot fixes if any
+### 1.1.4 Uninstall all hot fixes if any
 
 Uninstal the CCS (portal-project) hotfix.
+
+### 1.1.5 Take the DataLineage service out of maintenance mode
+
+```
+oc patch DataLineage datalineage-cr -p "{\"spec\":{\"ignoreForMaintenance\": false}}" --type=merge -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
+Wait until the DataLineage Operator reconcilation completed and also the datalineage-cr in 'Completed' status.
+
+```
+oc get DataLineage datalineage-cr -n ${PROJECT_CPD_INST_OPERANDS}
+```
 
 
 ## 1.2 Updating the IBM Software Hub command-line interface
