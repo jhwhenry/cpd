@@ -508,6 +508,14 @@ cpd-cli manage get-cr-status \
 --components=wkc
 ```
 
+Make sure the ccs-cams-postgres cluster is healthy.
+
+```
+oc cnp status ccs-cams-postgres
+```
+Make sure it is Healthy and replica is up to date (current LSN are the same).
+
+
 ## 2.6 Upgrading DataStage, MANTA Automated Data Lineage and Data Management Console
 
 ### 2.6.1 Run the cpd-cli manage login-to-ocp command to log in to the cluster
