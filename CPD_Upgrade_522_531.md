@@ -643,6 +643,15 @@ cpd-cli service-instance list \
 ```
 
 ### 3.2.2 Recreate missing CAMS Postgres indexes
+Connect to the ccs-cams-postgres database.
+
+```
+oc -n ${PROJECT_CPD_INST_OPERANDS} exec -it ccs-cams-postgres-1 sh
+sh-5.1$psql -h ccs-cams-postgres-rw -p 5432 -U cams_user -d camsdb
+```
+
+Create the missing indexes.
+
 ```
 -- Catalog indexes
 CREATE INDEX CONCURRENTLY IF NOT EXISTS catalog_bss_subtype_state_idx ON cams.catalog(bss_account, subtype, state, is_public, is_consolidated_db) WHERE bss_account IS NOT NULL;  
