@@ -90,11 +90,29 @@ Add the following properties to the CCS Custom Resource prior to initiating the 
 opensearch_legacy_core_version: "2.19.3"
 opensearch_legacy_plugin_version: "2.19.3.0"
 ```
-Wait until the reconcilation completed successfully.
 
 ### 1.1.3 Uninstall all hot fixes if any
 
 Uninstal the CCS (portal-project) hotfix.
+<br>
+Edit the CCS custom resource.
+
+```
+oc edit ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
+Remove the hot fix.
+
+```
+image_digests:
+  portal_projects_image: sha256:e9f85d5e4f0c021d8d16443012cf4de3ec823e16731ba17a3be99a6c233d4849
+```
+
+Save and Exit. Wait until the CCS Operator reconcilation completed and also the ccs-cr in 'Completed' status.
+
+```
+oc get CCS ccs-cr -o yaml -n ${PROJECT_CPD_INST_OPERANDS}
+```
 
 ### 1.1.4 Take the DataLineage service out of maintenance mode
 
