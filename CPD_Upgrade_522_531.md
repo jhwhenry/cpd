@@ -642,6 +642,26 @@ cpd-cli service-instance list \
 --profile=${CPD_PROFILE_NAME}
 ```
 
+### 3.2.2 Recreate missing CAMS Postgres indexes
+```
+-- Catalog indexes
+CREATE INDEX CONCURRENTLY IF NOT EXISTS catalog_bss_subtype_state_idx ON cams.catalog(bss_account, subtype, state, is_public, is_consolidated_db) WHERE bss_account IS NOT NULL;  
+   
+CREATE INDEX CONCURRENTLY IF NOT EXISTS catalog_active_archive_order_idx ON cams.catalog(state, version, create_time_ticks) WHERE archive_info_state IS NULL; 
+     
+CREATE INDEX CONCURRENTLY IF NOT EXISTS catalog_bss_uid_state_idx ON cams.catalog(bss_account, uid, state);   
+      
+CREATE INDEX CONCURRENTLY IF NOT EXISTS catalog_bucket_lookup_idx ON cams.catalog(version, state) INCLUDE (id, bucket_container_ids, bucket_states) WHERE bucket_container_ids IS NOT NULL
+ AND bucket_states IS NOT NULL;
+      
+-- Asset type indexes 
+CREATE INDEX CONCURRENTLY IF NOT EXISTS asset_type_active_id_order_idx ON cams.asset_type(id) WHERE asset_type_state_state IN ('CREATED', 'PROCESSING');  
+     
+CREATE INDEX CONCURRENTLY IF NOT EXISTS asset_type_state_id_idx ON cams.asset_type(asset_type_state_state, id);   
+     
+CREATE INDEX CONCURRENTLY IF NOT EXISTS asset_type_tenancy_account_idx ON cams.asset_type(asset_type_tenancy_level, bss_account_id, asset_type_state_state) INCLUDE (id); 
+```
+
 ## 3.3 Post-upgrade of Db2Wh
 ### 3.3.1 Upgrading existing service instances
 [Upgrading existing service instances](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-52-41#cli-upgrade__svc-inst__title__1)
