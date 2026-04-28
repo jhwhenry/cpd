@@ -79,9 +79,68 @@ cpd-cli health nodes
 cpd-cli health operators --operator_ns=${PROJECT_CPD_INST_OPERATORS} --control_plane_ns=${PROJECT_CPD_INST_OPERANDS}
 cpd-cli health operands --control_plane_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
+### 1.1.2 Tune the ccs-cams-postgres cluster
+#### 1.1.2.1 Patch the ccs-cams-postgres cluster.
+```
+oc patch clusters.postgresql.k8s.enterprisedb.io ccs-cams-postgres \
+  -n ${PROJECT_CPD_INST_OPERANDS} \
+  --type merge \
+  --patch '
+spec:
+  primaryUpdateMethod: restart
+  postgresql:
+    parameters:
+      wal_keep_size: "4GB"
+      wal_receiver_timeout: "30s"
+      wal_sender_timeout: "30s"
+      wal_compression: "on"
+'
+```
+Validate whether the patch applied successfully.
+```
+oc get clusters.postgresql ccs-cams-postgres -o json |jq .spec.primaryUpdateMethod
+```
+The output should be `restart`.
 
-### 1.1.2 Global Search legacy index compatibility check before upgrade
-**Note:** the step 1.1.2 and 1.1.3 can be done as one-go.
+#### 1.1.2.2 Make sure the ccs-cams-postgres cluster is healthy
+Check the ccs-cams-postgres cluster status. 
+```
+oc cnp status ccs-cams-postgres
+```
+
+Make sure it is Healthy and replica is up to date (current LSN are the same), like below.
+```
+Cluster Summary
+Name                 wkc/ccs-cams-postgres
+System ID:           7632433098929098770
+PostgreSQL Image:    cp.icr.io/cpopen/edb/postgresql:16.10-5.22.0-amd64@sha256:66edda691d6e760c8de46a9796664ea70cfea9052b4de65ecb3e42139d5dea3c
+Primary instance:    ccs-cams-postgres-1
+Primary start time:  2026-04-24 20:59:01 +0000 UTC (uptime 64h56m28s)
+Status:              Cluster in healthy state            <<<<<<<<<<<<<  Cluster is in Healthy state
+Instances:           2
+Ready instances:     2
+Size:                595M
+Current Write LSN:   0/23000000 (Timeline: 1 - WAL File: 000000010000000000000022)
+
+Streaming Replication status
+Replication Slots Enabled
+Name                 Sent LSN    Write LSN   Flush LSN   Replay LSN  Write Lag  Flush Lag  Replay Lag  State      Sync State  Sync Priority  Replication Slot
+----                 --------    ---------   ---------   ----------  ---------  ---------  ----------  -----      ----------  -------------  ----------------
+ccs-cams-postgres-2  0/23000000  0/23000000  0/23000000  0/23000000  00:00:00   00:00:00   00:00:00    streaming  async       0              active
+
+Instances status
+Name                 Current LSN  Replication role  Status  QoS        Manager Version  Node
+----                 -----------  ----------------  ------  ---        ---------------  ----
+ccs-cams-postgres-1  0/23000000   Primary           OK      Burstable  1.25.3           worker4.cams-vz-522.cp.fyre.ibm.com
+ccs-cams-postgres-2  0/23000000   Standby (async)   OK      Burstable  1.25.3           worker3.cams-vz-522.cp.fyre.ibm.com
+                   ^^^^^^^^^^^^^^. Current LSN are the same
+```
+
+#### 1.1.2.3 Make a backup for CAMS postgres
+Make a backup for CAMS postgres by referring to the step 5 in this documentation [Backing up the PostgreSQL database](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=services-completing-catalog-api-migration#catalog-api-migration__backup__title__1)
+
+### 1.1.3 Global Search legacy index compatibility check before upgrade
+**Note:** the step 1.1.3 and 1.1.4 can be done as one-go.
 <br>
 [Known Issue: Global Search Legacy Index Compatibility](https://www.ibm.com/support/pages/node/7268540#pre-upgrade-checklist)
 <br>
@@ -91,7 +150,7 @@ opensearch_legacy_core_version: "2.19.3"
 opensearch_legacy_plugin_version: "2.19.3.0"
 ```
 
-### 1.1.3 Uninstall all hot fixes if any
+### 1.1.4 Uninstall all hot fixes if any
 
 Uninstal the CCS (portal-project) hotfix.
 <br>
@@ -114,7 +173,7 @@ Save and Exit. Wait until the CCS Operator reconcilation completed and also the 
 oc get CCS ccs-cr -o yaml -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
-### 1.1.4 Take the DataLineage service out of maintenance mode
+### 1.1.5 Take the DataLineage service out of maintenance mode
 
 ```
 oc patch DataLineage datalineage-cr -p "{\"spec\":{\"ignoreForMaintenance\": false}}" --type=merge -n ${PROJECT_CPD_INST_OPERANDS}
