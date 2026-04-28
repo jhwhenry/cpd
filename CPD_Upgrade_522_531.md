@@ -79,15 +79,9 @@ cpd-cli health nodes
 cpd-cli health operators --operator_ns=${PROJECT_CPD_INST_OPERATORS} --control_plane_ns=${PROJECT_CPD_INST_OPERANDS}
 cpd-cli health operands --control_plane_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
-### 1.1.2 Checking the Common Core services before the upgrade
 
-- 1. Check whether Global Search configured properly
-- 2. Run the `precheck_migration.sh` to determine whether you can run an automatic migration of the common core services or whether you need to configure common core services to run a semi-automatic migration.
-
-Complete the above two checks by following the steps of the `Before you begin` section in this documentation [Pre-upgrade check for CCS](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=hub-upgrading-software#taskupgrade-instance__prereq__1_)
-
-### 1.1.3 Global Search legacy index compatibility check before upgrade
-**Note:** the step 1.1.4 and 1.1.5 can be done as one-go.
+### 1.1.2 Global Search legacy index compatibility check before upgrade
+**Note:** the step 1.1.2 and 1.1.3 can be done as one-go.
 <br>
 [Known Issue: Global Search Legacy Index Compatibility](https://www.ibm.com/support/pages/node/7268540#pre-upgrade-checklist)
 <br>
@@ -98,11 +92,11 @@ opensearch_legacy_plugin_version: "2.19.3.0"
 ```
 Wait until the reconcilation completed successfully.
 
-### 1.1.4 Uninstall all hot fixes if any
+### 1.1.3 Uninstall all hot fixes if any
 
 Uninstal the CCS (portal-project) hotfix.
 
-### 1.1.5 Take the DataLineage service out of maintenance mode
+### 1.1.4 Take the DataLineage service out of maintenance mode
 
 ```
 oc patch DataLineage datalineage-cr -p "{\"spec\":{\"ignoreForMaintenance\": false}}" --type=merge -n ${PROJECT_CPD_INST_OPERANDS}
