@@ -511,12 +511,30 @@ cpd-cli manage get-cr-status \
 --components=wkc
 ```
 
-Make sure the ccs-cams-postgres cluster is healthy.
+**Note:** <br>
+Apply the patch for ccs-cams-postgres to improve the performance.
+
+```
+ oc patch clusters.postgresql.k8s.enterprisedb.io ccs-cams-postgres \
+  -n ${PROJECT_CPD_INST_OPERANDS} \
+  --type merge \
+  --patch '
+spec:
+  primaryUpdateMethod: restart
+  postgresql:
+    parameters:
+      wal_keep_size: "4GB"
+      wal_receiver_timeout: "30s"
+      wal_sender_timeout: "30s"
+      wal_compression: "on"
+'
+```
+
+Make sure it is Healthy and replica is up to date (current LSN of the Primary and Standby are the same).
 
 ```
 oc cnp status ccs-cams-postgres
 ```
-Make sure it is Healthy and replica is up to date (current LSN are the same).
 
 
 ## 2.6 Upgrading DataStage, MANTA Automated Data Lineage and Data Management Console
