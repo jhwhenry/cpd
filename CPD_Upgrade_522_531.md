@@ -206,11 +206,14 @@ zen=# SELECT * from platform_config  WHERE id = 'ldap';
 1)Have a backup of current LDAP configuration
 <br>
 Take a screenshot of current LDAP configuration from web console.
+<br>
+Refer to the section `The Identity Management Service is not enabled` of the IBM documentation [Connecting to your identity provider](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=users-connecting-your-identity-provider#ldap__no-iam__title__1)
 
 2)Unset the LDAP config 
-You can disable the LDAP config
-
-from database.
+<br>
+Unset the LDAP config from web console.
+<br>
+Or Unset the LDAP config from database.
 ```
 oc rsh <zen-metastoredb-primarypod>
 sh-5.1$ psql -U postgres -d zen
