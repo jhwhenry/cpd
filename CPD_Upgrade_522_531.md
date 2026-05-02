@@ -188,6 +188,35 @@ Wait until the DataLineage Operator reconcilation completed and also the datalin
 oc get DataLineage datalineage-cr -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
+### 1.1.6 Check the LDAP configuration and unset it if needed
+1.Check whether the `iamIntegration` enabled.
+```
+oc get ZenService lite-cr -n ${PROJECT_CPD_INST_OPERANDS} -o jsonpath='{.spec.iamIntegration}'
+```
+
+2.Check whether LDAP configured
+```
+oc rsh <zen-metastoredb-primarypod>
+sh-5.1$ psql -U postgres -d zen
+zen=# SELECT * from platform_config  WHERE id = 'ldap';
+```
+
+3.If the `iamIntegration` value is `false` and LDAP configured, have a backup of current LDAP configuration and then unset the LDAP configuration prior to the upgrade.
+
+1)Have a backup of current LDAP configuration
+<br>
+Take a screenshot of current LDAP configuration from web console.
+
+2)Unset the LDAP config 
+You can disable the LDAP config
+
+from database.
+```
+oc rsh <zen-metastoredb-primarypod>
+sh-5.1$ psql -U postgres -d zen
+zen=# UPDATE platform_config SET data = '{"comment":"this is the default out of the box settings - n o ldap or policy setup. auto signup disabled","auto_signup":false,"externalLDAPHost":"","externalLDAPPort":"","externalLDAPSuffix":"","externalLDAPMechanism":"search"}' WHERE id = 'ldap';
+```
+
 
 ## 1.2 Updating the IBM Software Hub command-line interface
 ### 1.2.1 Obtaining the olm-utils-v4 image
@@ -700,4 +729,10 @@ CREATE INDEX CONCURRENTLY IF NOT EXISTS asset_type_tenancy_account_idx ON cams.a
 [Upgrading existing service instances](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=u-upgrading-from-version-52-41#cli-upgrade__svc-inst__title__1)
 
 ## 3.4 Upgrade the cpdbr service
+If IBM Fusion application in use, upgrade it before upgrading the cpdbr service.
 [Updating the cpdbr service](https://www.ibm.com/docs/en/SSNFH6_5.3.x/hub/upgrade/v52/upgrade-platform-bar-recipe.html)
+
+## 3.5 Reconfigure the LDAP
+
+[Configure a connection to an existing identity provider](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=users-connecting-your-identity-provider)
+
