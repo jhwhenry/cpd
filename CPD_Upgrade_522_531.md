@@ -154,9 +154,9 @@ opensearch_legacy_core_version: "2.19.3"
 opensearch_legacy_plugin_version: "2.19.3.0"
 ```
 
-### 1.1.4 Uninstall all hot fixes if any
+### 1.1.4 Uninstall all hot fixes or customization if any
 
-Uninstal the CCS (portal-project) hotfix.
+#### Uninstal the CCS (portal-project) hotfix
 <br>
 Edit the CCS custom resource.
 ```
@@ -174,6 +174,22 @@ Save and Exit. Wait until the CCS Operator reconcilation completed and also the 
 
 ```
 oc get CCS ccs-cr -o yaml -n ${PROJECT_CPD_INST_OPERANDS}
+```
+
+#### Uninstal the WKC hotfix
+Check whether the `wkc_gov_ui_resources` exists in the wkc cr.  If yes, edit the wkc-cr and add the `ephemeral-storage` under the `wkc_gov_ui_resources` section.
+<br>
+For example:
+```
+wkc_gov_ui_resources:
+  requests:
+    cpu: 50m
+    memory: 300Mi
+    ephemeral-storage: 50Mi
+  limits:
+    cpu: 1000m
+    memory: 1024Mi
+    ephemeral-storage: 1Gi
 ```
 
 ### 1.1.5 Take the DataLineage service out of maintenance mode
