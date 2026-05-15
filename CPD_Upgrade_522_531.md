@@ -56,6 +56,14 @@ If the IBM Certificate manager (ibm-cert-manager) is installed on your cluster, 
 
 [Migrating from the IBM Certificate manager to the Red Hat OpenShift certificate manager](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=upgrading-migrating-red-hat-openshift-certificate-manager)
 
+### 7. SAML provider should sign both SAML response and SAML assertion
+This can avoid below error during logging in the CPD web console.
+```
+Error: Invalid document signature
+    at SAML.validatePostResponseAsync (/usr/src/server-src/node_modules/@node-saml/node-saml/lib/saml.js:528:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+```
+
 # 1. Pre-upgrade
 
 **Note:**
