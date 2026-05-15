@@ -204,7 +204,33 @@ Wait until the DataLineage Operator reconcilation completed and also the datalin
 oc get DataLineage datalineage-cr -n ${PROJECT_CPD_INST_OPERANDS}
 ```
 
-### 1.1.6 Check the LDAP configuration and unset it if needed
+### 1.1.6 Update the saml-secret to avoid TypeError
+Update the saml-secret to avoid TypeError `value is set but not boolean` during the IBM Software Hub upgrade.
+<br>
+Find the `saml-secret` in OpenShift Web console and make change to the value of the property `disableRequestedAuthnContext`. Change the value from `"true"` to `true`.
+<br>
+From:
+
+```
+# samlConfig.json
+{
+    ......
+    "disableRequestedAuthnContext": "true"
+}
+```
+
+To:
+
+```
+# samlConfig.json
+{
+    ......
+    "disableRequestedAuthnContext": true
+}
+```
+
+
+### 1.1.7 Check the LDAP configuration and unset it if needed
 1.Check whether the `iamIntegration` enabled.
 ```
 oc get ZenService lite-cr -n ${PROJECT_CPD_INST_OPERANDS} -o jsonpath='{.spec.iamIntegration}'
