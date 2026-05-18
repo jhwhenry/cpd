@@ -14,7 +14,7 @@
 - 2. Pre-patch procedures
 - 3. Patch steps
 
-## Prerequisites
+## 1. Prerequisites
 
 ### 1.1 Backup of the cluster is done.
 
