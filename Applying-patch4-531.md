@@ -306,8 +306,6 @@ cpd-cli manage get-cr-status \
 
 Based on the Patch 4 manifest, the following services require a manual service-instance upgrade after `apply-patch` completes.
 
-> ⚠️ **Important: Only run the subset that applies to services installed in the customer's environment.**
-
 > **Note:** Create a `cpd-cli` profile for a user with `can_provision` or `manage_service_instances` permissions, then export `CPD_PROFILE_NAME` before running the commands below.
 
 #### Analytics Engine powered by Apache Spark
