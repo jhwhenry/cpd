@@ -1,4 +1,4 @@
-# Applying a Specific Patch Level to IBM Software Hub 5.3.1
+# Applying Patch4 to IBM Software Hub 5.3.1
 
 > Pinning to a chosen patch level (for example, Patch 1) when a newer patch has already been released.
 
