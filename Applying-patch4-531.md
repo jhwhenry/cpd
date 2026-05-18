@@ -10,28 +10,28 @@
 - **Airgapped:** Yes
 
 # Table of Contents
-- 1. Pre-patch procedures
-- 2. Patch steps
-- 3. Post-patch tasks
+- 1. Prerequisites
+- 2. Pre-patch procedures
+- 3. Patch steps
 
-# Prerequisites
+## Prerequisites
 
-### 1. Backup of the cluster is done.
+### 1.1 Backup of the cluster is done.
 
 Backup your Cloud Pak for Data cluster before the upgrade.
 
 **Note:**
 Make sure there are no scheduled backups conflicting with the scheduled upgrade.
 
-### 2. The image mirroring completed successfully
+### 1.2 The image mirroring completed successfully
 
 If a private container registry is in-use to host the IBM Software Hub software images, you must mirror the updated images from the IBM® Entitled Registry to the private container registry. 
 
-### 3. The CASE files and cluster resource files downloaded successfully
+### 1.3 The CASE files and cluster resource files downloaded successfully
 
 Before upgrading IBM Software Hub platform or any services, you must download the required cluster‑scoped resources, such as ClusterRoles and ClusterRoleBindings—for the components you plan to upgrade. Ensure that these files are available on the bastion node for use during the upgrade.
 
-### 4. The permissions required for the upgrade is ready
+### 1.4 The permissions required for the upgrade is ready
 
 - Openshift cluster permissions
 <br>An Openshift cluster administrator can complete all of the installation tasks.
@@ -45,13 +45,13 @@ Before upgrading IBM Software Hub platform or any services, you must download th
 
 - Access to the Bastion node for executing the upgrade commands
 
-### 5. A pre-patch health check is made to ensure the cluster's readiness for upgrade.
+### 1.5 A pre-patch health check is made to ensure the cluster's readiness for upgrade.
 
 - The OpenShift cluster, persistent storage, IBM Software Hub platform and services are in healthy status.
 
-## Pre-patch procedures
+## 2.Pre-patch procedures
 
-### Prepare cpd_vars.sh
+### 2.1 Prepare cpd_vars.sh
 
 Follow the IBM guidance at [Setting up installation environment variables](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=information-setting-up-installation-environment-variables) to prepare `cpd_vars.sh`. 
 
@@ -63,7 +63,7 @@ Source the script in every new shell session:
 source ./cpd_vars.sh
 ```
 
-### Refresh the olm-utils container
+### 2.2 Refresh the olm-utils container
 Mirror the latest `olm-utils-v4` image.
 
 ```
@@ -82,7 +82,7 @@ Restart the olm-utils container for using the latest `olm-utils-v4` image.
 cpd-cli manage restart-container
 ```
 
-### 2. Gather information about installed components
+### 2.3 Gather information about installed components
 
 **Reference:** [Gathering information about installed components](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=patches-gathering-information-about-installed-components)
 
@@ -109,7 +109,7 @@ cp ${WORK_DIR}/scan/scan.yaml \
    ${WORK_DIR}${PROJECT_CPD_INST_OPERANDS}-scan.yaml
 ```
 
-### 3. List available patches
+### 2.4 List available patches
 
 ```bash
 cpd-cli manage list-patch
@@ -125,7 +125,7 @@ cpd-cli manage case-download --components=xxxxxx --release=5.3.1
 > ⚠️ **Important:** Copy the `case-download` command that was returned by the `list-patch` command.
 
 
-### 4. Download CASE packages for patch 4
+### 2.5 Download CASE packages for patch 4
 
 **Reference:** [Downloading CASE packages](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=patches-downloading-case-packages)
 
@@ -142,7 +142,7 @@ Set `COMPONENTS_TO_PATCH` to the same list of components used above:
 export COMPONENTS_TO_PATCH=xxxxxx
 ```
 
-### Step 6: Mirror images directly to the private container registry
+### 2.6 Mirror images directly to the private container registry
 
 **Reference:** [Mirroring images directly to a private container registry](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=mipcr-mirroring-images-directly-private-container-registry-3)
 
@@ -164,73 +164,68 @@ cpd-cli manage login-private-registry \
 
 Inspect the source (Entitled) registry to confirm image access.
 
-> ⚠️ **Important:** Add `--patch_download=false` to the `list-images` command.
-
 ```bash
 cpd-cli manage list-images \
-  --components=${COMPONENTS_TO_PATCH} \
-  --release=5.3.1 \
-  --inspect_source_registry=true \
-  --patch_download=false
+--components=${COMPONENTS_TO_PATCH} \
+--release=5.3.1 \
+--patch_id=${PATCH_ID} \
+--inspect_source_registry=true
 ```
 
 Check for errors:
 
 ```bash
-grep "level=fatal" ${CPD_CLI_MANAGE_WORKSPACE}/work/offline/${VERSION}/list_images.csv
+grep "level=fatal" ${WORK_DIR}/offline/${VERSION}/list_images.csv
 ```
 
 Mirror the images to the private container registry.
 
-> ⚠️ **Important:** Add `--patch_download=false` to the `mirror-images` command.
-
 ```bash
 cpd-cli manage mirror-images \
-  --components=${COMPONENTS_TO_PATCH} \
-  --release=5.3.1 \
-  --target_registry=${PRIVATE_REGISTRY_LOCATION} \
-  --arch=${IMAGE_ARCH} \
-  --case_download=false \
-  --patch_download=false
+--components=${COMPONENTS_TO_PATCH} \
+--release=5.3.1 \
+--patch_id=${PATCH_ID} \
+--target_registry=${PRIVATE_REGISTRY_LOCATION} \
+--arch=${IMAGE_ARCH} \
+--case_download=false
 ```
 
 Check mirror logs for errors:
 
 ```bash
-grep "error" ${CPD_CLI_MANAGE_WORKSPACE}/work/mirror_*.log
+grep "error"  ${WORK_DIR}/mirror_*.log
 ```
 
 Verify the images landed in the private registry.
 
-> ⚠️ **Important:** Add `--patch_download=false` to the `list-images` command.
-
 ```bash
 cpd-cli manage list-images \
-  --components=${COMPONENTS_TO_PATCH} \
-  --release=5.3.1 \
-  --target_registry=${PRIVATE_REGISTRY_LOCATION} \
-  --case_download=false \
-  --patch_download=false
+--components=${COMPONENTS_TO_PATCH} \
+--release=5.3.1 \
+--patch_id=${PATCH_ID} \
+--target_registry=${PRIVATE_REGISTRY_LOCATION} \
+--case_download=false
 
-grep "level=fatal" ${CPD_CLI_MANAGE_WORKSPACE}/work/offline/${VERSION}/list_images.csv
+grep "level=fatal" ${WORK_DIR}/offline/${VERSION}/list_images.csv
 ```
 
-### Step 7: Update cluster-scoped resources
+### 2.7 Update cluster-scoped resources
 
 **Reference:** [Updating cluster-scoped resources for the instance](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=patches-updating-cluster-scoped-resources-instance)
-
-> ⚠️ **Important:** Append `--patch_download=false`
 
 Generate `cluster_scoped_resources.yaml`:
 
 ```bash
+echo ${COMPONENTS_TO_PATCH}
+echo ${PATCH_ID}
+
 cpd-cli manage case-download \
-  --components=${COMPONENTS_TO_PATCH} \
-  --release=5.3.1 \
-  --operator_ns=${PROJECT_CPD_INST_OPERATORS} \
-  --case_download=false \
-  --cluster_resources=true \
-  --patch_download=false
+--components=${COMPONENTS_TO_PATCH} \
+--release=5.3.1 \
+--patch_id=${PATCH_ID} \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--case_download=false \
+--cluster_resources=true
 ```
 
 Log in to OpenShift as a cluster administrator:
@@ -242,69 +237,54 @@ ${OC_LOGIN}
 Apply the cluster-scoped resources directly from the workspace path:
 
 ```bash
-oc apply -f ${CPD_CLI_MANAGE_WORKSPACE}/work/cluster_scoped_resources.yaml \
+oc apply -f ${WORK_DIR}/cluster_scoped_resources.yaml \
   --server-side \
   --force-conflicts
 ```
 
-> **Note:** IBM documentation references `cpd-cli-workspace/olm-utils-workspace/work` as the default location for the work directory. In practice, when `CPD_CLI_MANAGE_WORKSPACE` is set, the file is generated at `${CPD_CLI_MANAGE_WORKSPACE}/work/cluster_scoped_resources.yaml`. The command above applies it directly from that path.
-
 (Optional) Archive the resource file for the record:
 
 ```bash
-mv ${CPD_CLI_MANAGE_WORKSPACE}/work/cluster_scoped_resources.yaml \
-   ${CPD_CLI_MANAGE_WORKSPACE}/work/${VERSION}-PATCH-${PROJECT_CPD_INST_OPERATORS}-cluster_scoped_resources.yaml
+mv ${WORK_DIR}/cluster_scoped_resources.yaml \
+   ${WORK_DIR}/${VERSION}-PATCH-${PROJECT_CPD_INST_OPERATORS}-cluster_scoped_resources.yaml
 ```
 
-### Step 8: Verify the staged patch manifest before applying
+### 2.8 Verify the patch manifest before applying
 
-Before running `apply-patch`, confirm that the staged `patch-5.3.1.yaml` corresponds to the intended patch level. For Patch 1, you should see `patch_id: 1`.
+Before running `apply-patch`, confirm that the `patch-5.3.1.yaml` corresponds to the intended patch level. For Patch 4, you should see `patch_id: 4`.
 
 ```bash
-cat ${CPD_CLI_MANAGE_WORKSPACE}/work/offline/patch/patch-5.3.1.yaml
+cat ${WORK_DIR}/offline/patch/patch-5.3.1.yaml
 ```
 
-Expected output (excerpt) for Patch 1:
+Expected output (excerpt) for Patch 4:
 
 ```yaml
 patch_components_meta:
   patch_info:
-    patch_id: 1
-    patch_date: "2026-03-24"
+    patch_id: 4
+    patch_date: "2026-05-06"
 ```
 
-> ⚠️ **Important:** If `patch_id` does not match the target patch level, stop and re-stage the correct manifest from the correct Git tag (see Step 2). Do not run `apply-patch` with the wrong manifest.
+> ⚠️ **Important:** If `patch_id` does not match the target patch level, do not run `apply-patch` with the wrong manifest.
 >
 
-## Pre-patch procedures
+## 3. Patch steps
 
-### Step 9: Apply the patch to the instance
+### 3.1 Apply the patch to the instance
 
 **Reference:** [Applying the patch to an instance](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=patches-applying-patch)
 
 Apply the patch. Use the variant that matches your instance:
 
-#### Without tethered projects
-
 ```bash
 cpd-cli manage apply-patch \
-  --release=5.3.1 \
-  --operator_ns=${PROJECT_CPD_INST_OPERATORS} \
-  --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
-  --image_pull_prefix=${IMAGE_PULL_PREFIX} \
-  --image_pull_secret=${IMAGE_PULL_SECRET}
-```
-
-#### With tethered projects
-
-```bash
-cpd-cli manage apply-patch \
-  --release=5.3.1 \
-  --operator_ns=${PROJECT_CPD_INST_OPERATORS} \
-  --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
-  --tethered_instance_ns=${PROJECT_CPD_INSTANCE_TETHERED_LIST} \
-  --image_pull_prefix=${IMAGE_PULL_PREFIX} \
-  --image_pull_secret=${IMAGE_PULL_SECRET}
+--release=5.3.1 \
+--patch_id=${PATCH_ID} \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--image_pull_prefix=${IMAGE_PULL_PREFIX} \
+--image_pull_secret=${IMAGE_PULL_SECRET}
 ```
 
 Wait for:
@@ -317,14 +297,14 @@ Confirm all operands report `Completed`:
 
 ```bash
 cpd-cli manage get-cr-status \
-  --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
 ```
 
-### Step 10: Update service instances (Patch 1 specific)
+### 3.2 Update service instances 
 
 **Reference:** [Updating service instances after applying the patch](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=patches-updating-service-instances)
 
-Based on the Patch 1 manifest, the following services require a manual service-instance upgrade after `apply-patch` completes.
+Based on the Patch 4 manifest, the following services require a manual service-instance upgrade after `apply-patch` completes.
 
 > ⚠️ **Important: Only run the subset that applies to services installed in the customer's environment.**
 
@@ -338,76 +318,6 @@ cpd-cli service-instance upgrade \
   --profile=${CPD_PROFILE_NAME} \
   --all
 ```
-
-#### Data Gate
-
-Upgrade all Data Gate service instances at the same time:
-
-```bash
-cpd-cli service-instance upgrade \
-  --service-type=dg \
-  --profile=${CPD_PROFILE_NAME} \
-  --all
-```
-
-Verify the upgrade completed (status should be `UPGRADED`):
-
-```bash
-cpd-cli service-instance list \
-  --service-type=dg \
-  --profile=${CPD_PROFILE_NAME}
-```
-
-#### OpenPages
-
-Upgrade all OpenPages service instances (repeat per-instance if you prefer individual control):
-
-```bash
-cpd-cli service-instance upgrade \
-  --service-type=openpages \
-  --profile=${CPD_PROFILE_NAME} \
-  --all \
-  --force-version-upgrade=true
-```
-
-#### watsonx BI
-
-For Patch 1, the target service instance version is 3.4.1.
-
-Get the watsonx BI service instance name:
-
-```bash
-cpd-cli service-instance list \
-  --service-type=watsonx-bi-assistant \
-  --profile=${CPD_PROFILE_NAME}
-```
-
-Set the instance name and version, then upgrade:
-
-```bash
-export BI_INSTANCE_NAME=<service-instance-name>
-export BI_INSTANCE_VERSION=3.4.1
-
-cpd-cli service-instance upgrade \
-  --service-type=watsonx-bi-assistant \
-  --instance-name=${BI_INSTANCE_NAME} \
-  --version=${BI_INSTANCE_VERSION} \
-  --profile=${CPD_PROFILE_NAME}
-```
-
-> **Note:** Cognos Analytics, Data Virtualization, Db2, Db2 Warehouse, and Db2 Big SQL are **not** included in Patch 1 and do not require a service-instance upgrade for this patch level.
-
-## Reference: Commands requiring --patch_download=false
-
-| Command | Phase | Required |
-|---|---|---|
-| `list-patch` | Patch discovery | Yes |
-| `case-download` | Patch download | Yes |
-| `list-images` | Patch mirror | Yes |
-| `mirror-images` | Patch mirror | Yes |
-| `apply-cluster-components` | Install only | Yes |
-| `apply-scheduler` | Install only | Yes |
-| `apply-patch` | Patch apply | No (reads staged manifest) |
 
 ## References
 
