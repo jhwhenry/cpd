@@ -1,4 +1,4 @@
-# Arlington watsonx Services Upgrade Runbook - v.5.2.2 to 5.3.1 Patch 4
+# watsonx Services Upgrade Runbook - v.5.2.2 to 5.3.1 Patch 4
 
 ---
 
@@ -31,14 +31,11 @@ Componenets: ibm-licensing, scheduler, cpfs, cpd_platform, watsonx_orchestrate, 
 #### 1. Backup of the cluster is done.
 
 Backup your Cloud Pak for Data cluster before the upgrade.
-For details, see [Backing up and restoring Cloud Pak for Data](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=administering-backing-up-restoring-software-hub).
-
-**Note:**
-Some services don't support the offline OADP backup. Review the backup documentation and take the dedicate approach when necessary.
+For details, see [Backing up and restoring Cloud Pak for Data](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=administering-backing-up-restoring-software-hub).
 
 #### 2. The image mirroring completed successfully
 
-If a private container registry is in-use to host the IBM Cloud Pak for Data software images, you must mirror the updated images from the IBM® Entitled Registry to the private container registry.
+If a private container registry is in use to host the IBM Cloud Pak for Data software images, you must mirror the updated images from the IBM® Entitled Registry to the private container registry.
 `<br>`
 Reference:
 [Mirroring images to private image registry](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=mipcr-mirroring-images-directly-private-container-registry-1)
@@ -70,7 +67,6 @@ oc get TemporaryPatch -n ${PROJECT_CPD_INST_OPERANDS} -o yaml > TemporaryPatch_B
 
 ```
 Part 1: Pre-upgrade
-1.0 Create image tag mirror set in cluster
 1.1 Update client workstation
 1.1.1 Set up the utilities
 1.1.2 Update environment variables
@@ -81,7 +77,7 @@ Part 1: Pre-upgrade
 
 
 Part 2: Upgrade
-2.1 Upgrade CPD to 5.3.0
+2.1 Upgrade CPD to 5.3.1
 2.1.1 Upgrade shared cluster components
 2.1.2 Prepare to upgrade IBM Software Hub
 2.1.3 Create image pull secrets for IBM Software Hub instance
@@ -94,19 +90,6 @@ Summarize and close out the upgrade
 ```
 
 ## Part 1: Pre-upgrade
-
-1.0 Create image tag mirror set 
-
-<br>
-
-We observed that 5.3.1 upgrade is referring to image tags in some deployments. 
-We did not get the fix from IBM (TS021717555) yet but we can solve it by creating the imagetagmirrorset in cluster.
-Below is the sample from Tampa.
-
-```
-(base) [batsa2@watsonxjump wxo]$ oc get imagetagmirrorset cpd-image-tag-mirror-set -oyaml
-
-```
 
 ### 1.1 Update client workstation
 
@@ -131,8 +114,8 @@ Output like this
 ```
 cpd-cli
 	Version: 14.3.1
-	Build Date: 2025-12-05T14:54:42
-	Build Number: 2792
+	Build Date: 2026-05-01T13:41:10
+	Build Number: 3115
 	SWH Release Version: 5.3.1
 ```
 
@@ -169,7 +152,7 @@ export VERSION=5.3.1
 2.Locate the COMPONENTS entry and confirm the COMPONENTS entry is accurate.
 
 ```bash
-export COMPONENTS=ibm-licensing, scheduler, cpfs, cpd_platform, watsonx_orchestrate, watsonx_ai, spss, dods, watsonx_data
+export COMPONENTS=ibm-licensing,scheduler,cpfs,cpd_platform,watsonx_orchestrate,watsonx_ai,watsonx_data
 ```
 
 3.Add a new section called Image pull configuration to your script and add the following environment variables
@@ -188,7 +171,7 @@ Confirm that the script does not contain any errors.
 bash ./cpd_vars_531.sh
 ```
 
-Run this command to apply cpd_vars_530.sh
+Run this command to apply cpd_vars_531.sh
 
 ```
 source cpd_vars_531.sh
@@ -218,10 +201,13 @@ If the CASE packages have already been downloaded when mirroring the images, thi
 [Downloading CASE packages](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=pruirn-downloading-case-packages-1)
 
 ```
+export PATCH_ID=4
+
 cpd-cli manage case-download \
 --components=${COMPONENTS} \
 --release=${VERSION} \
---from_oci=true
+--from_oci=true \ 
+--patch_id=${PATCH_ID}
 
 ```
 
@@ -254,10 +240,13 @@ echo $COMPONENTS
 You already have the CASE packages on the client workstation
 
 ```
+export PATCH_ID=4
+
 cpd-cli manage list-images \
 --components=${COMPONENTS} \
 --release=${VERSION} \
---inspect_source_registry=true
+--inspect_source_registry=true \ 
+--patch_id=${PATCH_ID}
 ```
 
 The output is saved to the list_images.csv file in the work/offline/${VERSION} directory.
