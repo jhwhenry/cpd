@@ -493,14 +493,6 @@ cpd-cli manage deploy-knative-eventing \
 
 #### 2.1.3 Upgrade Events Operator (For WxO and Wx.ai Cluster Only)
 
-If so download the CASE bundle and upgrade the events operator
-
-```
-cpd-cli manage case-download \
---release=${VERSION} \
---components=ibm_events_operator
-```
-
 ```
 cpd-cli manage deploy-events-operator \
 --release=${VERSION} \
@@ -519,14 +511,22 @@ ${CPDM_OC_LOGIN}
 2.Updating the cluster-scoped resources for the platform and services
 
 ```
+export PATCH_ID=4
+
 cpd-cli manage case-download \
 --components=${COMPONENTS} \
 --release=${VERSION} \
+--patch_id=${PATCH_ID} \
 --operator_ns=${PROJECT_CPD_INST_OPERATORS} \
 --cluster_resources=true
 ```
 
-Change to the work directory. The default location of the work directory is `cpd-cli-workspace/olm-utils-workspace/work`.
+Get the path of the work directory. 
+
+```
+OLM_UTILS_CONTAINER_NAME=$(podman ps --format '{{.Names}}' | grep -E '^olm-utils-play-v4$'| head -n 1)
+WORK_DIR=$(podman inspect "${OLM_UTILS_CONTAINER_NAME}" 2>/dev/null | jq -r '.[0].Mounts[] | select(.Destination == "/tmp/work") | .Source' | head -n 1)
+```
 
 Log in to Red Hat® OpenShift® Container Platform as a cluster administrator.
 
@@ -537,7 +537,7 @@ ${OC_LOGIN}
 Apply the cluster-scoped resources for the from the `cluster_scoped_resources.yaml` file.
 
 ```
-oc apply --server-side --force-conflicts -f cluster_scoped_resources.yaml
+oc apply --server-side --force-conflicts -f $WORK_DIR/cluster_scoped_resources.yaml
 ```
 
 Have a record of the resources that you generated.
@@ -545,36 +545,6 @@ Have a record of the resources that you generated.
 ```
 mv cluster_scoped_resources.yaml ${VERSION}-${PROJECT_CPD_INST_OPERATORS}-cluster_scoped_resources.yaml
 ```
-
-Change directory back to parent directory.
-
-3.Applying your entitlements to monitor and report use against license terms
-
-**Non-production environment**
-
-Apply the IBM Cloud Pak for Data Enterprise Edition for the non-production environment.
-
-```
-cpd-cli manage apply-entitlement \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---entitlement=cpd-enterprise \
---production=false
-```
-
-Apply the watsonx.data license for the non-production environment.
-
-```
-export LICENSE_NAME=watsonx-data
-```
-
-```
-cpd-cli manage apply-entitlement \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---entitlement=${LICENSE_NAME} \
---production=false
-```
-
-Reference: [Applying your entitlements](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=aye-applying-your-entitlements-without-node-pinning-3)
 
 #### 2.1.5 Create image pull secrets for IBM Software Hub instance
 
@@ -624,25 +594,16 @@ oc create secret docker-registry ${IMAGE_PULL_SECRET} --from-file ".dockerconfig
 ${CPDM_OC_LOGIN}
 ```
 
-```
-cpd-cli manage case-download \
-  --release=${VERSION} \
-  --components=ibm_usage_metering
-```
-
-```
-Apply the cluster-scoped resources for the from the `cluster_scoped_resources.yaml` file.
-
-oc apply --server-side --force-conflicts -f cluster_scoped_resources.yaml
-```
-
 2.Upgrade the required operators and custom resources for the instance.
 
 ```
+export PATCH_ID=4
+
 cpd-cli manage install-components \
 --license_acceptance=true \
 --components=cpd_platform \
 --release=${VERSION} \
+--patch_id=${PATCH_ID} \
 --operator_ns=${PROJECT_CPD_INST_OPERATORS} \
 --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
 --image_pull_prefix=${IMAGE_PULL_PREFIX} \
@@ -672,7 +633,7 @@ ${CPDM_OC_LOGIN}
 - Check for any Analytics engine hotfixes
 
   ```
-  oc get ae analyticsengine-sample  -n ${PROJECT_CPD_INST_OPERANDS} -oyaml |grep image_digests
+  oc get ae analyticsengine-sample -n ${PROJECT_CPD_INST_OPERANDS} -oyaml |grep image_digests
   ```
 
   - If Analytic Engine patches exist, please remove patches and then proceed with next command
@@ -683,10 +644,13 @@ ${CPDM_OC_LOGIN}
 - Upgrade the Service
 
   ```
+  export PATCH_ID=4
+
   cpd-cli manage install-components \
   --license_acceptance=true \
   --components=watsonx_data \
   --release=${VERSION} \
+  --patch_id=${PATCH_ID} \
   --operator_ns=${PROJECT_CPD_INST_OPERATORS} \
   --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
   --image_pull_prefix=${IMAGE_PULL_PREFIX} \
@@ -701,75 +665,33 @@ cpd-cli manage get-cr-status \
 --components=watsonx_data
 ```
 
-#### 2.2.2 Upgrade Datastage
+#### 2.2.2 Upgrade Watsonx AI
 
-- Download the case bundle for Datstage.
-
-```
-cpd-cli manage case-download
---release=${VERSION}
---components=datastage_ent
-```
-
-
-
-- Updating the cluster-scoped resources for the platform and services
+- Upgrade Wx.ai service
 
 ```
-cpd-cli manage case-download \
---components=${COMPONENTS},datastage_ent \
+export PATCH_ID=4
+
+cpd-cli manage install-components \
+--license_acceptance=true \
+--components=watsonx_ai \
 --release=${VERSION} \
+--patch_id=${PATCH_ID} \
 --operator_ns=${PROJECT_CPD_INST_OPERATORS} \
---cluster_resources=true
-```
-
-- Change to the work directory. The default location of the work directory is `cpd-cli-workspace/olm-utils-workspace/work`.
-
-- Apply the cluster-scoped resources for the from the `cluster_scoped_resources.yaml` file.
-
-```
-oc apply --server-side --force-conflicts -f cluster_scoped_resources.yaml
-```
-
-- Have a record of the resources that you generated.
-
-```
-mv cluster_scoped_resources.yaml datastage_${VERSION}-${PROJECT_CPD_INST_OPERATORS}-cluster_scoped_resources.yaml
-```
-
-- Change directory back to parent directory.
-
-
-- Set the datastage type.
-
-```
-export DATASTAGE_TYPE=datastage_ent
-```
-
-- Upgrade Datsatge service.
-
-```
-cpd-cli manage install-components
---license_acceptance=true
---components=${DATASTAGE_TYPE}
---release=${VERSION}
---operator_ns=${PROJECT_CPD_INST_OPERATORS}
---instance_ns=${PROJECT_CPD_INST_OPERANDS}
---image_pull_prefix=${IMAGE_PULL_PREFIX}
---image_pull_secret=${IMAGE_PULL_SECRET}
+--instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--image_pull_prefix=${IMAGE_PULL_PREFIX} \
+--image_pull_secret=${IMAGE_PULL_SECRET} \
 --upgrade=true
 ```
 
-
 - Validate the upgrade
 
-```
-cpd-cli manage get-cr-status \
---cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
-
-```
-
-
+  ```
+  cpd-cli manage get-cr-status \
+  --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+  --components=watsonx_ai
+  ```
+  
 #### 2.2.3 Upgrade Watsonx Orchestrate
 
 - Specify install options in the overridewxo.yaml
@@ -795,10 +717,13 @@ non_olm:
 - Generate the Helm preview
 
   ```
+  export PATCH_ID=4
+
   cpd-cli manage install-components \
   --license_acceptance=true \
   --components=watsonx_orchestrate \
   --release=${VERSION} \
+  --patch_id=${PATCH_ID} \
   --operator_ns=${PROJECT_CPD_INST_OPERATORS} \
   --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
   --image_pull_prefix=${IMAGE_PULL_PREFIX} \
@@ -833,6 +758,7 @@ non_olm:
   --license_acceptance=true \
   --components=watsonx_orchestrate \
   --release=${VERSION} \
+  --patch_id=${PATCH_ID} \
   --operator_ns=${PROJECT_CPD_INST_OPERATORS} \
   --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
   --image_pull_prefix=${IMAGE_PULL_PREFIX} \
@@ -847,48 +773,6 @@ non_olm:
   --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
   --components=watsonx_orchestrate
   ```
-
-#### 2.2.4 Upgrade Watsonx AI
-
-- Upgrade Wx.ai service
-
-```
-cpd-cli manage install-components \
---license_acceptance=true \
---components=watsonx_ai \
---release=${VERSION} \
---operator_ns=${PROJECT_CPD_INST_OPERATORS} \
---instance_ns=${PROJECT_CPD_INST_OPERANDS} \
---image_pull_prefix=${IMAGE_PULL_PREFIX} \
---image_pull_secret=${IMAGE_PULL_SECRET} \
---upgrade=true
-```
-
-- Validate the upgrade
-
-  ```
-  cpd-cli manage get-cr-status \
-  --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
-  --components=watsonx_ai
-  ```
-
-#### 2.2.5 Decision Optimization + SPSS 
-
-
-- Upgrade the service
-
-  ```bash
-  cpd-cli manage install-components \
-  --license_acceptance=true \
-  --components=dods,spss  \
-  --release=${VERSION} \
-  --operator_ns=${PROJECT_CPD_INST_OPERATORS} \
-  --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
-  --image_pull_prefix=${IMAGE_PULL_PREFIX} \
-  --image_pull_secret=${IMAGE_PULL_SECRET} \
-  --upgrade=true
-  ```
-
 
 ### 2.3 Upgrade the cpdbr service
 
