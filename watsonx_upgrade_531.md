@@ -253,10 +253,9 @@ The output is saved to the list_images.csv file in the work/offline/${VERSION} d
 manually check for any errors in the csv file.
 
 The models and optional images that are mirrored are determined by the ${IMAGE_GROUPS} variable, from the installation environment variables script.
-For each model we already installed find the image group from below link.
-For example image_group for model 'gpt-oss-120b' is 'ibmwxGptOss120B'.
-
-https://www.ibm.com/docs/en/software-hub/5.3.x?topic=information-determining-which-models-optional-images-mirror#mirror-model-list__watsonxai-models
+For each model we already installed find the image group from below link. [Determining which models and optional images to mirror to your private container registry](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=information-determining-which-models-optional-images-mirror#mirror-model-list__watsonxai-models)
+<br>
+For example image_group for model `gpt-oss-120b` is `ibmwxGptOss120B`.
 
 ```
 export IMAGE_GROUPS=<comma separated values. eg:ibmwxGptOss120B,ibmwxMinistral14BInstruct2512, ..and so on  >
@@ -269,6 +268,7 @@ cpd-cli manage mirror-images \
 --components=${COMPONENTS} \
 --groups=${IMAGE_GROUPS} \
 --release=${VERSION} \
+--patch_id=${PATCH_ID} \
 --target_registry=${PRIVATE_REGISTRY_LOCATION} \
 --arch=${IMAGE_ARCH} \
 --case_download=false
@@ -285,7 +285,7 @@ The profile must be associated with a Cloud Pak for Data user who has either the
 
 Click this link and follow these steps for getting it done.
 
-[Creating a profile to use the cpd-cli management commands](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=cli-creating-cpd-profile)
+[Creating a profile to use the cpd-cli management commands](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=cli-creating-cpd-profile)
 
 ### 1.2 Health check OCP & CPD
 
