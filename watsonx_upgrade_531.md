@@ -1,0 +1,915 @@
+# Arlington watsonx Services Upgrade Runbook - v.5.2.2 to 5.3.1 Patch 4
+
+---
+
+## Upgrade documentation
+
+[Upgrading from IBM Cloud Pak for Data Version 5.2.2 to Version 5.3.](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=upgrading-from-version-52)
+
+## Upgrade context
+
+From
+
+```
+OCP: OpenShift On-prem
+CPD: 5.2.2
+Storage: Netapp 
+Componenets: ibm-licensing, scheduler, cpfs, cpd_platform, watsonx_orchestrate, watsonx_ai, watsonx_data
+```
+
+To
+
+```
+OCP: OpenShift on-prem
+CPD: 5.3.1 Patch 4
+Storage: Netapp 
+Componenets: ibm-licensing, scheduler, cpfs, cpd_platform, watsonx_orchestrate, watsonx_ai, watsonx_data
+```
+
+## Pre-requisites
+
+#### 1. Backup of the cluster is done.
+
+Backup your Cloud Pak for Data cluster before the upgrade.
+For details, see [Backing up and restoring Cloud Pak for Data](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=administering-backing-up-restoring-software-hub).
+
+**Note:**
+Some services don't support the offline OADP backup. Review the backup documentation and take the dedicate approach when necessary.
+
+#### 2. The image mirroring completed successfully
+
+If a private container registry is in-use to host the IBM Cloud Pak for Data software images, you must mirror the updated images from the IBM® Entitled Registry to the private container registry.
+`<br>`
+Reference:
+[Mirroring images to private image registry](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=mipcr-mirroring-images-directly-private-container-registry-1)
+
+#### 3. The permissions required for the upgrade is ready
+
+- Openshift cluster administrator permissions
+- Cloud Pak for Data administrator permissions
+- Permission to access the private image registry for pushing or pull images
+- Access to the Bastion node for executing the upgrade commands
+
+#### 4. A pre-upgrade health check is made to ensure the cluster's readiness for upgrade.
+
+- The OpenShift cluster, persistent storage and Cloud Pak for Data platform and services are in healthy status.
+
+#### 5. Backup the Routes
+
+```
+oc get Routes -n ${PROJECT_CPD_INST_OPERANDS} -o yaml > Routes_Bak.yaml
+```
+
+#### 6. Backup the TemporaryPatch
+
+```
+oc get TemporaryPatch -n ${PROJECT_CPD_INST_OPERANDS} -o yaml > TemporaryPatch_Bak.yaml
+```
+
+## Table of Content
+
+```
+Part 1: Pre-upgrade
+1.0 Create image tag mirror set in cluster
+1.1 Update client workstation
+1.1.1 Set up the utilities
+1.1.2 Update environment variables
+1.1.3 Ensure the cpd-cli manage plug-in has the latest version of the olm-utils image
+1.1.4 Download CASE packages and mirror images
+1.1.5 Create a profile for upgrading the service instances
+1.2 Health check OCP & CPD
+
+
+Part 2: Upgrade
+2.1 Upgrade CPD to 5.3.0
+2.1.1 Upgrade shared cluster components
+2.1.2 Prepare to upgrade IBM Software Hub
+2.1.3 Create image pull secrets for IBM Software Hub instance
+2.1.4 Upgrade IBM Software Hub
+2.2 Upgrade watsonxdata
+2.3 Upgade CPD BR service
+
+Summarize and close out the upgrade
+
+```
+
+## Part 1: Pre-upgrade
+
+1.0 Create image tag mirror set 
+
+<br>
+
+We observed that 5.3.1 upgrade is referring to image tags in some deployments. 
+We did not get the fix from IBM (TS021717555) yet but we can solve it by creating the imagetagmirrorset in cluster.
+Below is the sample from Tampa.
+
+```
+(base) [batsa2@watsonxjump wxo]$ oc get imagetagmirrorset cpd-image-tag-mirror-set -oyaml
+
+```
+
+### 1.1 Update client workstation
+
+#### 1.1.1 Set up the utilities
+
+**1. Update the cpd-cli utility**
+
+<br>
+
+Update the cpd-cli utility following the steps in [Updating client workstations](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=52-updating-client-workstations)
+
+<br>
+
+After the update is done, run below commands for the confirmation:
+
+```
+cpd-cli version
+```
+
+Output like this
+
+```
+cpd-cli
+	Version: 14.3.1
+	Build Date: 2025-12-05T14:54:42
+	Build Number: 2792
+	SWH Release Version: 5.3.1
+```
+
+**2. Update the OpenShift CLI**
+`<br>`
+Check the OpenShift CLI version.
+
+```
+oc version
+```
+
+If the version doesn't match the OpenShift cluster version, update it accordingly.
+
+**3. Install the Helm CLI**
+`<br>`
+Install Helm by following the [Helm documentation](https://www.ibm.com/links?url=https%3A%2F%2Fhelm.sh%2Fdocs%2Fintro%2Finstall%2F)
+
+#### 1.1.2 Update environment variables
+
+Make a copy of the environment variables script used by the existing 5.2.2 instance with the name like `cpd_vars_531.sh`.
+
+Update the environment variables script `cpd_vars_531.sh` as follows.
+
+```bash
+vi cpd_vars_531.sh
+```
+
+1.Locate the VERSION entry and update the environment variable for VERSION.
+
+```bash
+export VERSION=5.3.1
+```
+
+2.Locate the COMPONENTS entry and confirm the COMPONENTS entry is accurate.
+
+```bash
+export COMPONENTS=ibm-licensing, scheduler, cpfs, cpd_platform, watsonx_orchestrate, watsonx_ai, spss, dods, watsonx_data
+```
+
+3.Add a new section called Image pull configuration to your script and add the following environment variables
+
+```
+export IMAGE_PULL_SECRET=ibm-entitlement-key
+export IMAGE_PULL_CREDENTIALS=$(echo -n "$PRIVATE_REGISTRY_PULL_USER:$PRIVATE_REGISTRY_PULL_PASSWORD" | base64 -w 0)
+export IMAGE_PULL_PREFIX=${PRIVATE_REGISTRY_LOCATION}
+```
+
+Save the changes.
+
+Confirm that the script does not contain any errors.
+
+```
+bash ./cpd_vars_531.sh
+```
+
+Run this command to apply cpd_vars_530.sh
+
+```
+source cpd_vars_531.sh
+```
+
+#### 1.1.3 Ensure the cpd-cli manage plug-in has the latest olm-utils image
+
+```
+cpd-cli manage restart-container
+```
+
+**Note:**
+`<br>`Check and confirm the olm-utils-v4 container is up and running.
+
+```
+podman ps 
+```
+
+#### 1.1.4 Downloading CASE packages and mirror images
+
+Downloading CASE packages before running IBM Software Hub upgrade commands.
+
+**Note:**
+
+If the CASE packages have already been downloaded when mirroring the images, this step can be skipped.
+
+[Downloading CASE packages](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=pruirn-downloading-case-packages-1)
+
+```
+cpd-cli manage case-download \
+--components=${COMPONENTS} \
+--release=${VERSION} \
+--from_oci=true
+
+```
+
+Mirroring images directly to the private container registry
+
+Log in to the IBM Entitled Registry registry:
+
+,,,
+cpd-cli manage login-entitled-registry \
+${IBM_ENTITLEMENT_KEY}
+,,,
+
+Log in to the private container registry.
+The following command assumes that you are using private container registry that is secured with credentials:
+
+```
+cpd-cli manage login-private-registry \
+${PRIVATE_REGISTRY_LOCATION} \
+${PRIVATE_REGISTRY_PUSH_USER} \
+${PRIVATE_REGISTRY_PUSH_PASSWORD}
+```
+
+Confirm that you have access to the images that you want to mirror from the IBM Entitled Registry:
+Inspect the IBM Entitled Registry.
+
+```
+echo $COMPONENTS
+```
+
+You already have the CASE packages on the client workstation
+
+```
+cpd-cli manage list-images \
+--components=${COMPONENTS} \
+--release=${VERSION} \
+--inspect_source_registry=true
+```
+
+The output is saved to the list_images.csv file in the work/offline/${VERSION} directory.
+manually check for any errors in the csv file.
+
+The models and optional images that are mirrored are determined by the ${IMAGE_GROUPS} variable, from the installation environment variables script.
+For each model we already installed find the image group from below link.
+For example image_group for model 'gpt-oss-120b' is 'ibmwxGptOss120B'.
+
+https://www.ibm.com/docs/en/software-hub/5.3.x?topic=information-determining-which-models-optional-images-mirror#mirror-model-list__watsonxai-models
+
+```
+export IMAGE_GROUPS=<comma separated values. eg:ibmwxGptOss120B,ibmwxMinistral14BInstruct2512, ..and so on  >
+```
+
+Mirror the images to the private container registry.
+
+```
+cpd-cli manage mirror-images \
+--components=${COMPONENTS} \
+--groups=${IMAGE_GROUPS} \
+--release=${VERSION} \
+--target_registry=${PRIVATE_REGISTRY_LOCATION} \
+--arch=${IMAGE_ARCH} \
+--case_download=false
+```
+
+#### 1.1.5 Creating a profile for upgrading the service instances
+
+Create a profile on the workstation from which you will upgrade the service instances.
+
+The profile must be associated with a Cloud Pak for Data user who has either the following permissions:
+
+- Create service instances (can_provision)
+- Manage service instances (manage_service_instances)
+
+Click this link and follow these steps for getting it done.
+
+[Creating a profile to use the cpd-cli management commands](https://www.ibm.com/docs/en/software-hub/5.2.x?topic=cli-creating-cpd-profile)
+
+### 1.2 Health check OCP & CPD
+
+Check and make sure the cluster operators, nodes, and machine configure pool are in healthy status.
+Log onto bastion node and then log into OCP.
+
+```
+${OC_LOGIN}
+```
+
+Check the status of nodes, cluster operators and machine config pool.
+
+```
+oc get nodes,co,mcp
+```
+
+2. Check Cloud Pak for Data status
+
+Log onto bastion node, and make sure IBM Cloud Pak for Data command-line interface installed properly.
+
+Run this command in terminal and make sure the Lite and all the services' status are in Ready status.
+
+```
+${CPDM_OC_LOGIN}
+```
+
+```
+cpd-cli manage get-cr-status --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS}
+```
+
+Run this command and make sure all pods healthy.
+
+```
+oc get po --no-headers --all-namespaces -o wide | grep -Ev '([[:digit:]])/\1.*R' | grep -v 'Completed'
+```
+
+## Part 2: Upgrade
+
+### 2.1 Upgrade CPD to 5.3.1
+
+#### 2.1.0 Create image pull secret for shared cluster component
+
+1. Create dockerconfig.json
+
+   ```
+   cat <<EOF > dockerconfig.json 
+   {
+     "auths": {
+       "${PRIVATE_REGISTRY_LOCATION}": {
+         "auth": "${IMAGE_PULL_CREDENTIALS}"
+       }
+     }
+   }
+   EOF
+   ```
+2. Create the secret
+
+   ```
+   oc create secret docker-registry ibm-entitlement-key-scheduler \
+   --from-file ".dockerconfigjson=dockerconfig.json" \
+   --namespace=${PROJECT_SCHEDULING_SERVICE}
+   ```
+
+
+
+#### 2.1.1 Upgrade shared cluster components (No Cert manager)
+
+1.Run the cpd-cli manage login-to-ocp command to log in to the cluster
+
+```
+${CPDM_OC_LOGIN}
+```
+Run below commands 
+```
+ cpd-cli manage case-download \
+--components=scheduler \
+--release=${VERSION} \
+--scheduler_ns=${PROJECT_SCHEDULING_SERVICE} \
+--cluster_resources=true
+```
+
+```
+oc apply -f cluster_scoped_resources.yaml \
+--server-side \
+--force-conflicts
+```
+
+2.Upgrade the License Service.
+
+Confirm the project in which the License Service is running.
+
+```
+oc get deployment -A |  grep ibm-licensing-operator
+```
+
+Make sure the project returned by the command matches the environment variable PROJECT_LICENSE_SERVICE in your environment variables script `cpd_vars_531.sh`.
+`<br>`
+Upgrade the License Service.
+
+```
+cpd-cli manage apply-cluster-components \
+--release=${VERSION} \
+--license_acceptance=true \
+--licensing_ns=${PROJECT_LICENSE_SERVICE}
+```
+
+Confirm that the License Service pods are Running or Completed:
+
+```
+oc get pods --namespace=${PROJECT_LICENSE_SERVICE}
+```
+
+3. Confirm if Scheduler is installed
+
+   ```
+   oc get scheduling -A
+   ```
+
+   If so download the CASE bundle for scheduler and then upgrade schduler
+
+   ```
+   cpd-cli manage case-download \
+   --release=${VERSION} \
+   --components=scheduler
+   ```
+
+   ```
+   cpd-cli manage apply-scheduler \
+   --release=${VERSION} \
+   --license_acceptance=true \
+   --scheduler_ns=${PROJECT_SCHEDULING_SERVICE} \
+   --image_pull_prefix=${IMAGE_PULL_PREFIX} \
+   --image_pull_secret=ibm-entitlement-key-scheduler
+   ```
+
+   Validate Scheduling service pods are fully running post upgrade
+
+   ```
+   oc get pods --namespace=${PROJECT_SCHEDULING_SERVICE}
+   ```
+
+#### 2.1.2 Upgrade Knative Eventing (For WxO and Wx.ai Cluster Only)
+
+Generate the CRD files for IBM events operator
+
+```
+cpd-cli manage case-download --release=${VERSION} --components="ibm_events_operator"
+```
+
+```
+cpd-cli manage deploy-events-operator \
+--release=${VERSION} \
+--cluster_resources=true
+```
+
+Apply the resource files
+
+```
+oc apply \
+-f cpd-cli-workspace/olm-utils-workspace/work/ibm-events-operator-crds.yaml \
+--server-side \
+--force-conflicts
+```
+
+Relogin to the cpd-cli utility
+
+```
+${CPDM_OC_LOGIN}
+```
+
+Upgrade Knative Eventing
+
+```
+cpd-cli manage deploy-knative-eventing \
+--release=${VERSION} \
+--block_storage_class=${STG_CLASS_BLOCK} \
+--upgrade=true
+```
+
+#### 2.1.3 Upgrade Events Operator (For WxO and Wx.ai Cluster Only)
+
+If so download the CASE bundle and upgrade the events operator
+
+```
+cpd-cli manage case-download \
+--release=${VERSION} \
+--components=ibm_events_operator
+```
+
+```
+cpd-cli manage deploy-events-operator \
+--release=${VERSION} \
+--events_operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--events_operand_ns=${PROJECT_CPD_INST_OPERANDS}
+```
+
+#### 2.1.4 Prepare to upgrade IBM Software Hub
+
+1.Run the cpd-cli manage login-to-ocp command to log in to the cluster
+
+```
+${CPDM_OC_LOGIN}
+```
+
+2.Updating the cluster-scoped resources for the platform and services
+
+```
+cpd-cli manage case-download \
+--components=${COMPONENTS} \
+--release=${VERSION} \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--cluster_resources=true
+```
+
+Change to the work directory. The default location of the work directory is `cpd-cli-workspace/olm-utils-workspace/work`.
+
+Log in to Red Hat® OpenShift® Container Platform as a cluster administrator.
+
+```
+${OC_LOGIN}
+```
+
+Apply the cluster-scoped resources for the from the `cluster_scoped_resources.yaml` file.
+
+```
+oc apply --server-side --force-conflicts -f cluster_scoped_resources.yaml
+```
+
+Have a record of the resources that you generated.
+
+```
+mv cluster_scoped_resources.yaml ${VERSION}-${PROJECT_CPD_INST_OPERATORS}-cluster_scoped_resources.yaml
+```
+
+Change directory back to parent directory.
+
+3.Applying your entitlements to monitor and report use against license terms
+
+**Non-production environment**
+
+Apply the IBM Cloud Pak for Data Enterprise Edition for the non-production environment.
+
+```
+cpd-cli manage apply-entitlement \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--entitlement=cpd-enterprise \
+--production=false
+```
+
+Apply the watsonx.data license for the non-production environment.
+
+```
+export LICENSE_NAME=watsonx-data
+```
+
+```
+cpd-cli manage apply-entitlement \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--entitlement=${LICENSE_NAME} \
+--production=false
+```
+
+Reference: [Applying your entitlements](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=aye-applying-your-entitlements-without-node-pinning-3)
+
+#### 2.1.5 Create image pull secrets for IBM Software Hub instance
+
+Log in to OpenShift cluster.
+
+```
+${OC_LOGIN}
+```
+
+Generate the image pull credentials:
+
+```
+export IMAGE_PULL_CREDENTIALS=$(echo -n "$PRIVATE_REGISTRY_PULL_USER:$PRIVATE_REGISTRY_PULL_PASSWORD" | base64 -w 0)
+```
+
+Create a file named dockerconfig.json based on where your cluster pulls images from:
+
+```
+cat <<EOF > dockerconfig.json 
+{
+  "auths": {
+    "${PRIVATE_REGISTRY_LOCATION}": {
+      "auth": "${IMAGE_PULL_CREDENTIALS}"
+    }
+  }
+}
+EOF
+```
+
+Create the image pull secret in the `operators` project for the instance.
+
+```
+oc create secret docker-registry ${IMAGE_PULL_SECRET} --from-file ".dockerconfigjson=dockerconfig.json" --namespace=${PROJECT_CPD_INST_OPERATORS}
+```
+
+Create the image pull secret in the `operands` project for the instance.
+
+```
+oc create secret docker-registry ${IMAGE_PULL_SECRET} --from-file ".dockerconfigjson=dockerconfig.json" --namespace=${PROJECT_CPD_INST_OPERANDS}
+```
+
+#### 2.1.6 Upgrade IBM Software Hub
+
+1.Run the cpd-cli manage login-to-ocp command to log in to the cluster.
+
+```
+${CPDM_OC_LOGIN}
+```
+
+```
+cpd-cli manage case-download \
+  --release=${VERSION} \
+  --components=ibm_usage_metering
+```
+
+```
+Apply the cluster-scoped resources for the from the `cluster_scoped_resources.yaml` file.
+
+oc apply --server-side --force-conflicts -f cluster_scoped_resources.yaml
+```
+
+2.Upgrade the required operators and custom resources for the instance.
+
+```
+cpd-cli manage install-components \
+--license_acceptance=true \
+--components=cpd_platform \
+--release=${VERSION} \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--image_pull_prefix=${IMAGE_PULL_PREFIX} \
+--image_pull_secret=${IMAGE_PULL_SECRET} \
+--run_storage_tests=false \
+--upgrade=true
+```
+
+Once the above command `cpd-cli manage install-components` complete, make sure the status of the IBM Software Hub is in 'Completed' status.
+
+```
+cpd-cli manage get-cr-status \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \ 
+--components=cpd_platform
+```
+
+### 2.2 Upgrade Services
+
+#### 2.2.1 Upgrade the Watsonx.data service
+
+- Log in to the cluster
+
+```
+${CPDM_OC_LOGIN}
+```
+
+- Check for any Analytics engine hotfixes
+
+  ```
+  oc get ae analyticsengine-sample  -n ${PROJECT_CPD_INST_OPERANDS} -oyaml |grep image_digests
+  ```
+
+  - If Analytic Engine patches exist, please remove patches and then proceed with next command
+
+    ```
+    oc patch ae analyticsengine-sample -n ${PROJECT_CPD_INST_OPERANDS} --type=json --patch '[{"op":"remove","path":"/spec/image_digests"}]'
+    ```
+- Upgrade the Service
+
+  ```
+  cpd-cli manage install-components \
+  --license_acceptance=true \
+  --components=watsonx_data \
+  --release=${VERSION} \
+  --operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+  --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+  --image_pull_prefix=${IMAGE_PULL_PREFIX} \
+  --image_pull_secret=${IMAGE_PULL_SECRET} \
+  --upgrade=true
+  ```
+- Validate the upgrade
+
+```
+cpd-cli manage get-cr-status \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--components=watsonx_data
+```
+
+#### 2.2.2 Upgrade Datastage
+
+- Download the case bundle for Datstage.
+
+```
+cpd-cli manage case-download
+--release=${VERSION}
+--components=datastage_ent
+```
+
+
+
+- Updating the cluster-scoped resources for the platform and services
+
+```
+cpd-cli manage case-download \
+--components=${COMPONENTS},datastage_ent \
+--release=${VERSION} \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--cluster_resources=true
+```
+
+- Change to the work directory. The default location of the work directory is `cpd-cli-workspace/olm-utils-workspace/work`.
+
+- Apply the cluster-scoped resources for the from the `cluster_scoped_resources.yaml` file.
+
+```
+oc apply --server-side --force-conflicts -f cluster_scoped_resources.yaml
+```
+
+- Have a record of the resources that you generated.
+
+```
+mv cluster_scoped_resources.yaml datastage_${VERSION}-${PROJECT_CPD_INST_OPERATORS}-cluster_scoped_resources.yaml
+```
+
+- Change directory back to parent directory.
+
+
+- Set the datastage type.
+
+```
+export DATASTAGE_TYPE=datastage_ent
+```
+
+- Upgrade Datsatge service.
+
+```
+cpd-cli manage install-components
+--license_acceptance=true
+--components=${DATASTAGE_TYPE}
+--release=${VERSION}
+--operator_ns=${PROJECT_CPD_INST_OPERATORS}
+--instance_ns=${PROJECT_CPD_INST_OPERANDS}
+--image_pull_prefix=${IMAGE_PULL_PREFIX}
+--image_pull_secret=${IMAGE_PULL_SECRET}
+--upgrade=true
+```
+
+
+- Validate the upgrade
+
+```
+cpd-cli manage get-cr-status \
+--cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+
+```
+
+
+#### 2.2.3 Upgrade Watsonx Orchestrate
+
+- Specify install options in the overridewxo.yaml
+
+```
+---
+# ............................................................................
+# watsonx Orchestrate parameters
+# ............................................................................
+non_olm:
+  watsonxOrchestrate: 
+    watsonxAI:
+      watsonxaiifm: true
+```
+
+- Copy to your cpd-cli-workspace/olm-utils-workspace/work directory
+- Clean up Events Operator Depedency
+
+  ```
+  oc delete rolebinding ibm-lakehouse-leader-election-rolebinding -n ${PROJECT_CPD_INST_OPERATORS} || true
+  oc delete role ibm-uab-ads-operator-role -n ${PROJECT_CPD_INST_OPERATORS} || true
+  ```
+- Generate the Helm preview
+
+  ```
+  cpd-cli manage install-components \
+  --license_acceptance=true \
+  --components=watsonx_orchestrate \
+  --release=${VERSION} \
+  --operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+  --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+  --image_pull_prefix=${IMAGE_PULL_PREFIX} \
+  --image_pull_secret=${IMAGE_PULL_SECRET} \
+  --param-file=/tmp/work/overridewxo.yml \
+  --upgrade=true \
+  --preview=true
+  ```
+- Export your workspace directory and find the name of the helm file
+
+  ```
+  export cpd-cli_workspace=<REPACE WITH PATH>/cpd-cli-workspace/olm-utils-workspace/work
+  cat $cpdcli_workspace/preview.sh | grep -E "watsonx-orchestrate-migration|watson-assistant-migration"
+  ```
+- Run the helm command within Podman and replace the
+
+  ```
+  podman exec -it olm-utils-play-v4 helm upgrade --install --namespace ${PROJECT_CPD_INST_OPERANDS} watsonx-orchestrate \
+  /tmp/work/offline/5.3.1/.ibm-pak/data/cases/ibm-watsonx-orchestrate/7.0.0/charts/watsonx-orchestrate-migration-0.0.0.tgz \
+  --take-ownership --debug \
+  -f /tmp/work/olm-utils-ansible-log/override_file_<REPLACE WITH NAME/TIMESTAMP OF FILE>.yaml
+  ```
+- Ensure the WxO Custome Resource shows the label "Helm"
+
+  ```
+  oc get wo wo -n ${PROJECT_CPD_INST_OPERANDS} -o jsonpath='{.metadata.labels.app\.kubernetes\.io/managed-by}'
+  ```
+- Upgrade WxO Service
+
+  ```
+  cpd-cli manage install-components \
+  --license_acceptance=true \
+  --components=watsonx_orchestrate \
+  --release=${VERSION} \
+  --operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+  --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+  --image_pull_prefix=${IMAGE_PULL_PREFIX} \
+  --image_pull_secret=${IMAGE_PULL_SECRET} \
+  --param-file=/tmp/work/overridewxo.yml \
+  --upgrade=true
+  ```
+- Validate the upgrade
+
+  ```
+  cpd-cli manage get-cr-status \
+  --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+  --components=watsonx_orchestrate
+  ```
+
+#### 2.2.4 Upgrade Watsonx AI
+
+- Upgrade Wx.ai service
+
+```
+cpd-cli manage install-components \
+--license_acceptance=true \
+--components=watsonx_ai \
+--release=${VERSION} \
+--operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+--instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+--image_pull_prefix=${IMAGE_PULL_PREFIX} \
+--image_pull_secret=${IMAGE_PULL_SECRET} \
+--upgrade=true
+```
+
+- Validate the upgrade
+
+  ```
+  cpd-cli manage get-cr-status \
+  --cpd_instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+  --components=watsonx_ai
+  ```
+
+#### 2.2.5 Decision Optimization + SPSS 
+
+
+- Upgrade the service
+
+  ```bash
+  cpd-cli manage install-components \
+  --license_acceptance=true \
+  --components=dods,spss  \
+  --release=${VERSION} \
+  --operator_ns=${PROJECT_CPD_INST_OPERATORS} \
+  --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
+  --image_pull_prefix=${IMAGE_PULL_PREFIX} \
+  --image_pull_secret=${IMAGE_PULL_SECRET} \
+  --upgrade=true
+  ```
+
+
+### 2.3 Upgrade the cpdbr service
+
+1.Set the `OADP_OPERATOR_NS` environment variable to the project where the OADP operator is installed:
+
+```
+export OADP_OPERATOR_NS=<oadp-operator-project>
+```
+
+2.Upgrade the cpdbr-tenant component for the instance.
+
+```
+cpd-cli oadp install \
+--component=cpdbr-tenant \
+--cpdbr-hooks-image-prefix=${PRIVATE_REGISTRY_LOCATION} \
+--cpfs-image-prefix=${PRIVATE_REGISTRY_LOCATION} \
+--namespace=${OADP_OPERATOR_NS} \
+--tenant-operator-namespace=${PROJECT_CPD_INST_OPERATORS} \
+--skip-recipes=true \
+--upgrade=true \
+--log-level=debug \
+--verbose
+```
+
+## Part 3 (Post-upgrade tasks)
+
+Please validate before releasing back to users.
+
+## Summarize and close out the upgrade
+
+1)Prepare for applying the TemporaryPatch if needed as a post-upgrade task.
+
+2)Schedule a wrap-up meeting and review the upgrade procedure and lessons learned from it.
+
+3)Evaluate the outcome of upgrade with pre-defined goals.
+
+---
+
+End of document
