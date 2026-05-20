@@ -277,6 +277,8 @@ export IMAGE_GROUPS=<comma separated values. eg:ibmwxGptOss120B,ibmwxMinistral14
 Mirror the images to the private container registry.
 
 ```
+export PATCH_ID=4
+
 cpd-cli manage mirror-images \
 --components=${COMPONENTS} \
 --groups=${IMAGE_GROUPS} \
@@ -362,8 +364,6 @@ oc get po --no-headers --all-namespaces -o wide | grep -Ev '([[:digit:]])/\1.*R'
    --namespace=${PROJECT_SCHEDULING_SERVICE}
    ```
 
-
-
 #### 2.1.1 Upgrade shared cluster components (No Cert manager)
 
 1.Run the cpd-cli manage login-to-ocp command to log in to the cluster
@@ -371,17 +371,29 @@ oc get po --no-headers --all-namespaces -o wide | grep -Ev '([[:digit:]])/\1.*R'
 ```
 ${CPDM_OC_LOGIN}
 ```
-Run below commands 
+
+Generate the cluster-scoped resource definitions for the scheduling service.
 ```
- cpd-cli manage case-download \
+export PATCH_ID=4
+
+cpd-cli manage case-download \
 --components=scheduler \
 --release=${VERSION} \
+--patch_id=${PATCH_ID} \
 --scheduler_ns=${PROJECT_SCHEDULING_SERVICE} \
 --cluster_resources=true
 ```
 
+Get the path of the work directory.
+
 ```
-oc apply -f cluster_scoped_resources.yaml \
+OLM_UTILS_CONTAINER_NAME=$(podman ps --format '{{.Names}}' | grep -E '^olm-utils-play-v4$'| head -n 1)
+WORK_DIR=$(podman inspect "${OLM_UTILS_CONTAINER_NAME}" 2>/dev/null | jq -r '.[0].Mounts[] | select(.Destination == "/tmp/work") | .Source' | head -n 1)
+```
+
+Apply the cluster-scoped resources for the scheduling service from the `cluster_scoped_resources.yaml` file.
+```
+oc apply -f $WORK_DIR/cluster_scoped_resources.yaml \
 --server-side \
 --force-conflicts
 ```
@@ -394,13 +406,16 @@ Confirm the project in which the License Service is running.
 oc get deployment -A |  grep ibm-licensing-operator
 ```
 
-Make sure the project returned by the command matches the environment variable PROJECT_LICENSE_SERVICE in your environment variables script `cpd_vars_531.sh`.
-`<br>`
+Make sure the project returned by the command matches the environment variable `PROJECT_LICENSE_SERVICE` in your environment variables script `cpd_vars_531.sh`.
+<br>
 Upgrade the License Service.
 
 ```
+export PATCH_ID=4
+
 cpd-cli manage apply-cluster-components \
 --release=${VERSION} \
+--patch_id=${PATCH_ID} \
 --license_acceptance=true \
 --licensing_ns=${PROJECT_LICENSE_SERVICE}
 ```
@@ -411,41 +426,34 @@ Confirm that the License Service pods are Running or Completed:
 oc get pods --namespace=${PROJECT_LICENSE_SERVICE}
 ```
 
-3. Confirm if Scheduler is installed
+3. Upgrade the scheduling service
 
-   ```
-   oc get scheduling -A
-   ```
+```
+export PATCH_ID=4
 
-   If so download the CASE bundle for scheduler and then upgrade schduler
+cpd-cli manage apply-scheduler \
+--release=${VERSION} \
+--patch_id=${PATCH_ID} \
+--license_acceptance=true \
+--scheduler_ns=${PROJECT_SCHEDULING_SERVICE} \
+--image_pull_prefix=${IMAGE_PULL_PREFIX} \
+--image_pull_secret=ibm-entitlement-key-scheduler
+```
 
-   ```
-   cpd-cli manage case-download \
-   --release=${VERSION} \
-   --components=scheduler
-   ```
+Validate Scheduling service pods are fully running post upgrade
 
-   ```
-   cpd-cli manage apply-scheduler \
-   --release=${VERSION} \
-   --license_acceptance=true \
-   --scheduler_ns=${PROJECT_SCHEDULING_SERVICE} \
-   --image_pull_prefix=${IMAGE_PULL_PREFIX} \
-   --image_pull_secret=ibm-entitlement-key-scheduler
-   ```
-
-   Validate Scheduling service pods are fully running post upgrade
-
-   ```
-   oc get pods --namespace=${PROJECT_SCHEDULING_SERVICE}
-   ```
+```
+oc get pods --namespace=${PROJECT_SCHEDULING_SERVICE}
+```
 
 #### 2.1.2 Upgrade Knative Eventing (For WxO and Wx.ai Cluster Only)
 
 Generate the CRD files for IBM events operator
 
 ```
-cpd-cli manage case-download --release=${VERSION} --components="ibm_events_operator"
+export PATCH_ID=4
+
+cpd-cli manage case-download --release=${VERSION} --components=ibm_events_operator --patch_id=${PATCH_ID}
 ```
 
 ```
@@ -457,8 +465,13 @@ cpd-cli manage deploy-events-operator \
 Apply the resource files
 
 ```
+OLM_UTILS_CONTAINER_NAME=$(podman ps --format '{{.Names}}' | grep -E '^olm-utils-play-v4$'| head -n 1)
+WORK_DIR=$(podman inspect "${OLM_UTILS_CONTAINER_NAME}" 2>/dev/null | jq -r '.[0].Mounts[] | select(.Destination == "/tmp/work") | .Source' | head -n 1)
+```
+
+```
 oc apply \
--f cpd-cli-workspace/olm-utils-workspace/work/ibm-events-operator-crds.yaml \
+-f $WORK_DIR/ibm-events-operator-crds.yaml \
 --server-side \
 --force-conflicts
 ```
