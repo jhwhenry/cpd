@@ -47,7 +47,7 @@ Reference:
 - Permission to access the private image registry for pushing or pull images
 - Access to the Bastion node for executing the upgrade commands
 
-#### 4. A pre-upgrade health check is made to ensure the cluster's readiness for upgrade.
+#### 4. A pre-upgrade health check is done to ensure the cluster's readiness for upgrade.
 
 - The OpenShift cluster, persistent storage and Cloud Pak for Data platform and services are in healthy status.
 
@@ -200,7 +200,7 @@ cpd-cli manage restart-container
 `<br>`Check and confirm the olm-utils-v4 container is up and running.
 
 ```
-podman ps 
+podman ps | grep -i olm-utils-v4
 ```
 
 #### 1.1.4 Downloading CASE packages and mirror images
@@ -228,11 +228,10 @@ Mirroring images directly to the private container registry
 
 Log in to the IBM Entitled Registry registry:
 
-,,,
+```
 cpd-cli manage login-entitled-registry \
 ${IBM_ENTITLEMENT_KEY}
-,,,
-
+```
 Log in to the private container registry.
 The following command assumes that you are using private container registry that is secured with credentials:
 
@@ -694,7 +693,7 @@ cpd-cli manage install-components \
   
 #### 2.2.3 Upgrade Watsonx Orchestrate
 
-- Specify install options in the overridewxo.yaml
+- Create the install-options.yml and specify below install options in it.
 
 ```
 ---
@@ -707,7 +706,17 @@ non_olm:
       watsonxaiifm: true
 ```
 
-- Copy to your cpd-cli-workspace/olm-utils-workspace/work directory
+- Move install-options.yml to the work directory
+
+```
+OLM_UTILS_CONTAINER_NAME=$(podman ps --format '{{.Names}}' | grep -E '^olm-utils-play-v4$'| head -n 1)
+WORK_DIR=$(podman inspect "${OLM_UTILS_CONTAINER_NAME}" 2>/dev/null | jq -r '.[0].Mounts[] | select(.Destination == "/tmp/work") | .Source' | head -n 1)
+mv install-options.yml $WORK_DIR/install-options.yml
+```
+**Note:**
+<br>
+Change the file owner and group of the install-options.yml if needed. You may want to change this accordingly based on your environment.
+
 - Clean up Events Operator Depedency
 
   ```
@@ -735,25 +744,26 @@ non_olm:
 - Export your workspace directory and find the name of the helm file
 
   ```
-  export cpd-cli_workspace=<REPACE WITH PATH>/cpd-cli-workspace/olm-utils-workspace/work
-  cat $cpdcli_workspace/preview.sh | grep -E "watsonx-orchestrate-migration|watson-assistant-migration"
+  cat $WORK_DIR/preview.sh | grep -E "watsonx-orchestrate-migration|watson-assistant-migration"
   ```
-- Run the helm command within Podman and replace the
+- Run the helm command within Podman
 
   ```
   podman exec -it olm-utils-play-v4 helm upgrade --install --namespace ${PROJECT_CPD_INST_OPERANDS} watsonx-orchestrate \
-  /tmp/work/offline/5.3.1/.ibm-pak/data/cases/ibm-watsonx-orchestrate/7.0.0/charts/watsonx-orchestrate-migration-0.0.0.tgz \
+  /tmp/work/offline/5.3.1/.ibm-pak/data/cases/ibm-watsonx-orchestrate/7.1.1/charts/watsonx-orchestrate-migration-0.0.0.tgz \
   --take-ownership --debug \
   -f /tmp/work/olm-utils-ansible-log/override_file_<REPLACE WITH NAME/TIMESTAMP OF FILE>.yaml
   ```
-- Ensure the WxO Custome Resource shows the label "Helm"
+- Ensure the WxO Custome Resource shows the label "managed-by: Helm"
 
   ```
-  oc get wo wo -n ${PROJECT_CPD_INST_OPERANDS} -o jsonpath='{.metadata.labels.app\.kubernetes\.io/managed-by}'
+  oc get wo wo -n ${PROJECT_CPD_INST_OPERANDS} -o yaml | grep -i "managed-by"
   ```
-- Upgrade WxO Service
+- Upgrade wxO Service
 
   ```
+  export PATCH_ID=4
+  
   cpd-cli manage install-components \
   --license_acceptance=true \
   --components=watsonx_orchestrate \
@@ -763,7 +773,7 @@ non_olm:
   --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
   --image_pull_prefix=${IMAGE_PULL_PREFIX} \
   --image_pull_secret=${IMAGE_PULL_SECRET} \
-  --param-file=/tmp/work/overridewxo.yml \
+  --param-file=/tmp/work/install-options.yml \
   --upgrade=true
   ```
 - Validate the upgrade
@@ -780,6 +790,7 @@ non_olm:
 
 ```
 export OADP_OPERATOR_NS=<oadp-operator-project>
+cpd-cli oadp client config set namespace=${OADP_OPERATOR_NS}
 ```
 
 2.Upgrade the cpdbr-tenant component for the instance.
@@ -799,15 +810,11 @@ cpd-cli oadp install \
 
 ## Part 3 (Post-upgrade tasks)
 
-Please validate before releasing back to users.
+Please validate before releasing back to end users.
 
 ## Summarize and close out the upgrade
-
-1)Prepare for applying the TemporaryPatch if needed as a post-upgrade task.
-
-2)Schedule a wrap-up meeting and review the upgrade procedure and lessons learned from it.
-
-3)Evaluate the outcome of upgrade with pre-defined goals.
+- Schedule a wrap-up meeting and review the upgrade procedure and lessons learned from it.
+- Evaluate the outcome of upgrade with pre-defined goals.
 
 ---
 
