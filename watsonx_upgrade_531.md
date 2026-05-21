@@ -631,7 +631,7 @@ cpd-cli manage get-cr-status \
 
 ### 2.2 Upgrade Services
 
-#### 2.2.1 Upgrade the Watsonx.data service
+#### 2.2.1 Upgrade the watsonx.data service
 
 - Log in to the cluster
 
@@ -691,7 +691,7 @@ cpd-cli manage get-cr-status \
 --components=watsonx_data
 ```
 
-#### 2.2.2 Upgrade Watsonx AI
+#### 2.2.2 Upgrade watsonx.ai service
 
 - Upgrade Wx.ai service
 
@@ -723,7 +723,7 @@ If so, delete existing foundation model pods to release the GPU resource.
   --components=watsonx_ai
   ```
   
-#### 2.2.3 Upgrade Watsonx Orchestrate
+#### 2.2.3 Upgrade watsonx Orchestrate service
 
 - Create the install-options.yml and specify below install options in it.
 
