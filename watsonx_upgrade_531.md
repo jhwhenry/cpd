@@ -146,7 +146,9 @@ oc version
 If the version doesn't match the OpenShift cluster version, update it accordingly.
 
 **3. Install the Helm CLI**
-`<br>`
+
+<br>
+
 Install Helm by following the [Helm documentation](https://www.ibm.com/links?url=https%3A%2F%2Fhelm.sh%2Fdocs%2Fintro%2Finstall%2F)
 
 #### 1.1.2 Update environment variables
@@ -204,7 +206,9 @@ cpd-cli manage restart-container
 ```
 
 **Note:**
-`<br>`Check and confirm the olm-utils-v4 container is up and running.
+<br>
+
+Check and confirm the olm-utils-v4 container is up and running.
 
 ```
 podman ps | grep -i olm-utils-v4
@@ -239,7 +243,9 @@ Log in to the IBM Entitled Registry registry:
 cpd-cli manage login-entitled-registry \
 ${IBM_ENTITLEMENT_KEY}
 ```
+
 Log in to the private container registry.
+
 The following command assumes that you are using private container registry that is secured with credentials:
 
 ```
@@ -249,30 +255,9 @@ ${PRIVATE_REGISTRY_PUSH_USER} \
 ${PRIVATE_REGISTRY_PUSH_PASSWORD}
 ```
 
-Confirm that you have access to the images that you want to mirror from the IBM Entitled Registry:
-Inspect the IBM Entitled Registry.
-
-```
-echo $COMPONENTS
-```
-
-You already have the CASE packages on the client workstation
-
-```
-export PATCH_ID=4
-
-cpd-cli manage list-images \
---components=${COMPONENTS} \
---release=${VERSION} \
---inspect_source_registry=true \ 
---patch_id=${PATCH_ID}
-```
-
-The output is saved to the list_images.csv file in the work/offline/${VERSION} directory.
-manually check for any errors in the csv file.
-
 The models and optional images that are mirrored are determined by the ${IMAGE_GROUPS} variable, from the installation environment variables script.
-For each model we already installed find the image group from below link. [Determining which models and optional images to mirror to your private container registry](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=information-determining-which-models-optional-images-mirror#mirror-model-list__watsonxai-models)
+<br>
+For each model we already installed find the image group from this documentation. [Determining which models and optional images to mirror to your private container registry](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=information-determining-which-models-optional-images-mirror#mirror-model-list__watsonxai-models)
 <br>
 For example image_group for model `gpt-oss-120b` is `ibmwxGptOss120B`.
 
@@ -293,6 +278,12 @@ cpd-cli manage mirror-images \
 --target_registry=${PRIVATE_REGISTRY_LOCATION} \
 --arch=${IMAGE_ARCH} \
 --case_download=false
+```
+
+The output is saved to the `list_images.csv` file in the work/offline/${VERSION} directory.
+Check the output for errors:
+```
+grep "level=fatal" list_images.csv
 ```
 
 #### 1.1.5 Creating a profile for upgrading the service instances
