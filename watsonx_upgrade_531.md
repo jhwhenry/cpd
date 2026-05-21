@@ -173,7 +173,8 @@ export COMPONENTS=ibm-licensing,scheduler,cpfs,cpd_platform,watsonx_orchestrate,
 ```
 export IMAGE_PULL_SECRET=ibm-entitlement-key
 export IMAGE_PULL_CREDENTIALS=$(echo -n "$PRIVATE_REGISTRY_PULL_USER:$PRIVATE_REGISTRY_PULL_PASSWORD" | base64 -w 0)
-export IMAGE_PULL_PREFIX=${PRIVATE_REGISTRY_LOCATION}
+##Use icr.io is a special setting for adapting to the subpaths in Verizon's image registry. The ImageDigestMirrorSet will be used for mirroing the images.
+export IMAGE_PULL_PREFIX=icr.io
 ```
 
 Save the changes.
@@ -656,6 +657,23 @@ ${CPDM_OC_LOGIN}
   --image_pull_secret=${IMAGE_PULL_SECRET} \
   --upgrade=true
   ```
+**Note:**
+<br>
+Apply preventative measures to avoid the problem TS022183476 - "ccs-cams-postgres and ccs-jobs-postgres pods stuck with image pulling problem"
+<br>
+Check the private registry location.
+```
+echo ${PRIVATE_REGISTRY_LOCATION}
+```
+Patch the CCS custom resource with the right image name
+```
+oc patch ccs ccs-cr --type='merge' -p '
+spec:
+  existing_postgres_image:
+    image_name: "${PRIVATE_REGISTRY_LOCATION}/icr.io/cpopen/edb/postgresql:16.13-5.31.1-amd64@sha256:31d36e076118478fea58a90fe63632b17b6b795a84a071f0872bb410dbe059dc"
+'
+```
+  
 - Validate the upgrade
 
 ```
@@ -682,6 +700,11 @@ cpd-cli manage install-components \
 --image_pull_secret=${IMAGE_PULL_SECRET} \
 --upgrade=true
 ```
+
+**Note:**
+<br>
+Monitor whether any foundation model pods stuck in `Pending` with the message "Insufficient nvidia.com/gpu".
+If so, delete existing foundation model pods to release the GPU resource.
 
 - Validate the upgrade
 
@@ -776,6 +799,29 @@ Change the file owner and group of the install-options.yml if needed. You may wa
   --param-file=/tmp/work/install-options.yml \
   --upgrade=true
   ```
+- Apply the preventative measures for avoiding the problem TS022191347 - wxo service upgrade stuck with the error message "WatsonxAiifm version mismatch"
+  Patch WO custom resource
+  
+  ```
+
+	oc patch watsonxorchestrate wo -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{
+	  "spec": {
+	    "watsonxaiifm": {
+	      "version": "12.1.2"
+	    },
+	    "redis": {
+	      "version": "1.3.1"
+	    }
+	  }
+	}'
+  ```
+ 	
+  Clear Stale Status Messages
+  ```
+  oc patch watsonxorchestrate wo -n ${PROJECT_CPD_INST_OPERANDS} --subresource=status --type=merge -p '{"status":{"progressMessage":""}}'
+  ```
+  Restart WO Operator.
+  
 - Validate the upgrade
 
   ```
@@ -809,8 +855,9 @@ cpd-cli oadp install \
 ```
 
 ## Part 3 (Post-upgrade tasks)
-
-Please validate before releasing back to end users.
+- Check whether the custom foundation model gpt-120b-xxx pods stuck in CrashLoopBackOff status.
+If so, apply the workaround in the support ticket TS022189506.
+- Please have sanity testing before releasing back to end users.
 
 ## Summarize and close out the upgrade
 - Schedule a wrap-up meeting and review the upgrade procedure and lessons learned from it.
