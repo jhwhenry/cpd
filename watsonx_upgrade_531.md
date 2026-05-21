@@ -338,64 +338,15 @@ oc get po --no-headers --all-namespaces -o wide | grep -Ev '([[:digit:]])/\1.*R'
 
 ### 2.1 Upgrade CPD to 5.3.1
 
-#### 2.1.0 Create image pull secret for shared cluster component
-
-1. Create dockerconfig.json
-
-   ```
-   cat <<EOF > dockerconfig.json 
-   {
-     "auths": {
-       "${PRIVATE_REGISTRY_LOCATION}": {
-         "auth": "${IMAGE_PULL_CREDENTIALS}"
-       }
-     }
-   }
-   EOF
-   ```
-2. Create the secret
-
-   ```
-   oc create secret docker-registry ibm-entitlement-key-scheduler \
-   --from-file ".dockerconfigjson=dockerconfig.json" \
-   --namespace=${PROJECT_SCHEDULING_SERVICE}
-   ```
-
 #### 2.1.1 Upgrade shared cluster components (No Cert manager)
 
-1.Run the cpd-cli manage login-to-ocp command to log in to the cluster
+**1.Log in to the OCP cluster**
 
 ```
 ${CPDM_OC_LOGIN}
 ```
 
-Generate the cluster-scoped resource definitions for the scheduling service.
-```
-export PATCH_ID=4
-
-cpd-cli manage case-download \
---components=scheduler \
---release=${VERSION} \
---patch_id=${PATCH_ID} \
---scheduler_ns=${PROJECT_SCHEDULING_SERVICE} \
---cluster_resources=true
-```
-
-Get the path of the work directory.
-
-```
-OLM_UTILS_CONTAINER_NAME=$(podman ps --format '{{.Names}}' | grep -E '^olm-utils-play-v4$'| head -n 1)
-WORK_DIR=$(podman inspect "${OLM_UTILS_CONTAINER_NAME}" 2>/dev/null | jq -r '.[0].Mounts[] | select(.Destination == "/tmp/work") | .Source' | head -n 1)
-```
-
-Apply the cluster-scoped resources for the scheduling service from the `cluster_scoped_resources.yaml` file.
-```
-oc apply -f $WORK_DIR/cluster_scoped_resources.yaml \
---server-side \
---force-conflicts
-```
-
-2.Upgrade the License Service.
+**2.Upgrade the License Service.**
 
 Confirm the project in which the License Service is running.
 
@@ -423,8 +374,60 @@ Confirm that the License Service pods are Running or Completed:
 oc get pods --namespace=${PROJECT_LICENSE_SERVICE}
 ```
 
-3. Upgrade the scheduling service
+**3. Upgrade the scheduling service**
 
+1)Create image pull secret for shared cluster component
+
+Create dockerconfig.json
+
+```
+cat <<EOF > dockerconfig.json 
+{
+ "auths": {
+   "${PRIVATE_REGISTRY_LOCATION}": {
+	 "auth": "${IMAGE_PULL_CREDENTIALS}"
+   }
+ }
+}
+EOF
+```
+
+2)Create the secret
+
+```
+oc create secret docker-registry ibm-entitlement-key-scheduler \
+--from-file ".dockerconfigjson=dockerconfig.json" \
+--namespace=${PROJECT_SCHEDULING_SERVICE}
+```
+
+3)Generate the cluster-scoped resource definitions for the scheduling service
+
+```
+export PATCH_ID=4
+
+cpd-cli manage case-download \
+--components=scheduler \
+--release=${VERSION} \
+--patch_id=${PATCH_ID} \
+--scheduler_ns=${PROJECT_SCHEDULING_SERVICE} \
+--cluster_resources=true
+```
+
+4)Get the path of the work directory.
+
+```
+OLM_UTILS_CONTAINER_NAME=$(podman ps --format '{{.Names}}' | grep -E '^olm-utils-play-v4$'| head -n 1)
+WORK_DIR=$(podman inspect "${OLM_UTILS_CONTAINER_NAME}" 2>/dev/null | jq -r '.[0].Mounts[] | select(.Destination == "/tmp/work") | .Source' | head -n 1)
+```
+
+5)Apply the cluster-scoped resources for the scheduling service from the `cluster_scoped_resources.yaml` file.
+```
+oc apply -f $WORK_DIR/cluster_scoped_resources.yaml \
+--server-side \
+--force-conflicts
+```
+
+7)Upgrade the scheduling service
 ```
 export PATCH_ID=4
 
