@@ -63,9 +63,11 @@ oc get Routes -n ${PROJECT_CPD_INST_OPERANDS} -o yaml > Routes_Bak.yaml
 oc get TemporaryPatch -n ${PROJECT_CPD_INST_OPERANDS} -o yaml > TemporaryPatch_Bak.yaml
 ```
 #### 7.Global Search legacy index compatibility check before upgrade
-<br>
+
 [Known Issue: Global Search Legacy Index Compatibility](https://www.ibm.com/support/pages/node/7268540#pre-upgrade-checklist)
+
 <br>
+
 Edit the CCS custom resource.
 
 ```
