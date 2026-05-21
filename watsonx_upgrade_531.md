@@ -763,7 +763,7 @@ Change the file owner and group of the install-options.yml if needed. You may wa
   --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
   --image_pull_prefix=${IMAGE_PULL_PREFIX} \
   --image_pull_secret=${IMAGE_PULL_SECRET} \
-  --param-file=/tmp/work/overridewxo.yml \
+  --param-file=/tmp/work/install-options.yml \
   --upgrade=true \
   --preview=true
   ```
