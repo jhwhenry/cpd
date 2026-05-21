@@ -67,10 +67,13 @@ oc get TemporaryPatch -n ${PROJECT_CPD_INST_OPERANDS} -o yaml > TemporaryPatch_B
 [Known Issue: Global Search Legacy Index Compatibility](https://www.ibm.com/support/pages/node/7268540#pre-upgrade-checklist)
 <br>
 Edit the CCS custom resource.
+
 ```
 oc edit ccs ccs-cr -n ${PROJECT_CPD_INST_OPERANDS}
 ```
+
 Add the following properties to the CCS Custom Resource prior to initiating the upgrade:
+
 ```
 opensearch_legacy_core_version: "2.19.3"
 opensearch_legacy_plugin_version: "2.19.3.0"
