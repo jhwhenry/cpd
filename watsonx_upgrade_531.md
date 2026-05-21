@@ -176,9 +176,12 @@ export COMPONENTS=ibm-licensing,scheduler,cpfs,cpd_platform,watsonx_orchestrate,
 ```
 export IMAGE_PULL_SECRET=ibm-entitlement-key
 export IMAGE_PULL_CREDENTIALS=$(echo -n "$PRIVATE_REGISTRY_PULL_USER:$PRIVATE_REGISTRY_PULL_PASSWORD" | base64 -w 0)
-##Use icr.io is a special setting for adapting to the subpaths in Verizon's image registry. The ImageDigestMirrorSet will be used for mirroing the images.
 export IMAGE_PULL_PREFIX=icr.io
 ```
+**Note:**
+`export IMAGE_PULL_PREFIX=icr.io` is a special setting for adapting to the subpaths in Verizon's image registry. The ImageDigestMirrorSet will be used for mapping the image pull request to the private image registry.
+
+<br>
 
 Save the changes.
 
