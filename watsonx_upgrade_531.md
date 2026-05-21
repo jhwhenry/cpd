@@ -95,11 +95,18 @@ Part 1: Pre-upgrade
 Part 2: Upgrade
 2.1 Upgrade CPD to 5.3.1
 2.1.1 Upgrade shared cluster components
-2.1.2 Prepare to upgrade IBM Software Hub
-2.1.3 Create image pull secrets for IBM Software Hub instance
-2.1.4 Upgrade IBM Software Hub
-2.2 Upgrade watsonxdata
+2.1.2 Upgrade Knative Eventing
+2.1.3 Upgrade Events Operator
+2.1.4 Prepare to upgrade IBM Software Hub
+2.1.5 Create image pull secrets for IBM Software Hub instance
+2.1.6 Upgrade IBM Software Hub
+2.2 Upgrade services
+2.2.1 Upgrade the Watsonx.data service
+2.2.2 Upgrade watsonx.ai service
+2.2.3 Upgrade watsonx Orchestrate service
 2.3 Upgade CPD BR service
+
+Part 3: Post-upgrade
 
 Summarize and close out the upgrade
 
