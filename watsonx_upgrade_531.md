@@ -670,24 +670,6 @@ ${CPDM_OC_LOGIN}
   --image_pull_secret=${IMAGE_PULL_SECRET} \
   --upgrade=true
   ```
-**Note:**
-<br>
-Apply preventative measures to avoid the problem TS022183476 - "ccs-cams-postgres and ccs-jobs-postgres pods stuck with image pulling problem"
-<br>
-Check the private registry location.
-```
-echo ${PRIVATE_REGISTRY_LOCATION}
-```
-
-Replace the `${PRIVATE_REGISTRY_LOCATION}` with the proper value returned in the above command and then patch the CCS custom resource with the right image name using below command.
-
-```
-oc patch ccs ccs-cr --type='merge' -p '
-spec:
-  existing_postgres_image:
-    image_name: "${PRIVATE_REGISTRY_LOCATION}/icr.io/cpopen/edb/postgresql:16.13-5.31.1-amd64@sha256:31d36e076118478fea58a90fe63632b17b6b795a84a071f0872bb410dbe059dc"
-'
-```
   
 - Validate the upgrade
 
@@ -718,7 +700,24 @@ cpd-cli manage install-components \
 
 **Note:**
 <br>
-Monitor whether any foundation model pods stuck in `Pending` with the message "Insufficient nvidia.com/gpu".
+1.Apply preventative measures to avoid the problem TS022183476 - "ccs-cams-postgres and ccs-jobs-postgres pods stuck with image pulling problem"
+<br>
+Check the private registry location.
+```
+echo ${PRIVATE_REGISTRY_LOCATION}
+```
+
+Replace the `${PRIVATE_REGISTRY_LOCATION}` with the proper value returned in the above command and then patch the CCS custom resource with the right image name using below command.
+
+```
+oc patch ccs ccs-cr --type='merge' -p '
+spec:
+  existing_postgres_image:
+    image_name: "${PRIVATE_REGISTRY_LOCATION}/icr.io/cpopen/edb/postgresql:16.13-5.31.1-amd64@sha256:31d36e076118478fea58a90fe63632b17b6b795a84a071f0872bb410dbe059dc"
+'
+```
+
+2.Monitor whether any foundation model pods stuck in `Pending` with the message "Insufficient nvidia.com/gpu".
 If so, delete existing foundation model pods to release the GPU resource.
 
 - Validate the upgrade
