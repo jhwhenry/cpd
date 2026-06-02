@@ -126,6 +126,11 @@ Summarize and close out the upgrade
 
 Update the cpd-cli utility following the steps in [Updating client workstations](https://www.ibm.com/docs/en/software-hub/5.3.x?topic=52-updating-client-workstations)
 
+**Note:** Download the cpd-cli v14.3.1.5 (patch 5) which can support the `--patch_id` parameter.
+<br>
+
+[cpd-cli v14.3.1.5](https://github.com/IBM/cpd-cli/releases/download/v14.3.1.5/cpd-cli-linux-EE-14.3.1.tgz)
+
 <br>
 
 After the update is done, run below commands for the confirmation:
@@ -139,8 +144,7 @@ Output like this
 ```
 cpd-cli
 	Version: 14.3.1
-	Build Date: 2026-05-01T13:41:10
-	Build Number: 3115
+    Build Number: 3169
 	SWH Release Version: 5.3.1
 ```
 
@@ -674,7 +678,9 @@ Check the private registry location.
 ```
 echo ${PRIVATE_REGISTRY_LOCATION}
 ```
-Patch the CCS custom resource with the right image name
+
+Replace the `${PRIVATE_REGISTRY_LOCATION}` with the proper value returned in the above command and then patch the CCS custom resource with the right image name using below command.
+
 ```
 oc patch ccs ccs-cr --type='merge' -p '
 spec:
