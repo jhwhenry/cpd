@@ -713,7 +713,7 @@ Replace the `${PRIVATE_REGISTRY_LOCATION}` with the proper value returned in the
 oc patch ccs ccs-cr --type='merge' -p '
 spec:
   existing_postgres_image:
-    image_name: "${PRIVATE_REGISTRY_LOCATION}/icr.io/cpopen/edb/postgresql:16.13-5.31.1-amd64@sha256:31d36e076118478fea58a90fe63632b17b6b795a84a071f0872bb410dbe059dc"
+    image_name: "<YOUR_PRIVATE_REGISTRY_LOCATION>/icr.io/cpopen/edb/postgresql:16.13-5.31.1-amd64@sha256:31d36e076118478fea58a90fe63632b17b6b795a84a071f0872bb410dbe059dc"
 '
 ```
 
@@ -760,42 +760,6 @@ Change the file owner and group of the install-options.yml if needed. You may wa
   oc delete rolebinding ibm-lakehouse-leader-election-rolebinding -n ${PROJECT_CPD_INST_OPERATORS} || true
   oc delete role ibm-uab-ads-operator-role -n ${PROJECT_CPD_INST_OPERATORS} || true
   ```
-- Generate the Helm preview
-
-  ```
-  export PATCH_ID=4
-
-  cpd-cli manage install-components \
-  --license_acceptance=true \
-  --components=watsonx_orchestrate \
-  --release=${VERSION} \
-  --patch_id=${PATCH_ID} \
-  --operator_ns=${PROJECT_CPD_INST_OPERATORS} \
-  --instance_ns=${PROJECT_CPD_INST_OPERANDS} \
-  --image_pull_prefix=${IMAGE_PULL_PREFIX} \
-  --image_pull_secret=${IMAGE_PULL_SECRET} \
-  --param-file=/tmp/work/install-options.yml \
-  --upgrade=true \
-  --preview=true
-  ```
-- Export your workspace directory and find the name of the helm file
-
-  ```
-  cat $WORK_DIR/preview.sh | grep -E "watsonx-orchestrate-migration|watson-assistant-migration"
-  ```
-- Run the helm command within Podman
-
-  ```
-  podman exec -it olm-utils-play-v4 helm upgrade --install --namespace ${PROJECT_CPD_INST_OPERANDS} watsonx-orchestrate \
-  /tmp/work/offline/5.3.1/.ibm-pak/data/cases/ibm-watsonx-orchestrate/7.1.1/charts/watsonx-orchestrate-migration-0.0.0.tgz \
-  --take-ownership --debug \
-  -f /tmp/work/olm-utils-ansible-log/override_file_<REPLACE WITH NAME/TIMESTAMP OF FILE>.yaml
-  ```
-- Ensure the WxO Custome Resource shows the label "managed-by: Helm"
-
-  ```
-  oc get wo wo -n ${PROJECT_CPD_INST_OPERANDS} -o yaml | grep -i "managed-by"
-  ```
 - Upgrade wxO Service
 
   ```
@@ -817,7 +781,6 @@ Change the file owner and group of the install-options.yml if needed. You may wa
   Patch WO custom resource
   
   ```
-
 	oc patch watsonxorchestrate wo -n ${PROJECT_CPD_INST_OPERANDS} --type=merge -p '{
 	  "spec": {
 	    "watsonxaiifm": {
@@ -868,10 +831,14 @@ cpd-cli oadp install \
 --verbose
 ```
 
+**Note:**
+<br>
+Monitor the cpdbr pod during this command execution. 
+If it stuck in the `ImagePullBackOff` status, then update the image URL in the cpdbr-tenant deployment accordingly.
+
+
 ## Part 3 (Post-upgrade tasks)
-- Check whether the custom foundation model gpt-120b-xxx pods stuck in CrashLoopBackOff status.
-If so, apply the workaround in the support ticket TS022189506.
-- Please have sanity testing before releasing back to end users.
+- Have sanity testing before releasing back to end users.
 
 ## Summarize and close out the upgrade
 - Schedule a wrap-up meeting and review the upgrade procedure and lessons learned from it.
